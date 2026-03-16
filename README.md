@@ -25,6 +25,9 @@ Este projeto é desenvolvido pelos alunos do **Eixo Computação** durante o **1
 
 Desenvolver uma solução tecnológica para um **problema real**, aplicando os conhecimentos adquiridos ao longo do curso.
 
+### Tema 
+Desenvolvimento de um Sistema Web para Gestão de Ordens de Serviço e Controle de Fluxo Operacional na [Zito Tapeçaria para Autos](https://zitotapecaria.com.br/). 
+
 ---
 
 ## 👨‍🏫 Orientação
