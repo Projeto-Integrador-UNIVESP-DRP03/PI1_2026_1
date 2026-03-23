@@ -1,0 +1,44 @@
+<h2>Cliente encontrado</h2>
+
+<p>Nome: {{cliente[2]}}</p>
+<p>CPF: {{cliente[1]}}</p>
+
+<h3>Veículos</h3>
+
+<ul>
+{% for v in veiculos %}
+
+<li>
+{{v[3]}} - {{v[4]}} - {{v[2]}}
+</li>
+
+{% endfor %}
+</ul>
+
+
+<h3>Adicionar veículo</h3>
+
+<form action="/adicionar_veiculo" method="post">
+
+<input type="hidden" name="id_cliente" value="{{cliente[0]}}">
+
+Placa:
+<input name="placa">
+
+Marca:
+<input name="marca">
+
+Modelo:
+<input name="modelo">
+
+Ano:
+<input name="ano">
+
+Cor:
+<input name="cor">
+
+<button type="submit">
+Cadastrar
+</button>
+
+</form>
