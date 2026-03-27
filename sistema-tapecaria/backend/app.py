@@ -4,7 +4,7 @@ import os
 import datetime
 from flask_sqlalchemy import SQLAlchemy
 
-
+# Conectando ao banco de dados SQLite usando SQLAlchemy, configurando a URI do banco de dados com base no caminho do arquivo e inicializando a extensão SQLAlchemy com a aplicação Flask
 project_dir = os.path.dirname(os.path.abspath(__file__))
 database_file = "sqlite:///{}".format(os.path.join(project_dir, "../database/database.db"))
 
@@ -40,7 +40,6 @@ class enderecos_cliente(db.Model):
     __tablename__ = 'enderecos_cliente'
     id_endereco = db.Column(db.Integer, primary_key=True)
     id_cliente  = db.Column(db.Integer, db.ForeignKey('clientes.id_cliente'), nullable=False)
-    endereco    = db.Column(db.String(200), nullable=False)
     rua         = db.Column(db.String(150), nullable=False)
     numero      = db.Column(db.String(10) , nullable=False)
     bairro      = db.Column(db.String(100), nullable=False)
@@ -51,55 +50,194 @@ class enderecos_cliente(db.Model):
 
 def conectar(): # Função para conectar ao banco de dados SQLite, retornando a conexão estabelecida
     return sqlite3.connect("../database/database.db")
+######
 
-
+# Rota para a página inicial, renderizando o template de consulta
 @app.route("/")
 def home():
     return render_template("/consulta.html")
 
-
+# Rota para a página de busca
+# Rota para a página de busca
 @app.route("/buscar", methods=["POST"])
-# função para buscar um cliente no banco de dados com base no código do cliente fornecido pelo usuário, e renderizar a página de cliente com as informações do cliente e seus veículos, ou redirecionar para a página de cadastro se o cliente não for encontrado
 def buscar():
-    cod_cliente = request.form["cod_cliente"].upper() # obtém o código do cliente enviado pelo formulário na página de consulta
 
-    conn = conectar() # conecta ao banco de dados usando a função conectar() definida anteriormente
-    cursor = conn.cursor() # cria um cursor para executar comandos SQL no banco de dados
+    cod_cliente = request.form["cod_cliente"].upper()
 
-    cursor.execute("SELECT * FROM clientes WHERE cod_cliente = ?", (cod_cliente,)) # executa uma consulta SQL para buscar um cliente com o código fornecido, usando um parâmetro para evitar injeção de SQL
-    cliente = cursor.fetchone()
-    
+    # buscar cliente
+    cliente = Cliente.query.filter_by(
+        cod_cliente=cod_cliente
+    ).first()
 
+    # se cliente existir
     if cliente:
-        cursor.execute("SELECT * FROM veiculos WHERE id_cliente = ?", (cliente[0],))
-        veiculos = cursor.fetchall()
+
+        telefone = telefones_cliente.query.filter_by(
+            id_cliente=cliente.id_cliente
+        ).first()
+
+        endereco = enderecos_cliente.query.filter_by(
+            id_cliente=cliente.id_cliente
+        ).first()
+
+        veiculos = Veiculo.query.filter_by(
+            id_cliente=cliente.id_cliente
+        ).all()
 
         return render_template(
             "cliente.html",
             cliente=cliente,
+            telefone=telefone,
+            endereco=endereco,
             veiculos=veiculos
         )
-    else:
-        return render_template("/cadastro_cliente.html", cod_cliente=cod_cliente)
 
+    # se cliente não existir
+    else:
+        return render_template(
+            "cadastro_cliente.html",
+            cod_cliente=cod_cliente
+        )
+
+
+# Rota para listar os clientes, buscando todos os clientes do banco de dados e renderizando a página de lista de clientes com as informações dos clientes
+@app.route("/clientes")
+def listar_clientes():
+
+    clientes = Cliente.query.all()
+    return render_template(
+        "lista_clientes.html",
+        clientes=clientes
+    )
+    
+# Rota para deletar um cliente, recebendo o ID do cliente como parâmetro, buscando o cliente no banco de dados, deletando o cliente e redirecionando para a página de lista de clientes
+@app.route("/deletar_cliente/<int:id_cliente>", methods=["POST"])
+def deletar_cliente(id_cliente):
+
+    cliente = Cliente.query.get_or_404(id_cliente)
+    telefone = telefones_cliente.query.filter_by(
+        id_cliente=id_cliente
+    ).first()
+    endereco = enderecos_cliente.query.filter_by(
+        id_cliente=id_cliente
+    ).first()
+    # deletar telefone
+    if telefone:
+        db.session.delete(telefone)
+    # deletar endereço
+    if endereco:
+        db.session.delete(endereco)
+    # deletar cliente
+    db.session.delete(cliente)
+    db.session.commit()
+
+    return redirect("/clientes")
+
+# Rota para editar um cliente, recebendo o ID do cliente como parâmetro, buscando o cliente no banco de dados e renderizando a página de edição de cliente com as informações do cliente
+@app.route("/editar/<int:id>")
+def editar_cliente(id):
+
+    cliente = Cliente.query.get_or_404(id)
+
+    telefone = telefones_cliente.query.filter_by(
+        id_cliente=id
+    ).first()
+
+    endereco = enderecos_cliente.query.filter_by(
+        id_cliente=id
+    ).first()
+
+    return render_template(
+        "editar_cliente.html",
+        cliente=cliente,
+        telefone=telefone,
+        endereco=endereco
+    )
+
+
+@app.route("/atualizar_cliente/<int:id_cliente>", methods=["POST"])
+def atualizar_cliente(id_cliente):
+
+    cliente = Cliente.query.get_or_404(id_cliente)
+
+    telefone = telefones_cliente.query.filter_by(
+        id_cliente=id_cliente
+    ).first()
+
+    endereco = enderecos_cliente.query.filter_by(
+        id_cliente=id_cliente
+    ).first()
+
+    # atualizar cliente
+    cliente.nome = request.form["nome"]
+
+    # atualizar telefone
+    if telefone:
+        telefone.telefone = request.form["telefone"]
+
+    # atualizar endereço
+    if endereco:
+        endereco.rua = request.form["rua"]
+        endereco.numero = request.form["numero"]
+        endereco.bairro = request.form["bairro"]
+        endereco.cidade = request.form["cidade"]
+        endereco.estado = request.form["estado"]
+        endereco.cep = request.form["cep"]
+
+    db.session.commit()
+
+    return redirect(f"/editar/{id_cliente}")
 
 @app.route("/cadastrar_cliente", methods=["POST"])
 def cadastrar_cliente():
 
-    nome = request.form["nome"]
     cod_cliente = request.form["cod_cliente"]
+    nome = request.form["nome"]
+    telefone = request.form["telefone"]
 
-    conn = conectar()
-    cursor = conn.cursor()
+    rua = request.form["rua"]
+    numero = request.form["numero"]
+    bairro = request.form["bairro"]
+    cidade = request.form["cidade"]
+    estado = request.form["estado"]
+    cep = request.form["cep"]
 
-    cursor.execute(
-        "INSERT INTO clientes (nome, cod_cliente) VALUES (?, ?)",
-        (nome, cod_cliente)
+    # inserir cliente
+    novo_cliente = Cliente(
+        cod_cliente=cod_cliente,
+        nome=nome
     )
 
-    conn.commit()
+    db.session.add(novo_cliente)
+    db.session.commit()
 
-    return redirect("/")
+    # pegar id gerado
+    id_cliente = novo_cliente.id_cliente
+
+    # inserir telefone
+    novo_telefone = telefones_cliente(
+        id_cliente=id_cliente,
+        telefone=telefone
+    )
+
+    db.session.add(novo_telefone)
+
+    # inserir endereço
+    novo_endereco = enderecos_cliente(
+        id_cliente=id_cliente,
+        rua=rua,
+        numero=numero,
+        bairro=bairro,
+        cidade=cidade,
+        estado=estado,
+        cep=cep
+    )
+
+    db.session.add(novo_endereco)
+
+    db.session.commit()
+
+    return redirect("/clientes")
 
 
 # Adicionar veículo para um cliente específico, recebendo os dados do veículo através de um formulário e inserindo-os na tabela de veículos do banco de dados, associando o veículo ao cliente pelo ID do cliente

@@ -1,26 +1,76 @@
 <h2>Cliente encontrado</h2>
 
-<p>Nome: {{cliente[2]}}</p>
-<p>CPF: {{cliente[1]}}</p>
+<h3>Dados do cliente</h3>
+
+<p><b>Nome:</b> {{ cliente.nome }}</p>
+<p><b>CPF/CNPJ:</b> {{ cliente.cod_cliente }}</p>
+
+<a href="/editar/{{ cliente.id_cliente }}">
+<button>Editar cliente</button>
+</a>
+
+<hr>
+
+<h3>Telefone</h3>
+
+{% if telefone %}
+<p>{{ telefone.telefone }}</p>
+{% else %}
+<p>Telefone não cadastrado</p>
+{% endif %}
+
+<h3>Endereço</h3>
+
+{% if endereco %}
+
+<p>
+{{ endereco.rua }}, {{ endereco.numero }} <br>
+{{ endereco.bairro }} <br>
+{{ endereco.cidade }} - {{ endereco.estado }} <br>
+CEP: {{ endereco.cep }}
+</p>
+
+{% else %}
+
+<p>Endereço não cadastrado</p>
+
+{% endif %}
+
+<hr>
 
 <h3>Veículos</h3>
 
-<ul>
+<table border="1">
+
+<tr>
+<th>Placa</th>
+<th>Marca</th>
+<th>Modelo</th>
+<th>Ano</th>
+<th>Cor</th>
+</tr>
+
 {% for v in veiculos %}
 
-<li>
-{{v[3]}} - {{v[4]}} - {{v[2]}}
-</li>
+<tr>
+<td>{{ v.placa }}</td>
+<td>{{ v.marca }}</td>
+<td>{{ v.modelo }}</td>
+<td>{{ v.ano }}</td>
+<td>{{ v.cor }}</td>
+</tr>
 
 {% endfor %}
-</ul>
 
+</table>
+
+<hr>
 
 <h3>Adicionar veículo</h3>
 
 <form action="/adicionar_veiculo" method="post">
 
-<input type="hidden" name="id_cliente" value="{{cliente[0]}}">
+<input type="hidden" name="id_cliente" value="{{ cliente.id_cliente }}">
 
 Placa:
 <input name="placa">
@@ -38,7 +88,7 @@ Cor:
 <input name="cor">
 
 <button type="submit">
-Cadastrar
+Cadastrar veículo
 </button>
 
 </form>
