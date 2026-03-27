@@ -1,0 +1,40 @@
+<h1>Clientes Cadastrados</h1>
+
+<table border="1">
+
+<tr>
+    <th>ID</th>
+    <th>Nome</th>
+    <th>CPF/CNPJ</th>
+    <th>Ações</th>
+</tr>
+
+{% for cliente in clientes %}
+
+<tr>
+    <td>{{ cliente.id_cliente }}</td>
+    <td>{{ cliente.nome }}</td>
+    <td>{{ cliente.cod_cliente }}</td>
+    <td>
+        <a href="/editar/{{ cliente.id_cliente }}">
+            <button type="button">
+                Editar
+            </button>
+        </a>
+<form action="/deletar_cliente/{{ cliente.id_cliente }}" method="post">
+    <button type="submit"
+    onclick="return confirm('Tem certeza que deseja deletar o cadastro de {{ cliente.nome }}?')">
+    Deletar
+    </button>
+</form>
+
+</td>
+</tr>
+{% endfor %}
+</table>
+
+<a href="/">
+    <button type="button">
+        Voltar Para Página de Consulta
+    </button>
+</a>
