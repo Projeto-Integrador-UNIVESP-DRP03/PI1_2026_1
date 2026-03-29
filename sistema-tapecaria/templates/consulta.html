@@ -1,22 +1,85 @@
-<h1>Consultar Cliente</h1>
-<h2>Zito Tapeçaria</h2>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Consultar Cliente</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f9fc;
+            margin: 20px;
+            color: #333;
+        }
 
+        h1, h2 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
 
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
 
-<form action="/buscar" method="post">
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
 
-Pesquisa por CPF ou CNPJ:
-<input type="text" name="cod_cliente">
+        input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            width: 300px;
+        }
 
-<button type="submit">
-Pesquisar
-</button>
+        button {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
 
-</form>
+        button:hover {
+            background-color: #2980b9;
+        }
 
-<br>
-<a href="/clientes">
-    <button>
-        Listar todos os clientes
-    </button>
-</a>
+        .footer-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .footer-buttons a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Consultar Cliente</h1>
+    <h2>Zito Tapeçaria</h2>
+
+    <div class="card">
+        <form action="/buscar" method="post">
+            <label for="cod_cliente"><strong>Pesquisa por CPF ou CNPJ:</strong></label>
+            <input type="text" id="cod_cliente" name="cod_cliente" placeholder="Digite o CPF ou CNPJ">
+            <button type="submit">Pesquisar</button>
+        </form>
+    </div>
+
+    <div class="footer-buttons">
+        <a href="/clientes">
+            <button>Listar todos os clientes</button>
+        </a>
+    </div>
+
+</body>
+</html>
