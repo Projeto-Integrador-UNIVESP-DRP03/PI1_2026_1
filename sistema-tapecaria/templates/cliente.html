@@ -1,0 +1,134 @@
+<h1>Dados do Cliente</h1>
+
+<h2>Informações básicas</h2>
+
+<p><strong>Nome:</strong> {{ cliente.nome }}</p>
+<p><strong>CPF/CNPJ:</strong> {{ cliente.cod_cliente }}</p>
+
+<p>
+<strong>Telefone:</strong>
+{{ cliente.telefone.telefone if cliente.telefone else "Não cadastrado" }}
+</p>
+
+<p>
+<strong>Rua:</strong>
+{{ cliente.endereco.rua if cliente.endereco else "Não cadastrada" }}
+</p>
+
+<p>
+<strong>Número:</strong>
+{{ cliente.endereco.numero if cliente.endereco else "Não cadastrado" }}
+</p>
+
+<p>
+<strong>Complemento:</strong>
+{{ cliente.endereco.complemento if cliente.endereco else "Não cadastrado" }}
+</p>
+
+<p>
+<strong>Bairro:</strong>
+{{ cliente.endereco.bairro if cliente.endereco else "Não cadastrado" }}
+</p>
+
+<p>
+<strong>Cidade:</strong>
+{{ cliente.endereco.cidade if cliente.endereco else "Não cadastrada" }}
+</p>
+
+<p>
+<strong>Estado:</strong>
+{{ cliente.endereco.estado if cliente.endereco else "Não cadastrado" }}
+</p>
+
+<p>
+<strong>CEP:</strong>
+{{ cliente.endereco.cep if cliente.endereco else "Não cadastrado" }}
+</p>
+
+
+<hr>
+
+<h2>Veículos cadastrados</h2>
+
+{% if cliente.veiculos %}
+
+<table border="1" cellpadding="6">
+
+<thead>
+<tr>
+<th>Placa</th>
+<th>Modelo</th>
+<th>Marca</th>
+<th>Ano</th>
+<th>Cor</th>
+<th>Ações</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for veiculo in cliente.veiculos %}
+
+<tr>
+
+<td>{{ veiculo.placa }}</td>
+
+<td>{{ veiculo.modelo }}</td>
+
+<td>{{ veiculo.marca }}</td>
+
+<td>{{ veiculo.ano }}</td>
+
+<td>{{ veiculo.cor }}</td>
+
+<td>
+
+<a href="{{ url_for('main.editar_veiculo', id_veiculo=veiculo.id_veiculo) }}">
+<button type="button">Editar</button>
+</a>
+
+
+<form
+action="{{ url_for('main.deletar_veiculo', id_veiculo=veiculo.id_veiculo) }}"
+method="post"
+style="display:inline;"
+>
+
+<button type="submit">Excluir</button>
+
+</form>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+</table>
+
+{% else %}
+
+<p>Nenhum veículo cadastrado.</p>
+
+{% endif %}
+
+<br>
+
+<a href="{{ url_for('main.novo_veiculo', id_cliente=cliente.id_cliente) }}">
+<button>Adicionar veículo</button>
+</a>
+
+<hr>
+
+<a href="{{ url_for('main.editar_cliente', id_cliente=cliente.id_cliente) }}">
+<button>Editar cliente</button>
+</a>
+
+<a href="{{ url_for('main.home') }}">
+<button>Buscar outro cliente</button>
+</a>
+
+<a href="{{ url_for('main.home') }}">
+<button>Novo cliente</button>
+</a>

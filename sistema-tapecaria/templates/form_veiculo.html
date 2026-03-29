@@ -1,0 +1,34 @@
+<h1>{{ "Editar Veículo" if veiculo else "Cadastrar Veículo" }}</h1>
+
+<form method="POST" action="{{ url_for('main.salvar_veiculo') }}">
+
+<input type="hidden" name="id_cliente" value="{{ id_cliente }}">
+<input type="hidden" name="id_veiculo" value="{{ veiculo.id_veiculo if veiculo else '' }}">
+
+<label>Placa</label>
+<input type="text" name="placa"
+value="{{ veiculo.placa if veiculo else '' }}" required>
+
+<label>Marca</label>
+<input type="text" name="marca"
+value="{{ veiculo.marca if veiculo else '' }}" required>
+
+<label>Modelo</label>
+<input type="text" name="modelo"
+value="{{ veiculo.modelo if veiculo else '' }}" required>
+
+<label>Ano</label>
+<input type="number" name="ano"
+value="{{ veiculo.ano if veiculo else '' }}">
+
+<label>Cor</label>
+<input type="text" name="cor"
+value="{{ veiculo.cor if veiculo else '' }}">
+
+<br><br>
+
+<button type="submit">
+{{ "Atualizar veículo" if veiculo else "Salvar veículo" }}
+</button>
+
+</form>

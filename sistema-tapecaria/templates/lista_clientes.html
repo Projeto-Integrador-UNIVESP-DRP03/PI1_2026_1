@@ -1,0 +1,120 @@
+<h1>Clientes Cadastrados</h1>
+
+<table border="1" cellpadding="6">
+
+<thead>
+<tr>
+
+<th>Nome</th>
+<th>CPF/CNPJ</th>
+<th>Telefone</th>
+<th>Rua</th>
+<th>Veículos</th>
+<th>Ações</th>
+
+</tr>
+</thead>
+
+<tbody>
+
+{% for cliente in clientes %}
+
+<tr>
+
+<td>{{ cliente.nome }}</td>
+
+<td>{{ cliente.cod_cliente }}</td>
+
+<td>
+{{ cliente.telefone.telefone if cliente.telefone else "Não cadastrado" }}
+</td>
+
+<td>
+{{ cliente.endereco.rua if cliente.endereco else "Não cadastrada" }}
+</td>
+
+<td>
+
+{% if cliente.veiculos %}
+
+<ul>
+
+{% for veiculo in cliente.veiculos %}
+
+<li>
+
+{{ veiculo.placa }} - {{ veiculo.modelo }}
+
+<a href="{{ url_for('main.editar_veiculo', id_veiculo=veiculo.id_veiculo) }}">
+<button type="button">Editar</button>
+</a>
+
+<form
+action="{{ url_for('main.deletar_veiculo', id_veiculo=veiculo.id_veiculo) }}"
+method="post"
+style="display:inline;"
+>
+
+<button type="submit">Excluir</button>
+
+</form>
+
+</li>
+
+{% endfor %}
+
+</ul>
+
+{% else %}
+
+Nenhum veículo
+
+{% endif %}
+
+<br>
+
+<a href="{{ url_for('main.novo_veiculo', id_cliente=cliente.id_cliente) }}">
+<button>Adicionar veículo</button>
+</a>
+
+</td>
+
+<td>
+
+<a href="{{ url_for('main.perfil_cliente', id_cliente=cliente.id_cliente) }}">
+<button>Ver perfil</button>
+</a>
+
+<a href="{{ url_for('main.editar_cliente', id_cliente=cliente.id_cliente) }}">
+<button>Editar</button>
+</a>
+
+<form
+action="{{ url_for('main.deletar_cliente', id_cliente=cliente.id_cliente) }}"
+method="post"
+style="display:inline;"
+>
+
+<button type="submit">Excluir</button>
+
+</form>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+<br><br>
+
+<a href="{{ url_for('main.home') }}">
+<button>Novo cliente</button>
+</a>
+
+<a href="{{ url_for('main.home') }}">
+<button>Voltar para página inicial</button>
+</a>
