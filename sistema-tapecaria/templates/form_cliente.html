@@ -1,0 +1,49 @@
+<h1>{{ titulo }}</h1>
+
+<form method="POST"
+action="{{ url_for(acao, id_cliente=cliente.id_cliente if cliente else None) }}">
+
+<label>CPF/CNPJ</label>
+<input type="text" name="cod_cliente"
+value="{{ cliente.cod_cliente if cliente else cod_cliente }}"
+{% if cliente %}readonly{% endif %}>
+
+<label>Nome</label>
+<input type="text" name="nome"
+value="{{ cliente.nome if cliente else '' }}">
+
+<label>Telefone</label>
+<input type="text" name="telefone"
+value="{{ cliente.telefone.telefone if cliente and cliente.telefone else '' }}">
+
+<label>Rua</label>
+<input type="text" name="rua"
+value="{{ cliente.endereco.rua if cliente and cliente.endereco else '' }}">
+
+<label>Número</label>
+<input type="text" name="numero"
+value="{{ cliente.endereco.numero if cliente and cliente.endereco else '' }}">
+
+<label>Bairro</label>
+<input type="text" name="bairro"
+value="{{ cliente.endereco.bairro if cliente and cliente.endereco else '' }}">
+
+<label>Cidade</label>
+<input type="text" name="cidade"
+value="{{ cliente.endereco.cidade if cliente and cliente.endereco else '' }}">
+
+<label>Estado</label>
+<input type="text" name="estado"
+value="{{ cliente.endereco.estado if cliente and cliente.endereco else '' }}">
+
+<label>CEP</label>
+<input type="text" name="cep"
+value="{{ cliente.endereco.cep if cliente and cliente.endereco else '' }}">
+
+<label>Complemento</label>
+<input type="text" name="complemento"
+value="{{ cliente.endereco.complemento if cliente and cliente.endereco else '' }}">
+
+<button type="submit">{{ botao }}</button>
+
+</form>
