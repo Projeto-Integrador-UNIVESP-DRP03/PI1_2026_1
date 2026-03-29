@@ -56,7 +56,7 @@ CREATE TABLE ordens_servico (
     data_abertura DATE,
     quantidade_bancos INTEGER,
     padrao_veiculo BOOLEAN,
-    personalizacao_igual BOOLEAN,
+    personalizacao_igual BOOLEAN, -- se todos os bancos terão a mesma personalização
     observacoes TEXT,
     FOREIGN KEY (id_veiculo) REFERENCES veiculos(id_veiculo)
 );
@@ -94,7 +94,7 @@ CREATE TABLE costuras (
 );
 
 -- =========================
--- CORES
+-- CORES DAS COSTURAS
 -- =========================
 CREATE TABLE cores (
     id_cor INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -136,4 +136,19 @@ CREATE TABLE banco_tecidos (
     FOREIGN KEY (id_banco) REFERENCES bancos(id_banco),
     FOREIGN KEY (id_tecido) REFERENCES tecidos(id_tecido),
     FOREIGN KEY (id_cor) REFERENCES cores(id_cor)
+);
+
+-- =========================
+-- PEDIDOS (REGISTRO DE SERVIÇOS INICIADOS)
+-- =========================
+CREATE TABLE pedidos (
+    id_pedido INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_os INTEGER NOT NULL,
+    data_inicio DATE,
+    data_conclusao DATE,
+    observacoes TEXT,
+    aceite_cliente BOOLEAN,
+    status TEXT,
+    valor_total REAL,
+    FOREIGN KEY (id_os) REFERENCES ordens_servico(id_os)
 );
