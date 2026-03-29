@@ -83,6 +83,10 @@
 
 <td>
 
+<a href="{{ url_for('main.cadastrar_ordem_servico', id_cliente=cliente.id_cliente, id_veiculo=veiculo.id_veiculo) }}">
+    <button type="button">Nova Ordem de Serviço</button>
+</a>
+
 <a href="{{ url_for('main.editar_veiculo', id_veiculo=veiculo.id_veiculo) }}">
 <button type="button">Editar</button>
 </a>
@@ -93,7 +97,6 @@ action="{{ url_for('main.deletar_veiculo', id_veiculo=veiculo.id_veiculo) }}"
 method="post"
 style="display:inline;"
 >
-
 <button type="submit">Excluir</button>
 
 </form>

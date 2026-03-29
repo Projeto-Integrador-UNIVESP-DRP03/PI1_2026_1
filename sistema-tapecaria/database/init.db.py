@@ -1,16 +1,12 @@
-import sqlite3
-import os
+from models import db
+from flask import Flask
 
-BASE_DIR = os.path.dirname(__file__)
-db_path = os.path.join(BASE_DIR, "../database/database.db")
-schema_path = os.path.join(BASE_DIR, "../database/schema.sql")
+app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///../database/database.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-connection = sqlite3.connect(db_path)
+db.init_app(app)
 
-with open(schema_path, 'r', encoding='utf-8') as f:
-    connection.executescript(f.read())
-
-connection.commit()
-connection.close()
-
-print("Banco de dados criado com sucesso!")
+with app.app_context():
+    db.drop_all()   # apaga tabelas antigas
+    db.create_all() # recria com base nos models.py
