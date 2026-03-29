@@ -174,3 +174,17 @@ class BancoTecido(db.Model):
     banco = relationship("Banco", back_populates="tecidos")
     tecido = relationship("Tecido", back_populates="banco_tecidos")
     cor = relationship("Cor", back_populates="banco_tecidos")
+
+class Pedidos(db.Model):
+    __tablename__ = "pedidos"
+
+    id_pedido = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id_os = db.Column(db.Integer, db.ForeignKey("ordens_servico.id_os"), nullable=False)
+    data_inicio = db.Column(db.Date)
+    data_conclusao = db.Column(db.Date)
+    observacoes = db.Column(db.String(1020))
+    aceite_cliente = db.Column(db.Boolean)
+    valor_total = db.Column(db.Float)
+    status = db.Column(db.String(50))
+    
+    ordem_servico = relationship("OrdemServico", backref="pedido")
