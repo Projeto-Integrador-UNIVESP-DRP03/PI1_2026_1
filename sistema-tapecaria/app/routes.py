@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for
-from .models import db, Cliente, TelefoneCliente, EnderecoCliente, Veiculo
-
+from .models import db, Cliente, TelefoneCliente, EnderecoCliente, Veiculo, OrdemServico
+from datetime import datetime
 main = Blueprint("main", __name__)
 
 
@@ -218,3 +218,44 @@ def deletar_veiculo(id_veiculo):
         "main.editar_cliente",
         id_cliente=id_cliente
     ))
+    
+# =========================
+# ADICIONAR PEDIDO
+# =========================
+@main.route("/ordem_servico/cadastrar/<int:id_cliente>/<int:id_veiculo>", methods=["GET", "POST"])
+def cadastrar_ordem_servico(id_cliente, id_veiculo):
+    cliente = Cliente.query.get_or_404(id_cliente)
+    veiculo = Veiculo.query.get_or_404(id_veiculo)
+
+    if request.method == "POST":
+        data_abertura_str = request.form.get("data_abertura")
+        data_abertura = None
+        if data_abertura_str:
+            data_abertura = datetime.strptime(data_abertura_str, "%Y-%m-%d").date() # transforma a string em objeto date
+        else:
+            data_abertura = datetime.today().date() # se não for fornecida, usa a data atual
+        quantidade_bancos = request.form.get("quantidade_bancos")
+        padrao_veiculo = request.form.get("padrao_veiculo") == "true"
+        personalizacao_igual = request.form.get("personalizacao_igual") == "true"
+        observacoes = request.form.get("observacoes")
+
+        nova_os = OrdemServico(
+            id_veiculo=id_veiculo,
+            data_abertura=data_abertura,
+            quantidade_bancos=quantidade_bancos,
+            padrao_veiculo=padrao_veiculo,
+            personalizacao_igual=personalizacao_igual,
+            observacoes=observacoes
+        )
+
+        db.session.add(nova_os)
+        db.session.commit()
+
+        return redirect(url_for("main.listar_clientes"))  # ajuste se sua função estiver dentro de blueprint "main"
+
+    # Passa os objetos cliente e veiculo para o template
+    return render_template(
+        "ordem_servico.html",
+        cliente=cliente,
+        veiculo=veiculo
+    )
