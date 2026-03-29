@@ -1,137 +1,170 @@
-<h1>Dados do Cliente</h1>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Dados do Cliente</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f9fc;
+            margin: 20px;
+            color: #333;
+        }
 
-<h2>Informações básicas</h2>
+        h1, h2 {
+            color: #2c3e50;
+        }
 
-<p><strong>Nome:</strong> {{ cliente.nome }}</p>
-<p><strong>CPF/CNPJ:</strong> {{ cliente.cod_cliente }}</p>
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
 
-<p>
-<strong>Telefone:</strong>
-{{ cliente.telefone.telefone if cliente.telefone else "Não cadastrado" }}
-</p>
+        .info p {
+            margin: 8px 0;
+        }
 
-<p>
-<strong>Rua:</strong>
-{{ cliente.endereco.rua if cliente.endereco else "Não cadastrada" }}
-</p>
+        .info strong {
+            color: #34495e;
+        }
 
-<p>
-<strong>Número:</strong>
-{{ cliente.endereco.numero if cliente.endereco else "Não cadastrado" }}
-</p>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
 
-<p>
-<strong>Complemento:</strong>
-{{ cliente.endereco.complemento if cliente.endereco else "Não cadastrado" }}
-</p>
+        table th, table td {
+            padding: 10px;
+            text-align: left;
+        }
 
-<p>
-<strong>Bairro:</strong>
-{{ cliente.endereco.bairro if cliente.endereco else "Não cadastrado" }}
-</p>
+        table th {
+            background-color: #2c3e50;
+            color: #fff;
+        }
 
-<p>
-<strong>Cidade:</strong>
-{{ cliente.endereco.cidade if cliente.endereco else "Não cadastrada" }}
-</p>
+        table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
 
-<p>
-<strong>Estado:</strong>
-{{ cliente.endereco.estado if cliente.endereco else "Não cadastrado" }}
-</p>
+        button {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 2px;
+        }
 
-<p>
-<strong>CEP:</strong>
-{{ cliente.endereco.cep if cliente.endereco else "Não cadastrado" }}
-</p>
+        button:hover {
+            background-color: #2980b9;
+        }
 
+        .danger {
+            background-color: #e74c3c;
+        }
 
-<hr>
+        .danger:hover {
+            background-color: #c0392b;
+        }
 
-<h2>Veículos cadastrados</h2>
+        .actions {
+            display: flex;
+            gap: 5px;
+        }
 
-{% if cliente.veiculos %}
+        .footer-buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
 
-<table border="1" cellpadding="6">
+        .footer-buttons a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
 
-<thead>
-<tr>
-<th>Placa</th>
-<th>Modelo</th>
-<th>Marca</th>
-<th>Ano</th>
-<th>Cor</th>
-<th>Ações</th>
-</tr>
-</thead>
+    <h1>Dados do Cliente</h1>
 
-<tbody>
+    <div class="card info">
+        <h2>Informações básicas</h2>
+        <p><strong>Nome:</strong> {{ cliente.nome }}</p>
+        <p><strong>CPF/CNPJ:</strong> {{ cliente.cod_cliente }}</p>
+        <p><strong>Telefone:</strong> {{ cliente.telefone.telefone if cliente.telefone else "Não cadastrado" }}</p>
+        <p><strong>Rua:</strong> {{ cliente.endereco.rua if cliente.endereco else "Não cadastrada" }}</p>
+        <p><strong>Número:</strong> {{ cliente.endereco.numero if cliente.endereco else "Não cadastrado" }}</p>
+        <p><strong>Complemento:</strong> {{ cliente.endereco.complemento if cliente.endereco else "Não cadastrado" }}</p>
+        <p><strong>Bairro:</strong> {{ cliente.endereco.bairro if cliente.endereco else "Não cadastrado" }}</p>
+        <p><strong>Cidade:</strong> {{ cliente.endereco.cidade if cliente.endereco else "Não cadastrada" }}</p>
+        <p><strong>Estado:</strong> {{ cliente.endereco.estado if cliente.endereco else "Não cadastrado" }}</p>
+        <p><strong>CEP:</strong> {{ cliente.endereco.cep if cliente.endereco else "Não cadastrado" }}</p>
+    </div>
 
-{% for veiculo in cliente.veiculos %}
+    <div class="card">
+        <h2>Veículos cadastrados</h2>
+        {% if cliente.veiculos %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Placa</th>
+                    <th>Modelo</th>
+                    <th>Marca</th>
+                    <th>Ano</th>
+                    <th>Cor</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for veiculo in cliente.veiculos %}
+                <tr>
+                    <td>{{ veiculo.placa }}</td>
+                    <td>{{ veiculo.modelo }}</td>
+                    <td>{{ veiculo.marca }}</td>
+                    <td>{{ veiculo.ano }}</td>
+                    <td>{{ veiculo.cor }}</td>
+                    <td class="actions">
+                        <a href="{{ url_for('main.cadastrar_ordem_servico', id_cliente=cliente.id_cliente, id_veiculo=veiculo.id_veiculo) }}">
+                            <button type="button">Nova OS</button>
+                        </a>
+                        <a href="{{ url_for('main.editar_veiculo', id_veiculo=veiculo.id_veiculo) }}">
+                            <button type="button">Editar</button>
+                        </a>
+                        <form action="{{ url_for('main.deletar_veiculo', id_veiculo=veiculo.id_veiculo) }}" method="post" style="display:inline;">
+                            <button type="submit" class="danger">Excluir</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>Nenhum veículo cadastrado.</p>
+        {% endif %}
 
-<tr>
+        <br>
+        <a href="{{ url_for('main.novo_veiculo', id_cliente=cliente.id_cliente) }}">
+            <button>Adicionar veículo</button>
+        </a>
+    </div>
 
-<td>{{ veiculo.placa }}</td>
+    <div class="footer-buttons">
+        <a href="{{ url_for('main.editar_cliente', id_cliente=cliente.id_cliente) }}">
+            <button>Editar cliente</button>
+        </a>
+        <a href="{{ url_for('main.home') }}">
+            <button>Buscar outro cliente</button>
+        </a>
+        <a href="{{ url_for('main.home') }}">
+            <button>Novo cliente</button>
+        </a>
+    </div>
 
-<td>{{ veiculo.modelo }}</td>
-
-<td>{{ veiculo.marca }}</td>
-
-<td>{{ veiculo.ano }}</td>
-
-<td>{{ veiculo.cor }}</td>
-
-<td>
-
-<a href="{{ url_for('main.cadastrar_ordem_servico', id_cliente=cliente.id_cliente, id_veiculo=veiculo.id_veiculo) }}">
-    <button type="button">Nova Ordem de Serviço</button>
-</a>
-
-<a href="{{ url_for('main.editar_veiculo', id_veiculo=veiculo.id_veiculo) }}">
-<button type="button">Editar</button>
-</a>
-
-
-<form
-action="{{ url_for('main.deletar_veiculo', id_veiculo=veiculo.id_veiculo) }}"
-method="post"
-style="display:inline;"
->
-<button type="submit">Excluir</button>
-
-</form>
-
-</td>
-
-</tr>
-
-{% endfor %}
-
-</tbody>
-</table>
-
-{% else %}
-
-<p>Nenhum veículo cadastrado.</p>
-
-{% endif %}
-
-<br>
-
-<a href="{{ url_for('main.novo_veiculo', id_cliente=cliente.id_cliente) }}">
-<button>Adicionar veículo</button>
-</a>
-
-<hr>
-
-<a href="{{ url_for('main.editar_cliente', id_cliente=cliente.id_cliente) }}">
-<button>Editar cliente</button>
-</a>
-
-<a href="{{ url_for('main.home') }}">
-<button>Buscar outro cliente</button>
-</a>
-
-<a href="{{ url_for('main.home') }}">
-<button>Novo cliente</button>
-</a>
+</body>
+</html>

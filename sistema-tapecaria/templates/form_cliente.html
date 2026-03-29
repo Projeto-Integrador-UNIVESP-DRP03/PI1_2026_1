@@ -1,49 +1,121 @@
-<h1>{{ titulo }}</h1>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ titulo }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f9fc;
+            margin: 20px;
+            color: #333;
+        }
 
-<form method="POST"
-action="{{ url_for(acao, id_cliente=cliente.id_cliente if cliente else None) }}">
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
 
-<label>CPF/CNPJ</label>
-<input type="text" name="cod_cliente"
-value="{{ cliente.cod_cliente if cliente else cod_cliente }}"
-{% if cliente %}readonly{% endif %}>
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 25px;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
 
-<label>Nome</label>
-<input type="text" name="nome"
-value="{{ cliente.nome if cliente else '' }}">
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
 
-<label>Telefone</label>
-<input type="text" name="telefone"
-value="{{ cliente.telefone.telefone if cliente and cliente.telefone else '' }}">
+        label {
+            font-weight: bold;
+            color: #34495e;
+        }
 
-<label>Rua</label>
-<input type="text" name="rua"
-value="{{ cliente.endereco.rua if cliente and cliente.endereco else '' }}">
+        input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            width: 100%;
+        }
 
-<label>Número</label>
-<input type="text" name="numero"
-value="{{ cliente.endereco.numero if cliente and cliente.endereco else '' }}">
+        input[readonly] {
+            background-color: #f0f0f0;
+            color: #666;
+        }
 
-<label>Bairro</label>
-<input type="text" name="bairro"
-value="{{ cliente.endereco.bairro if cliente and cliente.endereco else '' }}">
+        button {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            margin-top: 10px;
+        }
 
-<label>Cidade</label>
-<input type="text" name="cidade"
-value="{{ cliente.endereco.cidade if cliente and cliente.endereco else '' }}">
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
 
-<label>Estado</label>
-<input type="text" name="estado"
-value="{{ cliente.endereco.estado if cliente and cliente.endereco else '' }}">
+    <h1>{{ titulo }}</h1>
 
-<label>CEP</label>
-<input type="text" name="cep"
-value="{{ cliente.endereco.cep if cliente and cliente.endereco else '' }}">
+    <div class="card">
+        <form method="POST"
+              action="{{ url_for(acao, id_cliente=cliente.id_cliente if cliente else None) }}">
 
-<label>Complemento</label>
-<input type="text" name="complemento"
-value="{{ cliente.endereco.complemento if cliente and cliente.endereco else '' }}">
+            <label for="cod_cliente">CPF/CNPJ</label>
+            <input type="text" id="cod_cliente" name="cod_cliente"
+                   value="{{ cliente.cod_cliente if cliente else cod_cliente }}"
+                   {% if cliente %}readonly{% endif %}>
 
-<button type="submit">{{ botao }}</button>
+            <label for="nome">Nome</label>
+            <input type="text" id="nome" name="nome"
+                   value="{{ cliente.nome if cliente else '' }}">
 
-</form>
+            <label for="telefone">Telefone</label>
+            <input type="text" id="telefone" name="telefone"
+                   value="{{ cliente.telefone.telefone if cliente and cliente.telefone else '' }}">
+
+            <label for="rua">Rua</label>
+            <input type="text" id="rua" name="rua"
+                   value="{{ cliente.endereco.rua if cliente and cliente.endereco else '' }}">
+
+            <label for="numero">Número</label>
+            <input type="text" id="numero" name="numero"
+                   value="{{ cliente.endereco.numero if cliente and cliente.endereco else '' }}">
+
+            <label for="bairro">Bairro</label>
+            <input type="text" id="bairro" name="bairro"
+                   value="{{ cliente.endereco.bairro if cliente and cliente.endereco else '' }}">
+
+            <label for="cidade">Cidade</label>
+            <input type="text" id="cidade" name="cidade"
+                   value="{{ cliente.endereco.cidade if cliente and cliente.endereco else '' }}">
+
+            <label for="estado">Estado</label>
+            <input type="text" id="estado" name="estado"
+                   value="{{ cliente.endereco.estado if cliente and cliente.endereco else '' }}">
+
+            <label for="cep">CEP</label>
+            <input type="text" id="cep" name="cep"
+                   value="{{ cliente.endereco.cep if cliente and cliente.endereco else '' }}">
+
+            <label for="complemento">Complemento</label>
+            <input type="text" id="complemento" name="complemento"
+                   value="{{ cliente.endereco.complemento if cliente and cliente.endereco else '' }}">
+
+            <button type="submit">{{ botao }}</button>
+        </form>
+    </div>
+
+</body>
+</html>

@@ -49,8 +49,8 @@ def buscar():
 
 @main.route("/clientes")
 def listar_clientes():
-
-    clientes = Cliente.query.all()
+    # apenas clientes com nome preenchido, para evitar mostrar registros "deletados" (soft delete)
+    clientes = Cliente.query.filter(Cliente.nome != "Descadastrado").all()
 
     return render_template(
         "lista_clientes.html",
@@ -147,16 +147,27 @@ def atualizar_cliente(id_cliente):
 # =========================
 # DELETAR CLIENTE
 # =========================
-
+# soft delete - para preservar o histórico de pedidos e veículos associados ao cliente, vamos apenas limpar os dados sensíveis e remover as associações com telefone e endereço, em vez de deletar o registro completamente.
+## Para proteger a privacidade do cliente, em vez de deletar o registro, vamos apenas limpar os dados sensíveis e remover as associações com telefone e endereço.
 @main.route("/deletar_cliente/<int:id_cliente>", methods=["POST"])
 def deletar_cliente(id_cliente):
-
     cliente = Cliente.query.get_or_404(id_cliente)
 
-    db.session.delete(cliente)
+    # Remove dados sensíveis
+    # Marca como "Descadastrado" em vez de apagar
+    cliente.nome = "Descadastrado"
+    cliente.cod_cliente = "Descadastrado"
+
+    # Remove telefone e endereço, se existirem
+    if cliente.telefone:
+        db.session.delete(cliente.telefone)
+    if cliente.endereco:
+        db.session.delete(cliente.endereco)
+
     db.session.commit()
 
     return redirect(url_for("main.listar_clientes"))
+
 
 
 # =========================
