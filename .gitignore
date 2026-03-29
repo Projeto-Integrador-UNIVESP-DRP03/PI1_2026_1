@@ -1,4 +1,2 @@
 # Ignorar cache do Python
-sistema-tapecaria/app/__pycache__/
-*.pyc
-*.pyo
+/app/__pycache__/
