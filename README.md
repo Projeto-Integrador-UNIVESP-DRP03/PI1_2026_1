@@ -10,14 +10,14 @@ Este projeto é desenvolvido pelos alunos do **Eixo Computação** durante o **1
 
 | Aluno | GitHub | LinkedIn |
 |------|--------|----------|
-| **Ailton Ribeiro Nascimento** | [GitHub](#) | [LinkedIn](https://www.linkedin.com/in/ailton-ribeir0/) |
-| **Amanda Rodrigues de Souza** | [GitHub](#) | [LinkedIn](https://www.linkedin.com/in/amanda-rs/) |
-| **Everton Anderson Santos Godoy** | [GitHub](#) | [LinkedIn](https://www.linkedin.com/in/evertom-santos-a4056026b/) |
-| **Fernanda Ferraz de Almeida Matias** | [GitHub](#) | [LinkedIn](https://www.linkedin.com/in/fernanda-ferraz-de-almeida-matias-377657316/) |
-| **Lucas Kauã de Paula Rosa** | [GitHub](#) | [LinkedIn](https://www.linkedin.com/in/lucas-kau%C3%A3-bb4771264/) |
-| **Maiara Campos Abud Ferretti** | [GitHub](#) | [LinkedIn](https://www.linkedin.com/in/maiara-abud/) |
-| **Pablo Henrique Pereira Emboava** | [GitHub](#) | [LinkedIn](https://www.linkedin.com/in/pablo-henrique-pereira-emboava-410843341/) |
-| **Paulo Gabriel de Oliveira** | [GitHub](#) | [LinkedIn](#) |
+| **Ailton Ribeiro Nascimento** | [GitHub] | [LinkedIn](https://www.linkedin.com/in/ailton-ribeir0/) |
+| **Amanda Rodrigues de Souza** | [GitHub](https://github.com/RSAmanda) | [LinkedIn](https://www.linkedin.com/in/amanda-rs/) |
+| **Everton Anderson Santos Godoy** | [GitHub] | [LinkedIn](https://www.linkedin.com/in/evertom-santos-a4056026b/) |
+| **Fernanda Ferraz de Almeida Matias** | [GitHub] | [LinkedIn](https://www.linkedin.com/in/fernanda-ferraz-de-almeida-matias-377657316/) |
+| **Lucas Kauã de Paula Rosa** | [GitHub] | [LinkedIn](https://www.linkedin.com/in/lucas-kau%C3%A3-bb4771264/) |
+| **Maiara Campos Abud Ferretti** | [GitHub] | [LinkedIn](https://www.linkedin.com/in/maiara-abud/) |
+| **Pablo Henrique Pereira Emboava** | [GitHub] | [LinkedIn](https://www.linkedin.com/in/pablo-henrique-pereira-emboava-410843341/) |
+| **Paulo Gabriel de Oliveira** | [GitHub] | [LinkedIn] |
 
 ---
 
