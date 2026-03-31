@@ -6,22 +6,34 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f7f9fc;
-            margin: 20px;
-            color: #333;
+            background-color: #ffffff;
+            margin: 120px;
+            color: #000;
         }
 
         h1, h2 {
-            color: #2c3e50;
-            margin-bottom: 10px;
+            color: #000;
+            margin-bottom: 20px;
+        }
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 200px;
+            height: auto;
         }
 
         .card {
             background: #fff;
-            border-radius: 8px;
+            border-radius: 16px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 6px rgba(20, 95, 129, 0.274);
         }
 
         form {
@@ -64,8 +76,13 @@
 </head>
 <body>
 
-    <h1>Consultar Cliente</h1>
-    <h2>Zito Tapeçaria</h2>
+    <div class="top-bar">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo">
+        <div>
+            <h1>Consultar Cliente</h1>
+            <h2>Zito Tapeçaria</h2>
+        </div>
+    </div>
 
     <div class="card">
         <form action="/buscar" method="post">
