@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Sistema de Gestão{% endblock %}</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- =========================
+         BARRA LATERAL
+    ========================== -->
+    <aside class="sidebar">
+
+        <!-- LOGO -->
+        <div class="logo">
+            <img src="{{ url_for('static', filename='imagens/Identidade_visual/logo_aplicacao.png') }}" alt="logo_aplicacao">
+        </div>
+
+        <!-- MENU -->
+        <nav class="menu">
+
+            <a href="{{ url_for('main.home') }}">
+                Home
+            </a>
+
+            <a href="{{ url_for('main.clientes') }}">
+                Lista de Clientes
+            </a>
+
+            <a href="{{ url_for('main.cadastrar_cliente') }}">
+                Novo Cliente
+            </a>
+
+
+        </nav>
+
+    </aside>
+
+
+    <!-- =========================
+         CONTEÚDO PRINCIPAL
+    ========================== -->
+    <main class="content">
+
+        <header>
+            <h1>{% block page_title %}Sistema{% endblock %}</h1>
+        </header>
+
+        <!-- ALERTAS -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for categoria, mensagem in messages %}
+                    <div class="alert alert-{{ categoria }}">
+                        {{ mensagem }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- CONTEÚDO DAS PÁGINAS -->
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+</div>
+
+</body>
+</html>
