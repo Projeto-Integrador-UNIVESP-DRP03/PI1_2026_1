@@ -19,21 +19,21 @@ sistema-tapecaria
 ├── frontend
 |   └──
 |
-├── imagens [Repositório de imagens]
-|   ├── Catalogos
-│   |   ├── Linhas
-│   |   ├── Padrao_Costura
-│   |   └── Revestimentos
-|   └── Identidade_visual
-|
 ├── instance
 |   
 ├── scripts
 |   └──
 |
 ├── statics
-|   └──
-
+|   ├── css
+|   |   └── estilo.css
+|   └── imagens [Repositório de imagens]
+|          ├── Catalogos
+│          |   ├── Linhas
+│          |   ├── Padrao_Costura
+│          |   └── Revestimentos
+|          └── Identidade_visual
+|
 ├── templates                   Página HTML
 │       ├── cliente.html
 │       ├── consulta.html
