@@ -3,6 +3,7 @@ from flask import Flask
 from app.models import db
 from app.routes import main
 
+
 app = Flask(__name__)
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -21,5 +22,9 @@ app.register_blueprint(main)
 # para debug
 #print(app.url_map)
 
+#if __name__ == "__main__":
+#    app.run(debug=True)
+    
+# para abrir a aplicação sem o modo debug, use o comando abaixo    
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
