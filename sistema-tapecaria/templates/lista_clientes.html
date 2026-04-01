@@ -1,163 +1,125 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Clientes Cadastrados</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f7f9fc;
-            margin: 20px;
-            color: #333;
-        }
+{% extends "base.html" %}
 
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-        }
+{% block title %}
+Clientes Cadastrados
+{% endblock %}
 
-        .card {
-            background: #fff;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
+{% block page_title %}
+Clientes Cadastrados
+{% endblock %}
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
+{% block content %}
 
-        table th, table td {
-            padding: 12px;
-            text-align: left;
-        }
+<div class="card table-container">
 
-        table th {
-            background-color: #2c3e50;
-            color: #fff;
-        }
+    <table>
 
-        table tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>CPF/CNPJ</th>
+                <th>Telefone</th>
+                <th>Rua</th>
+                <th>Veículos</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
 
-        ul {
-            padding-left: 20px;
-            margin: 0;
-        }
+        <tbody>
 
-        li {
-            margin-bottom: 6px;
-        }
+        {% for cliente in clientes %}
 
-        button {
-            background-color: #3498db;
-            color: #fff;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 2px;
-            font-size: 13px;
-        }
+        <tr>
 
-        button:hover {
-            background-color: #2980b9;
-        }
+            <td>{{ cliente.nome }}</td>
 
-        .danger {
-            background-color: #e74c3c;
-        }
+            <td>{{ cliente.cod_cliente }}</td>
 
-        .danger:hover {
-            background-color: #c0392b;
-        }
+            <td>
+                {{ cliente.telefone.telefone if cliente.telefone else "Não cadastrado" }}
+            </td>
 
-        .footer-buttons {
-            margin-top: 20px;
-            display: flex;
-            gap: 10px;
-        }
+            <td>
+                {{ cliente.endereco.rua if cliente.endereco else "Não cadastrada" }}
+            </td>
 
-        .footer-buttons a {
-            text-decoration: none;
-        }
-    </style>
-</head>
-<body>
+            <td>
 
-    <h1>Clientes Cadastrados</h1>
+                {% if cliente.veiculos %}
 
-    <div class="card">
-        <table>
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>CPF/CNPJ</th>
-                    <th>Telefone</th>
-                    <th>Rua</th>
-                    <th>Veículos</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for cliente in clientes %}
-                <tr>
-                    <td>{{ cliente.nome }}</td>
-                    <td>{{ cliente.cod_cliente }}</td>
-                    <td>{{ cliente.telefone.telefone if cliente.telefone else "Não cadastrado" }}</td>
-                    <td>{{ cliente.endereco.rua if cliente.endereco else "Não cadastrada" }}</td>
-                    <td>
-                        {% if cliente.veiculos %}
-                        <ul>
-                            {% for veiculo in cliente.veiculos %}
-                            <li>
-                                {{ veiculo.placa }} - {{ veiculo.modelo }}
-                                <a href="{{ url_for('main.editar_veiculo', id_veiculo=veiculo.id_veiculo) }}">
-                                    <button type="button">Editar</button>
-                                </a>
-                                <form action="{{ url_for('main.deletar_veiculo', id_veiculo=veiculo.id_veiculo) }}" method="post" style="display:inline;">
-                                    <button type="submit" class="danger">Excluir</button>
-                                </form>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                        {% else %}
-                        Nenhum veículo
-                        {% endif %}
-                        <br>
-                        <a href="{{ url_for('main.novo_veiculo', id_cliente=cliente.id_cliente) }}">
-                            <button>Adicionar veículo</button>
+                <ul>
+
+                    {% for veiculo in cliente.veiculos %}
+
+                    <li>
+
+                        {{ veiculo.placa }} - {{ veiculo.modelo }}
+
+                        <a href="{{ url_for('main.editar_veiculo', id_veiculo=veiculo.id_veiculo) }}">
+                            <button type="button">Editar</button>
                         </a>
-                    </td>
-                    <td>
-                        <a href="{{ url_for('main.perfil_cliente', id_cliente=cliente.id_cliente) }}">
-                            <button>Ver perfil</button>
-                        </a>
-                        <a href="{{ url_for('main.editar_cliente', id_cliente=cliente.id_cliente) }}">
-                            <button>Editar</button>
-                        </a>
-                        <form action="{{ url_for('main.deletar_cliente', id_cliente=cliente.id_cliente) }}" method="post" style="display:inline;">
-                            <button type="submit" class="danger">Excluir</button>
+
+                        <form action="{{ url_for('main.deletar_veiculo', id_veiculo=veiculo.id_veiculo) }}"
+                              method="post"
+                              style="display:inline;">
+
+                            <button type="submit" class="btn-danger">
+                                Excluir
+                            </button>
+
                         </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
 
-    <div class="footer-buttons">
-        <a href="{{ url_for('main.home') }}">
-            <button>Novo cliente</button>
-        </a>
-        <a href="{{ url_for('main.home') }}">
-            <button>Voltar para página inicial</button>
-        </a>
-    </div>
+                    </li>
 
-</body>
-</html>
+                    {% endfor %}
+
+                </ul>
+
+                {% else %}
+
+                Nenhum veículo
+
+                {% endif %}
+
+                <br>
+
+                <a href="{{ url_for('main.novo_veiculo', id_cliente=cliente.id_cliente) }}">
+                    <button>Adicionar veículo</button>
+                </a>
+
+            </td>
+
+            <td>
+
+                <a href="{{ url_for('main.perfil_cliente', id_cliente=cliente.id_cliente) }}">
+                    <button>Ver perfil</button>
+                </a>
+
+                <a href="{{ url_for('main.editar_cliente', id_cliente=cliente.id_cliente) }}">
+                    <button>Editar</button>
+                </a>
+
+                <form action="{{ url_for('main.deletar_cliente', id_cliente=cliente.id_cliente) }}"
+                      method="post"
+                      style="display:inline;">
+
+                    <button type="submit" class="btn-danger">
+                        Excluir
+                    </button>
+
+                </form>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+{% endblock %}

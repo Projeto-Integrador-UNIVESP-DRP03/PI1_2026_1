@@ -3,7 +3,7 @@
 ========================= */
 
 * {
-    margin: 0;
+    margin: 2;
     padding: 0;
     box-sizing: border-box;
 }
@@ -17,6 +17,17 @@ body {
 /* =========================
    LAYOUT PRINCIPAL
 ========================= */
+
+.logo-home{
+    display:flex;
+    justify-content:center;
+    margin-bottom:30px;
+}
+
+.logo-home img{
+    max-width:420px;
+    height:auto;
+}
 
 .container {
     display: flex;

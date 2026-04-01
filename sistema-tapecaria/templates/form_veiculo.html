@@ -1,100 +1,76 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ "Editar Veículo" if veiculo else "Cadastrar Veículo" }}</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f7f9fc;
-            margin: 20px;
-            color: #333;
-        }
+{% extends "base.html" %}
 
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            text-align: center;
-        }
+{% block title %}
+{{ "Editar Veículo" if veiculo else "Cadastrar Veículo" }}
+{% endblock %}
 
-        .card {
-            background: #fff;
-            border-radius: 8px;
-            padding: 25px;
-            max-width: 500px;
-            margin: auto;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
+{% block page_title %}
+{{ "Editar Veículo" if veiculo else "Cadastrar Veículo" }}
+{% endblock %}
 
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
+{% block content %}
 
-        label {
-            font-weight: bold;
-            color: #34495e;
-        }
+<div class="card">
 
-        input[type="text"], input[type="number"] {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            width: 100%;
-        }
+    <form method="POST" action="{{ url_for('main.salvar_veiculo') }}">
 
-        button {
-            background-color: #3498db;
-            color: #fff;
-            border: none;
-            padding: 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 15px;
-            margin-top: 10px;
-        }
+        <input type="hidden" name="id_cliente" value="{{ id_cliente }}">
 
-        button:hover {
-            background-color: #2980b9;
-        }
-    </style>
-</head>
-<body>
+        <input type="hidden"
+               name="id_veiculo"
+               value="{{ veiculo.id_veiculo if veiculo else '' }}">
 
-    <h1>{{ "Editar Veículo" if veiculo else "Cadastrar Veículo" }}</h1>
+        <label for="placa">Placa</label>
+        <input 
+            type="text"
+            id="placa"
+            name="placa"
+            value="{{ veiculo.placa if veiculo else '' }}"
+            required
+        >
 
-    <div class="card">
-        <form method="POST" action="{{ url_for('main.salvar_veiculo') }}">
+        <label for="marca">Marca</label>
+        <input 
+            type="text"
+            id="marca"
+            name="marca"
+            value="{{ veiculo.marca if veiculo else '' }}"
+            required
+        >
 
-            <input type="hidden" name="id_cliente" value="{{ id_cliente }}">
-            <input type="hidden" name="id_veiculo" value="{{ veiculo.id_veiculo if veiculo else '' }}">
+        <label for="modelo">Modelo</label>
+        <input 
+            type="text"
+            id="modelo"
+            name="modelo"
+            value="{{ veiculo.modelo if veiculo else '' }}"
+            required
+        >
 
-            <label for="placa">Placa</label>
-            <input type="text" id="placa" name="placa"
-                   value="{{ veiculo.placa if veiculo else '' }}" required>
+        <label for="ano">Ano</label>
+        <input 
+            type="number"
+            id="ano"
+            name="ano"
+            value="{{ veiculo.ano if veiculo else '' }}"
+        >
 
-            <label for="marca">Marca</label>
-            <input type="text" id="marca" name="marca"
-                   value="{{ veiculo.marca if veiculo else '' }}" required>
+        <label for="cor">Cor</label>
+        <input 
+            type="text"
+            id="cor"
+            name="cor"
+            value="{{ veiculo.cor if veiculo else '' }}"
+        >
 
-            <label for="modelo">Modelo</label>
-            <input type="text" id="modelo" name="modelo"
-                   value="{{ veiculo.modelo if veiculo else '' }}" required>
+        <br><br>
 
-            <label for="ano">Ano</label>
-            <input type="number" id="ano" name="ano"
-                   value="{{ veiculo.ano if veiculo else '' }}">
+        <button type="submit">
+            {{ "Atualizar veículo" if veiculo else "Salvar veículo" }}
+        </button>
 
-            <label for="cor">Cor</label>
-            <input type="text" id="cor" name="cor"
-                   value="{{ veiculo.cor if veiculo else '' }}">
+    </form>
 
-            <button type="submit">
-                {{ "Atualizar veículo" if veiculo else "Salvar veículo" }}
-            </button>
-        </form>
-    </div>
+</div>
 
-</body>
-</html>
+{% endblock %}
