@@ -12,7 +12,7 @@ Clientes Cadastrados
 
 <div class="card table-container">
 
-    <table>
+    <table class="table-clientes">
 
         <thead>
             <tr>
@@ -47,27 +47,34 @@ Clientes Cadastrados
 
                 {% if cliente.veiculos %}
 
-                <ul>
+                <ul class="lista-veiculos">
 
-                    {% for veiculo in cliente.veiculos %}
+                    {% for veiculo in cliente.veiculos if 'descadastrado' not in veiculo.placa.lower() %}
 
-                    <li>
+                    <li class="veiculo-item">
 
-                        {{ veiculo.placa }} - {{ veiculo.modelo }}
+                        <span class="veiculo-info">
+                            {{ veiculo.placa.upper() }} - {{ veiculo.modelo }}
+                        </span>
 
-                        <a href="{{ url_for('main.editar_veiculo', id_veiculo=veiculo.id_veiculo) }}">
-                            <button type="button">Editar</button>
-                        </a>
+                        <div class="veiculo-acoes">
 
-                        <form action="{{ url_for('main.deletar_veiculo', id_veiculo=veiculo.id_veiculo) }}"
-                              method="post"
-                              style="display:inline;">
+                            <a href="{{ url_for('main.editar_veiculo', id_veiculo=veiculo.id_veiculo) }}">
+                                <button class="btn-edit">Editar</button>
+                            </a>
 
-                            <button type="submit" class="btn-danger">
-                                Excluir
-                            </button>
+                            <form action="{{ url_for('main.deletar_veiculo', id_veiculo=veiculo.id_veiculo) }}"
+                                  method="post">
 
-                        </form>
+                                <button type="submit"
+                                        class="btn-danger"
+                                        onclick="return confirm('Excluir veículo?');">
+                                    Excluir
+                                </button>
+
+                            </form>
+
+                        </div>
 
                     </li>
 
@@ -81,29 +88,30 @@ Clientes Cadastrados
 
                 {% endif %}
 
-                <br>
-
-                <a href="{{ url_for('main.novo_veiculo', id_cliente=cliente.id_cliente) }}">
-                    <button>Adicionar veículo</button>
-                </a>
+                <div class="add-veiculo">
+                    <a href="{{ url_for('main.novo_veiculo', id_cliente=cliente.id_cliente) }}">
+                        <button class="btn-primary">Adicionar veículo</button>
+                    </a>
+                </div>
 
             </td>
 
-            <td>
+            <td class="cliente-acoes">
 
                 <a href="{{ url_for('main.perfil_cliente', id_cliente=cliente.id_cliente) }}">
-                    <button>Ver perfil</button>
+                    <button class="btn-primary">Ver perfil</button>
                 </a>
 
                 <a href="{{ url_for('main.editar_cliente', id_cliente=cliente.id_cliente) }}">
-                    <button>Editar</button>
+                    <button class="btn-edit">Editar</button>
                 </a>
 
                 <form action="{{ url_for('main.deletar_cliente', id_cliente=cliente.id_cliente) }}"
-                      method="post"
-                      style="display:inline;">
+                      method="post">
 
-                    <button type="submit" class="btn-danger">
+                    <button type="submit" 
+                            class="btn-danger"
+                            onclick="return confirm('Tem certeza que deseja excluir este cliente?');">
                         Excluir
                     </button>
 
@@ -120,6 +128,5 @@ Clientes Cadastrados
     </table>
 
 </div>
-
 
 {% endblock %}

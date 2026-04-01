@@ -11,54 +11,109 @@ Dados do Cliente
 {% block content %}
 
 <div class="card info">
-    <h2>Informações básicas</h2>
 
-    <p><strong>Nome:</strong> {{ cliente.nome }}</p>
+    <div class="card-header">
 
-    <p><strong>CPF/CNPJ:</strong> {{ cliente.cod_cliente }}</p>
+    <h2>Informações do Cliente</h2>
 
-    <p><strong>Telefone:</strong>
-        {{ cliente.telefone.telefone if cliente.telefone else "Não cadastrado" }}
-    </p>
+    <a href="{{ url_for('main.editar_cliente', id_cliente=cliente.id_cliente) }}">
+        <button class="btn-edit">Editar cliente</button>
+    </a>
 
-    <p><strong>Rua:</strong>
-        {{ cliente.endereco.rua if cliente.endereco else "Não cadastrada" }}
-    </p>
+    </div>
 
-    <p><strong>Número:</strong>
-        {{ cliente.endereco.numero if cliente.endereco else "Não cadastrado" }}
-    </p>
+        <div class="info-item">
+            <span class="label">Nome</span>
+            <span class="value">{{ cliente.nome }}</span>
+        </div>
 
-    <p><strong>Complemento:</strong>
-        {{ cliente.endereco.complemento if cliente.endereco else "Não cadastrado" }}
-    </p>
+        <div class="info-item">
+            <span class="label">CPF/CNPJ</span>
+            <span class="value">{{ cliente.cod_cliente }}</span>
+        </div>
 
-    <p><strong>Bairro:</strong>
-        {{ cliente.endereco.bairro if cliente.endereco else "Não cadastrado" }}
-    </p>
+        <div class="info-item">
+            <span class="label">Telefone</span>
+            <span class="value">
+                {{ cliente.telefone.telefone if cliente.telefone else "Não cadastrado" }}
+            </span>
+        </div>
 
-    <p><strong>Cidade:</strong>
-        {{ cliente.endereco.cidade if cliente.endereco else "Não cadastrada" }}
-    </p>
+    
 
-    <p><strong>Estado:</strong>
-        {{ cliente.endereco.estado if cliente.endereco else "Não cadastrado" }}
-    </p>
+    <h3>Endereço</h3>
 
-    <p><strong>CEP:</strong>
-        {{ cliente.endereco.cep if cliente.endereco else "Não cadastrado" }}
-    </p>
+    <div class="info-grid">
+
+        <div class="info-item">
+            <span class="label">Rua</span>
+            <span class="value">
+                {{ cliente.endereco.rua if cliente.endereco else "Não cadastrada" }}
+            </span>
+        </div>
+
+        <div class="info-item">
+            <span class="label">Número</span>
+            <span class="value">
+                {{ cliente.endereco.numero if cliente.endereco else "Não cadastrado" }}
+            </span>
+        </div>
+
+        <div class="info-item">
+            <span class="label">Complemento</span>
+            <span class="value">
+                {{ cliente.endereco.complemento if cliente.endereco else "Não cadastrado" }}
+            </span>
+        </div>
+
+        <div class="info-item">
+            <span class="label">Bairro</span>
+            <span class="value">
+                {{ cliente.endereco.bairro if cliente.endereco else "Não cadastrado" }}
+            </span>
+        </div>
+
+        <div class="info-item">
+            <span class="label">Cidade</span>
+            <span class="value">
+                {{ cliente.endereco.cidade if cliente.endereco else "Não cadastrada" }}
+            </span>
+        </div>
+
+        <div class="info-item">
+            <span class="label">Estado</span>
+            <span class="value">
+                {{ cliente.endereco.estado if cliente.endereco else "Não cadastrado" }}
+            </span>
+        </div>
+
+        <div class="info-item">
+            <span class="label">CEP</span>
+            <span class="value">
+                {{ cliente.endereco.cep if cliente.endereco else "Não cadastrado" }}
+            </span>
+        </div>
+
+    </div>
 
 </div>
 
 
 <div class="card">
 
+    <div class="card-header">
+
     <h2>Veículos cadastrados</h2>
+
+    <a href="{{ url_for('main.novo_veiculo', id_cliente=cliente.id_cliente) }}">
+        <button class="btn-primary">Adicionar veículo</button>
+    </a>
+
+</div>
 
     {% if cliente.veiculos %}
 
-    <table>
+    <table class="table-veiculos">
         <thead>
             <tr>
                 <th>Placa</th>
@@ -72,7 +127,7 @@ Dados do Cliente
 
         <tbody>
 
-        {% for veiculo in cliente.veiculos %}
+        {% for veiculo in cliente.veiculos if 'descadastrado' not in veiculo.placa.lower() %}
 
         <tr>
             <td>{{ veiculo.placa }}</td>
@@ -84,18 +139,21 @@ Dados do Cliente
             <td class="actions">
 
                 <a href="{{ url_for('main.cadastrar_ordem_servico', id_cliente=cliente.id_cliente, id_veiculo=veiculo.id_veiculo) }}">
-                    <button type="button">Nova OS</button>
+                    <button class="btn-primary">Nova OS</button>
                 </a>
 
                 <a href="{{ url_for('main.editar_veiculo', id_veiculo=veiculo.id_veiculo) }}">
-                    <button type="button">Editar</button>
+                    <button class="btn-edit">Editar</button>
                 </a>
 
-                <form action="{{ url_for('main.deletar_veiculo', id_veiculo=veiculo.id_veiculo) }}" method="post" style="display:inline;">
+                <form action="{{ url_for('main.deletar_veiculo', id_veiculo=veiculo.id_veiculo) }}"
+                      method="post"
+                      style="display:inline;">
                     <button type="submit" class="btn-danger">Excluir</button>
                 </form>
 
             </td>
+
         </tr>
 
         {% endfor %}
@@ -105,32 +163,26 @@ Dados do Cliente
 
     {% else %}
 
-        <p>Nenhum veículo cadastrado.</p>
+        <p class="empty">Nenhum veículo cadastrado.</p>
 
     {% endif %}
 
-    <br>
-
-    <a href="{{ url_for('main.novo_veiculo', id_cliente=cliente.id_cliente) }}">
-        <button>Adicionar veículo</button>
-    </a>
+  
 
 </div>
 
 
 <div class="footer-buttons">
 
-    <a href="{{ url_for('main.editar_cliente', id_cliente=cliente.id_cliente) }}">
-        <button>Editar cliente</button>
-    </a>
 
-    <form action="{{ url_for('main.deletar_cliente', id_cliente=cliente.id_cliente) }}"
-          method="post"
-          style="display:inline;">
+    <button type="submit"
+            class="btn-danger"
+            onclick="return confirm('Tem certeza que deseja excluir este cliente?');">
+        Excluir cliente
+    </button>
 
-        <button type="submit" class="btn-danger">
-            Excluir cliente
-        </button>
+</form>
+
 </div>
 
 {% endblock %}

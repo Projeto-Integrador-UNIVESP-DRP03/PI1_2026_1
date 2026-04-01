@@ -18,10 +18,17 @@ body {
    LAYOUT PRINCIPAL
 ========================= */
 
+
 .logo-home{
-    display:flex;
-    justify-content:center;
+    /*width:140px;*/
     margin-bottom:30px;
+}
+
+
+/* Cabeçalho da página */
+.home-header{
+    text-align:center;
+    margin-bottom:25px;
 }
 
 .logo-home img{
@@ -118,14 +125,36 @@ button:hover,
     background-color: #2e5f80;
 }
 
-/* botão de ação */
-
-.btn-danger {
-    background-color: #e93637;
+.footer-buttons{
+    margin-top:20px;
+    display:flex;
+    gap:10px;
+}
+.footer-buttons button{
+    margin:10px;
+}
+.empty{
+    color:#777;
 }
 
-.btn-danger:hover {
-    background-color: #c72b2c;
+/* botão de ação */
+.form-inline{
+    display:inline;
+    margin:0;
+}
+
+.btn-danger{
+    background:#e93637;
+    color:white;
+    border:none;
+    padding:8px 14px;
+    margin: 0;
+    border-radius:4px;
+    cursor:pointer;
+}
+
+.btn-danger:hover{
+    background:#c72b2c;
 }
 
 /* =========================
@@ -137,6 +166,7 @@ form {
     padding: 20px;
     border-radius: 8px;
     max-width: 700px;
+    margin: 0;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
@@ -145,6 +175,13 @@ label {
     margin-top: 10px;
     margin-bottom: 4px;
     font-weight: 500;
+}
+
+.label{
+    font-weight:bold;
+    display:block;
+    color:#555;
+    font-size:13px;
 }
 
 input, select {
@@ -201,11 +238,167 @@ tr:hover {
     background-color: #f8d7da;
     color: #721c24;
 }
-
+/* Centralizar área de busca */
+.search-wrapper{
+    display:flex;
+    justify-content:center;
+}
 .search-container{
-    max-width: 500px;
+    width:100%;
+    max-width:500px;
+}
+/* Formulário */
+.search-form{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
 }
 
+
+/* Campo de input */
+.search-form input{
+    padding:10px;
+    border-radius:6px;
+    border:1px solid #ccc;
+    font-size:15px;
+}
 .table-container{
     overflow-x: auto;
+}
+
+.value{
+    font-size:15px;
+}
+
+.table-veiculos{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.table-veiculos th{
+    background:#2c3e50;   /* fundo mais escuro */
+    color:#2c3e50;          /* texto branco */
+    font-weight:600;
+    padding:10px;
+    text-align:center;
+}
+.table-veiculos td{
+    padding:10px;
+    border-bottom:1px solid #ddd;
+    text-align:center;
+}
+
+.table-veiculos th{
+    background:#f0f0f0;
+}
+
+.actions button{
+    margin:2px;
+}
+
+
+/* Botão */
+.btn-primary{
+    padding:10px;
+    border:none;
+    border-radius:6px;
+    background:#007bff;
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.btn-primary:hover{
+    background:#0056b3;
+}
+.btn-edit{
+    background:#d86f19;
+    border:none;
+    padding:8px 14px;
+    border-radius:4px;
+    cursor:pointer;
+}
+
+.btn-edit:hover{
+    background:#e0a800;
+}
+.info-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.info-item{
+    background:#f8f8f8;
+    padding:12px;
+    border-radius:6px;
+}
+
+.card-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.lista-clientes{
+    list-style:none;
+    padding:0;
+}
+
+.cliente-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px;
+    border-bottom:1px solid #ddd;
+}
+
+.cliente-info{
+    font-weight:500;
+}
+
+.cliente-acoes{
+    display:flex;
+    gap:8px;
+}
+
+.cliente-acoes form{
+    margin:0;
+}
+
+.lista-veiculos{
+    list-style:none;
+    padding:0;
+    margin:0;
+}
+
+.veiculo-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:4px 0;
+}
+
+.veiculo-acoes{
+    display:flex;
+    gap:6px;
+}
+
+.veiculo-acoes form{
+    margin:0;
+}
+
+.add-veiculo{
+    margin-top:6px;
+}
+
+.cliente-acoes{
+    display:flex;
+    gap:6px;
+}
+
+.cliente-acoes form{
+    margin:0;
 }
