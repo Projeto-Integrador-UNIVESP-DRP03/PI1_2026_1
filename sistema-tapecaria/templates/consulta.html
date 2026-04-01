@@ -7,42 +7,47 @@ Consultar Cliente
 
 {% block page_title %}
 
-<div class="logo-home">
-    <img src="{{ url_for('static', filename='imagens/Identidade_visual/logo_zito.png') }}"
-         alt="Zito Tapeçaria">
-</div>
+<div class="home-header">
 
-<h1>Consultar Cliente</h1>
+    <img src="{{ url_for('static', filename='imagens/Identidade_visual/logo_zito.png') }}"
+         alt="Zito Tapeçaria"
+         class="logo-home">
+
+    <h1>Consultar Cliente</h1>
+
+</div>
 
 {% endblock %}
 
 
 {% block content %}
 
-<div class="card search-container">
+<div class="search-wrapper">
 
-    <form action="{{ url_for('main.buscar') }}" method="post">
+    <div class="card search-container">
 
-        <label for="cod_cliente">
-            <strong>Pesquisa por CPF ou CNPJ:</strong>
-        </label>
+        <form action="{{ url_for('main.buscar') }}" method="post" class="search-form">
 
-        <input 
-            type="text"
-            id="cod_cliente"
-            name="cod_cliente"
-            placeholder="Digite o CPF ou CNPJ"
-        >
+            <label for="cod_cliente">
+                CPF ou CNPJ
+            </label>
 
-        <br><br>
+            <input 
+                type="text"
+                id="cod_cliente"
+                name="cod_cliente"
+                placeholder="Digite o CPF ou CNPJ"
+                required
+            >
 
-        <button type="submit">Pesquisar</button>
+            <button type="submit" class="btn-primary">
+                Pesquisar
+            </button>
 
-    </form>
+        </form>
 
-</div>
+    </div>
 
-<div class="footer-buttons">
 </div>
 
 {% endblock %}
