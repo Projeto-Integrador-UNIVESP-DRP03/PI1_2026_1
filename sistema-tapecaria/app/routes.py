@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from .models import db, Cliente, TelefoneCliente, EnderecoCliente, Veiculo, OrdemServico
 from datetime import datetime
 main = Blueprint("main", __name__)
@@ -25,6 +25,10 @@ def buscar():
     cliente = Cliente.query.filter_by(
         cod_cliente=cod_cliente
     ).first()
+    
+    if not cod_cliente:
+        flash("Digite um CPF ou CNPJ para pesquisar.", "error")
+        return redirect(url_for("main.home"))
 
     if cliente:
 
@@ -33,14 +37,9 @@ def buscar():
             cliente=cliente
         )
 
-    return render_template(
-        "form_cliente.html",
-        titulo="Cadastrar Cliente",
-        botao="Cadastrar",
-        acao="main.cadastrar_cliente",
-        cliente=None,
-        cod_cliente=cod_cliente
-    )
+    flash("Cliente não encontrado.", "error")
+
+    return redirect(url_for("main.home"))
 
 
 # =========================
@@ -50,8 +49,8 @@ def buscar():
 @main.route("/clientes")
 def listar_clientes():
     # apenas clientes com nome preenchido, para evitar mostrar registros "deletados" (soft delete)
-    clientes = Cliente.query.filter(Cliente.nome != "Descadastrado").all()
-
+    clientes = Cliente.query.filter(~Cliente.nome.ilike("%Descadastrado%")).all()
+    #clientes = Cliente.query.filter().all()
     return render_template(
         "lista_clientes.html",
         clientes=clientes
@@ -62,34 +61,68 @@ def listar_clientes():
 # CADASTRAR CLIENTE
 # =========================
 
-@main.route("/cadastrar_cliente", methods=["POST"])
+@main.route("/cadastrar_cliente")
 def cadastrar_cliente():
 
+    return render_template(
+        "form_cliente.html",
+        titulo="Cadastrar Cliente",
+        acao="main.salvar_cliente",
+        botao="Cadastrar",
+        cliente=None,
+        cod_cliente=""
+    )
+    db.session.add(cliente)
+    db.session.commit()
+
+# =========================
+# SALVAR CLIENTE
+# =========================   
+@main.route("/salvar_cliente", methods=["POST"])
+def salvar_cliente():
+    
+    cod_cliente = request.form.get("cod_cliente")
+    nome = request.form.get("nome")
+    telefone = request.form.get("telefone")
+    
+    # Verifica se já existe cliente com esse código
+    existente = Cliente.query.filter_by(cod_cliente=cod_cliente).first()
+    if existente:
+        flash("Já existe um cadastro com esse código!", "warning")
+        return redirect(url_for("main.editar_cliente", id_cliente=existente.id_cliente))
+
     cliente = Cliente(
-        cod_cliente=request.form["cod_cliente"],
-        nome=request.form["nome"]
+        cod_cliente=cod_cliente,
+        nome=nome
     )
 
-    telefone = TelefoneCliente(
-        telefone=request.form["telefone"],
-        cliente=cliente
+    cliente = Cliente(
+        cod_cliente=cod_cliente,
+        nome=nome
     )
+    if telefone:
+        cliente.telefone = TelefoneCliente(telefone=telefone)
 
-    endereco = EnderecoCliente(
-        rua=request.form["rua"],
-        numero=request.form["numero"],
-        bairro=request.form["bairro"],
-        cidade=request.form["cidade"],
-        estado=request.form["estado"],
-        cep=request.form["cep"],
-        complemento=request.form["complemento"],
-        cliente=cliente
-    )
+    if any(request.form.get(field) for field in ["rua", "numero", "bairro", "cidade", "estado", "cep", "complemento"]):
+        cliente.endereco = EnderecoCliente(
+            rua=request.form.get("rua"),
+            numero=request.form.get("numero"),
+            bairro=request.form.get("bairro"),
+            cidade=request.form.get("cidade"),
+            estado=request.form.get("estado"),
+            cep=request.form.get("cep"),
+            complemento=request.form.get("complemento")
+        )
 
     db.session.add(cliente)
     db.session.commit()
 
     return redirect(url_for("main.listar_clientes"))
+
+
+
+
+
 
 @main.route("/cliente/<int:id_cliente>")
 def perfil_cliente(id_cliente):
@@ -143,7 +176,6 @@ def atualizar_cliente(id_cliente):
 
     return redirect(url_for("main.listar_clientes"))
 
-
 # =========================
 # DELETAR CLIENTE
 # =========================
@@ -155,9 +187,12 @@ def deletar_cliente(id_cliente):
 
     # Remove dados sensíveis
     # Marca como "Descadastrado" em vez de apagar
-    cliente.nome = "Descadastrado"
-    cliente.cod_cliente = "Descadastrado"
-
+    cliente.nome = f"Descadastrado_{cliente.id_cliente}"
+    cliente.cod_cliente = f"Descadastrado_{cliente.id_cliente}"
+    # Atualiza veículos vinculados
+    veiculos = Veiculo.query.filter_by(id_cliente=id_cliente).all()
+    for veiculo in veiculos:
+        veiculo.placa = f"Descadastrado_{veiculo.id_veiculo}"
     # Remove telefone e endereço, se existirem
     if cliente.telefone:
         db.session.delete(cliente.telefone)
@@ -166,9 +201,27 @@ def deletar_cliente(id_cliente):
 
     db.session.commit()
 
-    return redirect(url_for("main.listar_clientes"))
+    return redirect(url_for(
+        "main.listar_clientes"
+    ))
 
+# =========================
+# DELETAR VEÍCULO
+# =========================
+# soft delete
+@main.route("/deletar_veiculo/<int:id_veiculo>", methods=["POST"])
+def deletar_veiculo(id_veiculo):
 
+    veiculo = Veiculo.query.get_or_404(id_veiculo)
+
+    id_cliente = veiculo.id_cliente
+
+    veiculo.placa = f"Descadastrado_{veiculo.id_veiculo}"
+    db.session.commit()
+
+    return redirect(url_for(
+        "main.listar_clientes"
+    ))
 
 # =========================
 # ADICIONAR VEÍCULO
@@ -215,20 +268,7 @@ def editar_veiculo(id_veiculo):
         id_cliente=veiculo.id_cliente
     )
     
-@main.route("/deletar_veiculo/<int:id_veiculo>", methods=["POST"])
-def deletar_veiculo(id_veiculo):
 
-    veiculo = Veiculo.query.get_or_404(id_veiculo)
-
-    id_cliente = veiculo.id_cliente
-
-    db.session.delete(veiculo)
-    db.session.commit()
-
-    return redirect(url_for(
-        "main.editar_cliente",
-        id_cliente=id_cliente
-    ))
     
 # =========================
 # ADICIONAR PEDIDO

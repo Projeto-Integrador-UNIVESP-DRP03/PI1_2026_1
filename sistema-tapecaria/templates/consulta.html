@@ -1,102 +1,48 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Consultar Cliente</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #ffffff;
-            margin: 120px;
-            color: #000;
-        }
+{% extends "base.html" %}
 
-        h1, h2 {
-            color: #000;
-            margin-bottom: 20px;
-        }
+{% block title %}
+Consultar Cliente
+{% endblock %}
 
-        .top-bar {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
 
-        .logo {
-            width: 200px;
-            height: auto;
-        }
+{% block page_title %}
 
-        .card {
-            background: #fff;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 6px rgba(20, 95, 129, 0.274);
-        }
+<div class="logo-home">
+    <img src="{{ url_for('static', filename='imagens/Identidade_visual/logo_zito.png') }}"
+         alt="Zito Tapeçaria">
+</div>
 
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+<h1>Consultar Cliente</h1>
 
-        input[type="text"] {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            width: 300px;
-        }
+{% endblock %}
 
-        button {
-            background-color: #3498db;
-            color: #fff;
-            border: none;
-            padding: 10px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-        }
 
-        button:hover {
-            background-color: #2980b9;
-        }
+{% block content %}
 
-        .footer-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
+<div class="card search-container">
 
-        .footer-buttons a {
-            text-decoration: none;
-        }
-    </style>
-</head>
-<body>
+    <form action="{{ url_for('main.buscar') }}" method="post">
 
-    <div class="top-bar">
-        <img src="{{ url_for('static', filename='imagens/Identidade_visual/logo_aplicacao.png') }}" alt="Logo" class="logo">
-        <div>
-            <h1>Consultar Cliente</h1>
-            <h2>Zito Tapeçaria</h2>
-        </div>
-    </div>
+        <label for="cod_cliente">
+            <strong>Pesquisa por CPF ou CNPJ:</strong>
+        </label>
 
-    <div class="card">
-        <form action="/buscar" method="post">
-            <label for="cod_cliente"><strong>Pesquisa por CPF ou CNPJ:</strong></label>
-            <input type="text" id="cod_cliente" name="cod_cliente" placeholder="Digite o CPF ou CNPJ">
-            <button type="submit">Pesquisar</button>
-        </form>
-    </div>
+        <input 
+            type="text"
+            id="cod_cliente"
+            name="cod_cliente"
+            placeholder="Digite o CPF ou CNPJ"
+        >
 
-    <div class="footer-buttons">
-        <a href="/clientes">
-            <button>Listar todos os clientes</button>
-        </a>
-    </div>
+        <br><br>
 
-</body>
-</html>
+        <button type="submit">Pesquisar</button>
+
+    </form>
+
+</div>
+
+<div class="footer-buttons">
+</div>
+
+{% endblock %}

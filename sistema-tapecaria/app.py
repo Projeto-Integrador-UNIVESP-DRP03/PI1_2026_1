@@ -11,7 +11,7 @@ db_path = os.path.join(BASE_DIR, "database", "database.db")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
+app.secret_key = "uma_chave_bem_secreta_e_unica"
 # inicializa o banco
 db.init_app(app)
 
