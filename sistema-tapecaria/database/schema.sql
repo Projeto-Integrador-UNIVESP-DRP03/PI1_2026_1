@@ -46,109 +46,102 @@ CREATE TABLE veiculos (
     cor     VARCHAR(30),
     FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
 );
-
+--------------------------------------------------------------------
 -- =========================
--- ORDENS DE SERVIÇO
+-- CATÁLOGO DE ITENS
 -- =========================
-CREATE TABLE ordens_servico (
-    id_os INTEGER PRIMARY KEY AUTOINCREMENT,
-    id_veiculo INTEGER NOT NULL,
-    data_abertura DATE,
-    quantidade_bancos INTEGER,
-    padrao_veiculo BOOLEAN,
-    personalizacao_igual BOOLEAN, -- se todos os bancos terão a mesma personalização
-    observacoes TEXT,
-    FOREIGN KEY (id_veiculo) REFERENCES veiculos(id_veiculo)
+-- TECIDO/REVESTIMENTO
+CREATE TABLE tecido (
+    id_tecido VARCHAR(100) NOT NULL UNIQUE,
+    material VARCHAR(50) NOT NULL,
+    descricao TEXT
 );
-
--- =========================
--- ESPUMAS
--- =========================
-CREATE TABLE espumas (
-    id_espuma INTEGER PRIMARY KEY AUTOINCREMENT,
-    tipo TEXT,
-    densidade TEXT,
+-- ESPUMA
+CREATE TABLE espuma (   
+    id_espuma VARCHAR(100) NOT NULL UNIQUE,
+    tipo VARCHAR(50) NOT NULL,
+    densidade VARCHAR(20),
+    descricao TEXT
+);
+-- COSTURA
+CREATE TABLE costura (
+    id_costura VARCHAR(100) NOT NULL UNIQUE,
+    tipo VARCHAR(50) NOT NULL,
+    descricao TEXT
+);
+-- COR DA LINHA
+CREATE TABLE cor (
+    id_cor VARCHAR(100) NOT NULL UNIQUE,
     descricao TEXT
 );
 
 -- =========================
--- BANCOS
+-- 'SUBTABELAS' DE ORÇAMENTO (ITENS DO ORÇAMENTO)
 -- =========================
-CREATE TABLE bancos (
-    id_banco INTEGER PRIMARY KEY AUTOINCREMENT,
-    id_os INTEGER NOT NULL,
-    posicao TEXT,
-    troca_espuma BOOLEAN,
-    id_espuma INTEGER,
-    FOREIGN KEY (id_os) REFERENCES ordens_servico(id_os),
-    FOREIGN KEY (id_espuma) REFERENCES espumas(id_espuma)
+-- ESPUMA
+CREATE TABLE orcamento_espuma (
+    id_orcamento INT,
+    id_espuma INT,
+    obs_item TEXT,
+    PRIMARY KEY (id_orcamento, id_espuma),
+    FOREIGN KEY (id_orcamento) REFERENCES orcamento(id_orcamento),
+    FOREIGN KEY (id_espuma) REFERENCES espuma(id_espuma)
+);
+-- COSTURA
+CREATE TABLE orcamento_costura (
+    id_orcamento INT,
+    id_costura INT,
+    obs_item TEXT,
+    PRIMARY KEY (id_orcamento, id_costura),
+    FOREIGN KEY (id_orcamento) REFERENCES orcamento(id_orcamento),
+    FOREIGN KEY (id_costura) REFERENCES costura(id_costura)
+);
+-- COR DA LINHA
+CREATE TABLE orcamento_cor (
+    id_orcamento INT,
+    id_cor INT,
+    obs_item TEXT,
+    PRIMARY KEY (id_orcamento, id_cor),
+    FOREIGN KEY (id_orcamento) REFERENCES orcamento(id_orcamento),
+    FOREIGN KEY (id_cor) REFERENCES cor(id_cor)
+);
+-- TECIDO/REVESTIMENTO
+CREATE TABLE orcamento_tecido (
+    id_orcamento INT,
+    id_tecido INT,
+    obs_item TEXT,
+    PRIMARY KEY (id_orcamento, id_tecido),
+    FOREIGN KEY (id_orcamento) REFERENCES orcamento(id_orcamento),
+    FOREIGN KEY (id_tecido) REFERENCES tecido(id_tecido)
 );
 
--- =========================
--- COSTURAS
--- =========================
-CREATE TABLE costuras (
-    id_costura INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome TEXT,
-    descricao TEXT
+-- Tabela principal de orçamentos
+CREATE TABLE orcamento (
+    id_orcamento INT PRIMARY KEY AUTO_INCREMENT,
+    id_veiculo INT NOT NULL,
+    dat_orcamento DATE NOT NULL,
+    bool_original BOOLEAN DEFAULT FALSE,
+    bool_logo_prensada BOOLEAN DEFAULT FALSE,
+    qtd_bancos INT DEFAULT 0,
+    qtd_apoio_cabeca INT DEFAULT 0,
+    bool_espuma BOOLEAN DEFAULT FALSE,
+    valor DECIMAL(10,2) NOT NULL,
+    obs TEXT
 );
-
--- =========================
--- CORES DAS COSTURAS
--- =========================
-CREATE TABLE cores (
-    id_cor INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome TEXT
-);
-
--- =========================
--- PERSONALIZAÇÕES
--- =========================
-CREATE TABLE personalizacoes (
-    id_personalizacao INTEGER PRIMARY KEY AUTOINCREMENT,
-    id_banco INTEGER NOT NULL,
-    id_costura INTEGER,
-    id_cor_linha INTEGER,
-    FOREIGN KEY (id_banco) REFERENCES bancos(id_banco),
-    FOREIGN KEY (id_costura) REFERENCES costuras(id_costura),
-    FOREIGN KEY (id_cor_linha) REFERENCES cores(id_cor)
-);
-
--- =========================
--- TECIDOS
--- =========================
-CREATE TABLE tecidos (
-    id_tecido INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome TEXT,
-    material TEXT,
-    fornecedor TEXT
-);
-
--- =========================
--- BANCO_TECIDOS
--- =========================
-CREATE TABLE banco_tecidos (
-    id_banco INTEGER,
-    id_tecido INTEGER,
-    id_cor INTEGER,
-    parte_banco TEXT,
-    PRIMARY KEY (id_banco, id_tecido, parte_banco),
-    FOREIGN KEY (id_banco) REFERENCES bancos(id_banco),
-    FOREIGN KEY (id_tecido) REFERENCES tecidos(id_tecido),
-    FOREIGN KEY (id_cor) REFERENCES cores(id_cor)
-);
-
 -- =========================
 -- PEDIDOS (REGISTRO DE SERVIÇOS INICIADOS)
 -- =========================
 CREATE TABLE pedidos (
     id_pedido INTEGER PRIMARY KEY AUTOINCREMENT,
-    id_os INTEGER NOT NULL,
+    id_orcamento INTEGER NOT NULL,
+    boolean_aceite_cliente BOOLEAN DEFAULT FALSE,
+    dat_aceite_cliente DATE,
     data_inicio DATE,
     data_conclusao DATE,
-    observacoes TEXT,
+    observacoes_pedido TEXT,
     aceite_cliente BOOLEAN,
     status TEXT,
     valor_total REAL,
-    FOREIGN KEY (id_os) REFERENCES ordens_servico(id_os)
+    metodo_pagamento TEXT,
+    FOREIGN KEY (id_orcamento) REFERENCES orcamento(id_orcamento)
 );

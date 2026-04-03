@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Orçamento - Personalização de Bancos</title>
+</head>
+<body>
+
+<h2>Cadastro de Orçamento de Personalização</h2>
+
+<form action="/salvar_orcamento" method="post">
+    <fieldset>
+        <legend>Dados do Cliente e Veículo</legend>
+        <label for="nome_cliente">Nome do Cliente:</label>
+        <input type="text" id="nome_cliente" name="nome_cliente" required>
+
+        <label for="telefone_cliente">Telefone:</label>
+        <input type="tel" id="telefone_cliente" name="telefone_cliente" required>
+
+        <label for="placa">Placa do Carro:</label>
+        <input type="text" id="placa" name="placa" required>
+
+        <label for="modelo">Modelo do Carro:</label>
+        <input type="text" id="modelo" name="modelo" required>
+
+        <label for="cor_carro">Cor do Carro:</label>
+        <input type="text" id="cor_carro" name="cor_carro" required>
+    </fieldset>
+
+<form action="/salvar_orcamento" method="post">
+    <fieldset>
+        <legend>Dados do Orçamento</legend>
+        <label for="id_veiculo">ID do Veículo:</label>
+        <input type="number" id="id_veiculo" name="id_veiculo" required>
+
+        <label for="dat_orcamento">Data do Orçamento:</label>
+        <input type="date" id="dat_orcamento" name="dat_orcamento" required>
+
+        <label><input type="checkbox" name="bool_original"> Seguir modelo original</label>
+        <label><input type="checkbox" name="bool_logo_prensada"> Logo prensada</label>
+        <label><input type="checkbox" name="bool_espuma"> Troca da espuma</label>
+
+        <label for="qtd_bancos">Quantidade de bancos:</label>
+        <input type="number" id="qtd_bancos" name="qtd_bancos">
+
+        <label for="qtd_apoio_cabeca">Quantidade de apoios de cabeça:</label>
+        <input type="number" id="qtd_apoio_cabeca" name="qtd_apoio_cabeca">
+
+        <label for="valor">Valor total:</label>
+        <input type="number" step="0.01" id="valor" name="valor">
+
+        <label for="obs">Observações gerais:</label>
+        <textarea id="obs" name="obs"></textarea>
+    </fieldset>
+
+    <fieldset>
+        <legend>Espumas</legend>
+        <label for="espuma">Selecione as espumas:</label>
+        <select id="espuma" name="espuma[]" multiple>
+            <option value="1">Espuma Padrão</option>
+            <option value="2">Espuma Densidade Alta</option>
+            <option value="3">Espuma Viscoelástica</option>
+        </select>
+        <label for="obs_espuma">Observações sobre uso da espuma:</label>
+        <textarea id="obs_espuma" name="obs_espuma"></textarea>
+    </fieldset>
+
+    <fieldset>
+        <legend>Costuras</legend>
+        <select id="costura" name="costura[]" multiple>
+            <option value="1">Costura Simples</option>
+            <option value="2">Costura Dupla</option>
+            <option value="3">Costura Decorativa</option>
+        </select>
+        <label for="obs_costura">Observações sobre uso da costura:</label>
+        <textarea id="obs_costura" name="obs_costura"></textarea>
+    </fieldset>
+
+    <fieldset>
+        <legend>Cores</legend>
+        <select id="cor" name="cor[]" multiple>
+            <option value="1">Preto</option>
+            <option value="2">Cinza</option>
+            <option value="3">Bege</option>
+        </select>
+        <label for="obs_cor">Observações sobre uso da cor:</label>
+        <textarea id="obs_cor" name="obs_cor"></textarea>
+    </fieldset>
+
+    <fieldset>
+        <legend>Tecidos</legend>
+        <select id="tecido" name="tecido[]" multiple>
+            <option value="1">Couro Natural</option>
+            <option value="2">Couro Sintético</option>
+            <option value="3">Tecido Premium</option>
+        </select>
+        <label for="obs_tecido">Observações sobre uso do tecido:</label>
+        <textarea id="obs_tecido" name="obs_tecido"></textarea>
+    </fieldset>
+
+    <button type="submit">Salvar Orçamento</button>
+</form>
+
+</body>
+</html>
