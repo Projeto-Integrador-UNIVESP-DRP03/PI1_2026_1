@@ -35,7 +35,7 @@ Dados do Cliente
         <div class="info-item">
             <span class="label">Telefone</span>
             <span class="value">
-                {{ cliente.telefone.telefone if cliente.telefone else "Não cadastrado" }}
+                {{cliente.telefones[0].telefone if cliente.telefones else "Não cadastrado"}}
             </span>
         </div>
 
@@ -48,49 +48,49 @@ Dados do Cliente
         <div class="info-item">
             <span class="label">Rua</span>
             <span class="value">
-                {{ cliente.endereco.rua if cliente.endereco else "Não cadastrada" }}
+                {{ cliente.enderecos[0].rua if cliente.enderecos else "Não cadastrada" }}
             </span>
         </div>
 
         <div class="info-item">
             <span class="label">Número</span>
             <span class="value">
-                {{ cliente.endereco.numero if cliente.endereco else "Não cadastrado" }}
+                {{ cliente.enderecos[0].numero if cliente.enderecos else "Não cadastrado" }}
             </span>
         </div>
 
         <div class="info-item">
             <span class="label">Complemento</span>
             <span class="value">
-                {{ cliente.endereco.complemento if cliente.endereco else "Não cadastrado" }}
+                {{ cliente.enderecos[0].complemento if cliente.enderecos else "Não cadastrado" }}
             </span>
         </div>
 
         <div class="info-item">
             <span class="label">Bairro</span>
             <span class="value">
-                {{ cliente.endereco.bairro if cliente.endereco else "Não cadastrado" }}
+                {{ cliente.enderecos[0].bairro if cliente.enderecos else "Não cadastrado" }}
             </span>
         </div>
 
         <div class="info-item">
             <span class="label">Cidade</span>
             <span class="value">
-                {{ cliente.endereco.cidade if cliente.endereco else "Não cadastrada" }}
+                {{ cliente.enderecos[0].cidade if cliente.enderecos else "Não cadastrada" }}
             </span>
         </div>
 
         <div class="info-item">
             <span class="label">Estado</span>
             <span class="value">
-                {{ cliente.endereco.estado if cliente.endereco else "Não cadastrado" }}
+                {{ cliente.enderecos[0].estado if cliente.enderecos else "Não cadastrado" }}
             </span>
         </div>
 
         <div class="info-item">
             <span class="label">CEP</span>
             <span class="value">
-                {{ cliente.endereco.cep if cliente.endereco else "Não cadastrado" }}
+                {{ cliente.enderecos[0].cep if cliente.enderecos else "Não cadastrado" }}
             </span>
         </div>
 
@@ -150,7 +150,7 @@ Dados do Cliente
                 <form action="{{ url_for('main.deletar_veiculo', id_veiculo=veiculo.id_veiculo) }}"
                       method="post"
                       style="display:inline;">
-                    <button type="submit" class="btn-danger">Excluir</button>
+                    <button type="submit" class="btn-delete">Excluir</button>
                 </form>
 
             </td>
@@ -177,7 +177,7 @@ Dados do Cliente
 
 
     <button type="submit"
-            class="btn-danger"
+            class="btn-delete"
             onclick="return confirm('Tem certeza que deseja excluir este cliente?');">
         Excluir cliente
     </button>

@@ -23,6 +23,7 @@ with app.app_context():
     # =========================
 
     cliente1 = Cliente(
+        id_cliente=1,
         cod_cliente="CLI001",
         nome="João da Silva"
     )
@@ -31,11 +32,13 @@ with app.app_context():
     db.session.commit()
 
     telefone1 = TelefoneCliente(
+        id_telefone=1,
         telefone="24999990001",
         id_cliente=cliente1.id_cliente
     )
 
     endereco1 = EnderecoCliente(
+        id_endereco=1,
         rua="Rua das Flores",
         numero="123",
         bairro="Centro",
@@ -45,6 +48,7 @@ with app.app_context():
     )
 
     veiculo1 = Veiculo(
+        id_veiculo=1,
         placa="ABC1A23",
         modelo="Gol",
         marca="Volkswagen",
@@ -59,6 +63,7 @@ with app.app_context():
     # =========================
 
     cliente2 = Cliente(
+        id_cliente=2,
         cod_cliente="CLI002",
         nome="Maria Oliveira"
     )
@@ -67,11 +72,13 @@ with app.app_context():
     db.session.commit()
 
     telefone2 = TelefoneCliente(
+        id_telefone=2,
         telefone="24999990002",
         id_cliente=cliente2.id_cliente
     )
 
     endereco2 = EnderecoCliente(
+        id_endereco=2,
         rua="Av. Amaral Peixoto",
         numero="456",
         bairro="Aterrado",
@@ -81,6 +88,7 @@ with app.app_context():
     )
 
     veiculo2 = Veiculo(
+        id_veiculo=2,
         placa="XYZ2B45",
         modelo="Onix",
         marca="Chevrolet",

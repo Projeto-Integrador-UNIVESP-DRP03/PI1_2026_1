@@ -8,13 +8,13 @@ db = SQLAlchemy()
 class Cliente(db.Model):
     __tablename__ = "clientes"
 
-    id_cliente = db.Column(db.Integer, primary_key=True)
+    id_cliente = db.Column(db.Integer, primary_key=True, autoincrement=True)
     cod_cliente = db.Column(db.String(20), unique=True, nullable=False)
     nome = db.Column(db.String(120), nullable=False)
-
-    telefones = db.relationship("TelefoneCliente", backref="cliente", lazy=True)
-    enderecos = db.relationship("EnderecoCliente", backref="cliente", lazy=True)
-    veiculos = db.relationship("Veiculo", backref="cliente", lazy=True)
+    
+    telefones = db.relationship("TelefoneCliente", backref="cliente", lazy=True, cascade="all, delete-orphan")
+    enderecos = db.relationship("EnderecoCliente", backref="cliente", lazy=True, cascade="all, delete-orphan")
+    veiculos = db.relationship("Veiculo", backref="cliente", lazy=True, cascade="all, delete-orphan")
 
 
 # =========================
@@ -23,7 +23,7 @@ class Cliente(db.Model):
 class TelefoneCliente(db.Model):
     __tablename__ = "telefones_cliente"
 
-    id_telefone = db.Column(db.Integer, primary_key=True)
+    id_telefone = db.Column(db.Integer, primary_key=True, autoincrement=True)
     id_cliente = db.Column(db.Integer, db.ForeignKey("clientes.id_cliente"), nullable=False)
     telefone = db.Column(db.String(20), nullable=False)
 
@@ -34,7 +34,7 @@ class TelefoneCliente(db.Model):
 class EnderecoCliente(db.Model):
     __tablename__ = "enderecos_cliente"
 
-    id_endereco = db.Column(db.Integer, primary_key=True)
+    id_endereco = db.Column(db.Integer, primary_key=True, autoincrement=True)
     id_cliente = db.Column(db.Integer, db.ForeignKey("clientes.id_cliente"), nullable=False)
 
     rua = db.Column(db.String(150))
@@ -52,7 +52,7 @@ class EnderecoCliente(db.Model):
 class Veiculo(db.Model):
     __tablename__ = "veiculos"
 
-    id_veiculo = db.Column(db.Integer, primary_key=True)
+    id_veiculo = db.Column(db.Integer, primary_key=True, autoincrement=True)
     id_cliente = db.Column(db.Integer, db.ForeignKey("clientes.id_cliente"), nullable=False)
 
     placa = db.Column(db.String(7), unique=True, nullable=False)
@@ -71,7 +71,7 @@ class Veiculo(db.Model):
 class Tecido(db.Model):
     __tablename__ = "tecido"
 
-    id_tecido = db.Column(db.Integer, primary_key=True)
+    id_tecido = db.Column(db.Integer, primary_key=True, autoincrement=True)
     material = db.Column(db.String(50), nullable=False)
     cor = db.Column(db.String(30))
     descricao = db.Column(db.Text)
@@ -80,7 +80,7 @@ class Tecido(db.Model):
 class Espuma(db.Model):
     __tablename__ = "espuma"
 
-    id_espuma = db.Column(db.Integer, primary_key=True)
+    id_espuma = db.Column(db.Integer, primary_key=True, autoincrement=True)
     tipo = db.Column(db.String(50), nullable=False)
     densidade = db.Column(db.String(20))
     descricao = db.Column(db.Text)
@@ -89,7 +89,7 @@ class Espuma(db.Model):
 class Costura(db.Model):
     __tablename__ = "costura"
 
-    id_costura = db.Column(db.Integer, primary_key=True)
+    id_costura = db.Column(db.Integer, primary_key=True, autoincrement=True)
     tipo = db.Column(db.String(50), nullable=False)
     descricao = db.Column(db.Text)
 
@@ -97,7 +97,7 @@ class Costura(db.Model):
 class Cor(db.Model):
     __tablename__ = "cor"
 
-    id_cor = db.Column(db.Integer, primary_key=True)
+    id_cor = db.Column(db.Integer, primary_key=True, autoincrement=True)
     descricao = db.Column(db.Text)
 
 
@@ -107,7 +107,7 @@ class Cor(db.Model):
 class Orcamento(db.Model):
     __tablename__ = "orcamento"
 
-    id_orcamento = db.Column(db.Integer, primary_key=True)
+    id_orcamento = db.Column(db.Integer, primary_key=True, autoincrement=True)
     id_veiculo = db.Column(db.Integer, db.ForeignKey("veiculos.id_veiculo"), nullable=False)
 
     dat_orcamento = db.Column(db.Date, nullable=False)
@@ -139,7 +139,7 @@ class OrcamentoEspuma(db.Model):
 
     __tablename__ = "orcamento_espuma"
 
-    id_orcamento_espuma = db.Column(db.Integer, primary_key=True)
+    id_orcamento_espuma = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
     id_orcamento = db.Column(
         db.Integer,
@@ -160,7 +160,7 @@ class OrcamentoCostura(db.Model):
 
     __tablename__ = "orcamento_costura"
 
-    id_orcamento_costura = db.Column(db.Integer, primary_key=True)
+    id_orcamento_costura = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
     id_orcamento = db.Column(
         db.Integer,
@@ -181,7 +181,7 @@ class OrcamentoCor(db.Model):
 
     __tablename__ = "orcamento_cor"
 
-    id_orcamento_cor = db.Column(db.Integer, primary_key=True)
+    id_orcamento_cor = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
     id_orcamento = db.Column(
         db.Integer,
@@ -202,7 +202,7 @@ class OrcamentoTecido(db.Model):
 
     __tablename__ = "orcamento_tecido"
 
-    id_orcamento_tecido = db.Column(db.Integer, primary_key=True)
+    id_orcamento_tecido = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
     id_orcamento = db.Column(
         db.Integer,
@@ -223,7 +223,7 @@ class OrcamentoTecido(db.Model):
 class Pedido(db.Model):
     __tablename__ = "pedidos"
 
-    id_pedido = db.Column(db.Integer, primary_key=True)
+    id_pedido = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
     id_orcamento = db.Column(
         db.Integer,
