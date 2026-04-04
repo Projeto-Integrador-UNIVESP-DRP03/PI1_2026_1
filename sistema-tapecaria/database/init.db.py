@@ -1,12 +1,19 @@
-from models import db
-from flask import Flask
+import sys
+import os
 
-app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///../database/database.db"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+# adiciona a raiz do projeto ao path
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(BASE_DIR)
 
-db.init_app(app)
+from app import create_app
+from app.models import db
+
+app = create_app()
 
 with app.app_context():
-    db.drop_all()   # apaga tabelas antigas
-    db.create_all() # recria com base nos models.py
+    print("Recriando banco de dados...")
+
+    db.drop_all()
+    db.create_all()
+
+    print("Banco recriado com sucesso!")

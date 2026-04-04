@@ -3,20 +3,36 @@ from .models import db
 import os
 import secrets
 
+
 def create_app():
     app = Flask(__name__)
 
+    # Diretório base do projeto
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.join(BASE_DIR, "..", "database", "database.db")
+
+    # Caminho da pasta instance
+    instance_path = os.path.join(BASE_DIR, "..", "instance")
+
+    # Garante que a pasta instance exista
+    os.makedirs(instance_path, exist_ok=True)
+
+    # Caminho do banco
+    db_path = os.path.join(instance_path, "database.db")
 
     app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-    # Usa variável de ambiente SECRET_KEY
-    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", secrets.token_hex(32)) or "minha_chave_dev"
-   
+    # SECRET KEY
+    app.config["SECRET_KEY"] = os.environ.get(
+        "SECRET_KEY",
+        secrets.token_hex(32)
+    )
+
+    # Inicializa banco
     db.init_app(app)
 
+    # Registra rotas
     from .routes import main
     app.register_blueprint(main)
-    print("SECRET_KEY carregada:", app.config["SECRET_KEY"])
+
     return app

@@ -137,9 +137,10 @@ Dados do Cliente
             <td>{{ veiculo.cor }}</td>
 
             <td class="actions">
-
-                <a href="{{ url_for('main.cadastrar_ordem_servico', id_cliente=cliente.id_cliente, id_veiculo=veiculo.id_veiculo) }}">
-                    <button class="btn-primary">Nova OS</button>
+                <a href="{{ url_for('main.form_orcamento', id_veiculo=veiculo.id_veiculo) }}">
+                    <button class="btn-primary">
+                    Criar Orçamento
+                    </button>
                 </a>
 
                 <a href="{{ url_for('main.editar_veiculo', id_veiculo=veiculo.id_veiculo) }}">

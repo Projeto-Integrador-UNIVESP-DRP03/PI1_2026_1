@@ -1,6 +1,32 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from .models import db, Cliente, TelefoneCliente, EnderecoCliente, Veiculo, OrdemServico
+from flask import Blueprint, render_template, request, redirect, url_for, flash, send_file, current_app
 from datetime import datetime
+
+# tabelas
+from .models import (
+    db,
+    Cliente,
+    Veiculo,
+    Tecido,
+    Espuma,
+    Costura,
+    Cor,
+    Orcamento,
+    OrcamentoTecido,
+    OrcamentoEspuma,
+    OrcamentoCostura,
+    OrcamentoCor
+)
+
+# para gerar pdf
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import cm
+from reportlab.lib import colors
+import io
+import os
+
+
 main = Blueprint("main", __name__)
 
 
@@ -269,44 +295,474 @@ def editar_veiculo(id_veiculo):
     )
     
 
-    
-# =========================
-# ADICIONAR PEDIDO
-# =========================
-@main.route("/ordem_servico/cadastrar/<int:id_cliente>/<int:id_veiculo>", methods=["GET", "POST"])
-def cadastrar_ordem_servico(id_cliente, id_veiculo):
-    cliente = Cliente.query.get_or_404(id_cliente)
+@main.route("/orcamento/<int:id_veiculo>")
+def form_orcamento(id_veiculo):
+
     veiculo = Veiculo.query.get_or_404(id_veiculo)
+    cliente = veiculo.cliente
 
-    if request.method == "POST":
-        data_abertura_str = request.form.get("data_abertura")
-        data_abertura = None
-        if data_abertura_str:
-            data_abertura = datetime.strptime(data_abertura_str, "%Y-%m-%d").date() # transforma a string em objeto date
-        else:
-            data_abertura = datetime.today().date() # se não for fornecida, usa a data atual
-        quantidade_bancos = request.form.get("quantidade_bancos")
-        padrao_veiculo = request.form.get("padrao_veiculo") == "true"
-        personalizacao_igual = request.form.get("personalizacao_igual") == "true"
-        observacoes = request.form.get("observacoes")
+    tecidos = Tecido.query.all()
+    espumas = Espuma.query.all()
+    costuras = Costura.query.all()
+    cores = Cor.query.all()
+    
+    data_br = datetime.today().strftime("%d/%m/%Y")
 
-        nova_os = OrdemServico(
-            id_veiculo=id_veiculo,
-            data_abertura=data_abertura,
-            quantidade_bancos=quantidade_bancos,
-            padrao_veiculo=padrao_veiculo,
-            personalizacao_igual=personalizacao_igual,
-            observacoes=observacoes
+    return render_template(
+        "form_orcamento.html",
+        cliente=cliente,
+        veiculo=veiculo,
+        tecidos=tecidos,
+        espumas=espumas,
+        costuras=costuras,
+        cores=cores,
+        today=data_br
+    )
+# =========================
+# SALVAR ORÇAMENTO
+# =========================
+from datetime import datetime
+from flask import request, redirect, url_for
+
+@main.route("/salvar_orcamento", methods=["POST"])
+def salvar_orcamento():
+
+    id_veiculo = request.form.get("id_veiculo")
+
+    # data
+    data_str = request.form.get("dat_orcamento")
+    dat_orcamento = datetime.strptime(data_str, "%d/%m/%Y").date()
+
+    # números
+    qtd_bancos = int(request.form.get("qtd_bancos") or 0)
+    qtd_apoio_cabeca = int(request.form.get("qtd_apoio_cabeca") or 0)
+
+    valor = float(request.form.get("valor") or 0)
+
+    # booleanos
+    bool_original = True if request.form.get("bool_original") else False
+    bool_logo_prensada = True if request.form.get("bool_logo_prensada") else False
+    bool_espuma = True if request.form.get("bool_espuma") else False
+
+    obs = request.form.get("obs")
+
+    # =========================
+    # CRIAR ORÇAMENTO
+    # =========================
+
+    novo_orcamento = Orcamento(
+        id_veiculo=id_veiculo,
+        dat_orcamento=dat_orcamento,
+        qtd_bancos=qtd_bancos,
+        qtd_apoio_cabeca=qtd_apoio_cabeca,
+        bool_original=bool_original,
+        bool_logo_prensada=bool_logo_prensada,
+        bool_espuma=bool_espuma,
+        valor=valor,
+        obs=obs
+    )
+
+    db.session.add(novo_orcamento)
+    db.session.commit()
+
+    id_orcamento = novo_orcamento.id_orcamento
+
+    # =========================
+    # TECIDOS
+    # =========================
+
+    tecidos = request.form.getlist("tecidos")
+
+    for tecido_id in tecidos:
+
+        obs_item = request.form.get(f"obs_tecido_{tecido_id}")
+
+        item = OrcamentoTecido(
+            id_orcamento=id_orcamento,
+            id_tecido=tecido_id,
+            obs_item=obs_item
         )
 
-        db.session.add(nova_os)
-        db.session.commit()
+        db.session.add(item)
 
-        return redirect(url_for("main.listar_clientes"))  # ajuste se sua função estiver dentro de blueprint "main"
+    # =========================
+    # COSTURAS
+    # =========================
 
-    # Passa os objetos cliente e veiculo para o template
+    costuras = request.form.getlist("costuras")
+
+    for costura_id in costuras:
+
+        obs_item = request.form.get(f"obs_costura_{costura_id}")
+
+        item = OrcamentoCostura(
+            id_orcamento=id_orcamento,
+            id_costura=costura_id,
+            obs_item=obs_item
+        )
+
+        db.session.add(item)
+
+    # =========================
+    # CORES
+    # =========================
+
+    cores = request.form.getlist("cores")
+
+    for cor_id in cores:
+
+        obs_item = request.form.get(f"obs_cor_{cor_id}")
+
+        item = OrcamentoCor(
+            id_orcamento=id_orcamento,
+            id_cor=cor_id,
+            obs_item=obs_item
+        )
+
+        db.session.add(item)
+
+    # =========================
+    # ESPUMAS
+    # =========================
+
+    if bool_espuma:
+
+        espumas = request.form.getlist("espumas")
+
+        for espuma_id in espumas:
+
+            obs_item = request.form.get(f"obs_espuma_{espuma_id}")
+
+            item = OrcamentoEspuma(
+                id_orcamento=id_orcamento,
+                id_espuma=espuma_id,
+                obs_item=obs_item
+            )
+
+            db.session.add(item)
+
+    db.session.commit()
+
+    return redirect(url_for("main.home"))
+
+
+@main.route("/orcamentos")
+def lista_orcamentos():
+
+    orcamentos = Orcamento.query.order_by(Orcamento.dat_orcamento.desc()).all()
+
     return render_template(
-        "ordem_servico.html",
+        "lista_orcamentos.html",
+        orcamentos=orcamentos
+    )
+    
+    
+@main.route("/orcamento/<int:id_orcamento>/visualizar")
+def visualizar_orcamento(id_orcamento):
+
+    orcamento = Orcamento.query.get_or_404(id_orcamento)
+
+    veiculo = orcamento.veiculo
+    cliente = veiculo.cliente
+
+    tecidos = OrcamentoTecido.query.filter_by(id_orcamento=id_orcamento).all()
+    costuras = OrcamentoCostura.query.filter_by(id_orcamento=id_orcamento).all()
+    cores = OrcamentoCor.query.filter_by(id_orcamento=id_orcamento).all()
+    espumas = OrcamentoEspuma.query.filter_by(id_orcamento=id_orcamento).all()
+
+    return render_template(
+        "visualizar_orcamento.html",
+        orcamento=orcamento,
+        veiculo=veiculo,
         cliente=cliente,
-        veiculo=veiculo
+        tecidos=tecidos,
+        costuras=costuras,
+        cores=cores,
+        espumas=espumas
+    )
+#--------------------------
+# Rota para gerar PDF do orçamento
+#--------------------------
+@main.route("/orcamento/<int:id_orcamento>/pdf")
+def gerar_pdf_orcamento(id_orcamento):
+
+    orcamento = Orcamento.query.get_or_404(id_orcamento)
+    veiculo = Veiculo.query.get(orcamento.id_veiculo)
+    cliente = Cliente.query.get(veiculo.id_cliente)
+
+    tecidos = OrcamentoTecido.query.filter_by(id_orcamento=id_orcamento).all()
+    costuras = OrcamentoCostura.query.filter_by(id_orcamento=id_orcamento).all()
+    cores = OrcamentoCor.query.filter_by(id_orcamento=id_orcamento).all()
+    espumas = OrcamentoEspuma.query.filter_by(id_orcamento=id_orcamento).all()
+
+    buffer = io.BytesIO()
+
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        rightMargin=30,
+        leftMargin=30,
+        topMargin=30,
+        bottomMargin=30
+    )
+
+    styles = getSampleStyleSheet()
+    elementos = []
+
+    # ======================
+    # CABEÇALHO
+    # ======================
+
+    logo_path = os.path.join(
+        current_app.root_path,
+        "static/imagens/Identidade_visual/logo_zito.png"
+    )
+
+    logo = Image(logo_path, width=4*cm, height=4*cm)
+
+    dados_empresa = Paragraph("""
+    <b>Zito Tapeçaria para Autos</b><br/>
+    Rua Dr. Laerte Machado Guimarães, 241 – São Benedito<br/>
+    Pindamonhangaba – SP<br/>
+    Tel. (12) 3642-4713 / 3522-4713<br/>
+    CNPJ 74.458.852/0001-63<br/>
+    I.E. 528.045.963.113<br/>
+    Email: zitotapecaria@gmail.com
+    """, styles["Normal"])
+
+    cabecalho = Table(
+        [[dados_empresa, logo]],
+        colWidths=[14*cm,4*cm]
+    )
+
+    elementos.append(cabecalho)
+    elementos.append(Spacer(1,20))
+
+    # ======================
+    # CLIENTE
+    # ======================
+
+    telefone = ""
+    if cliente.telefones:
+        telefone = cliente.telefones[0].telefone
+
+    elementos.append(Paragraph(f"<b>Cliente:</b> {cliente.nome}", styles["Normal"]))
+    elementos.append(Paragraph(f"<b>Telefone:</b> {telefone}", styles["Normal"]))
+
+    elementos.append(Spacer(1,20))
+
+    # ======================
+    # TEXTO FORMAL
+    # ======================
+
+    texto = """
+    Levamos ao conhecimento de Vossa Senhoria, as nossas condições de orçamento,
+    para realização de serviços de tapeçaria.
+    """
+
+    elementos.append(Paragraph(texto, styles["Normal"]))
+
+    elementos.append(Spacer(1,20))
+
+    # ======================
+    # DADOS DO VEÍCULO
+    # ======================
+
+    dados_veiculo = [
+        ["Modelo", veiculo.modelo],
+        ["Placa", veiculo.placa],
+        ["Data do orçamento", str(orcamento.dat_orcamento)]
+    ]
+
+    tabela_veiculo = Table(dados_veiculo)
+
+    tabela_veiculo.setStyle(TableStyle([
+        ("GRID",(0,0),(-1,-1),1,colors.grey),
+        ("BACKGROUND",(0,0),(0,-1),colors.lightgrey)
+    ]))
+
+    elementos.append(tabela_veiculo)
+
+    elementos.append(Spacer(1,20))
+
+    # ======================
+    # DETALHES DO SERVIÇO
+    # ======================
+
+    servicos = [
+        ["Quantidade de bancos", orcamento.qtd_bancos],
+        ["Apoios de cabeça", orcamento.qtd_apoio_cabeca],
+        ["Manter padrão original", "Sim" if orcamento.bool_original else "Não"],
+        ["Logo prensada", "Sim" if orcamento.bool_logo_prensada else "Não"],
+        ["Troca de espuma", "Sim" if orcamento.bool_espuma else "Não"]
+    ]
+
+    tabela_servicos = Table(servicos)
+
+    tabela_servicos.setStyle(TableStyle([
+        ("GRID",(0,0),(-1,-1),1,colors.grey),
+        ("BACKGROUND",(0,0),(0,-1),colors.lightgrey)
+    ]))
+
+    elementos.append(tabela_servicos)
+
+    elementos.append(Spacer(1,20))
+
+    # ======================
+    # TECIDOS
+    # ======================
+
+    if tecidos:
+
+        elementos.append(Paragraph("<b>Tecidos</b>", styles["Heading4"]))
+
+        dados = [["Material","Observação"]]
+
+        for item in tecidos:
+            dados.append([
+                item.tecido.material,
+                item.obs_item or ""
+            ])
+
+        tabela = Table(dados)
+
+        tabela.setStyle(TableStyle([
+            ("GRID",(0,0),(-1,-1),1,colors.grey),
+            ("BACKGROUND",(0,0),(-1,0),colors.lightgrey)
+        ]))
+
+        elementos.append(tabela)
+        elementos.append(Spacer(1,15))
+
+    # ======================
+    # COSTURAS
+    # ======================
+
+    if costuras:
+
+        elementos.append(Paragraph("<b>Costuras</b>", styles["Heading4"]))
+
+        dados = [["Tipo","Observação"]]
+
+        for item in costuras:
+            dados.append([
+                item.costura.tipo,
+                item.obs_item or ""
+            ])
+
+        tabela = Table(dados)
+
+        tabela.setStyle(TableStyle([
+            ("GRID",(0,0),(-1,-1),1,colors.grey),
+            ("BACKGROUND",(0,0),(-1,0),colors.lightgrey)
+        ]))
+
+        elementos.append(tabela)
+        elementos.append(Spacer(1,15))
+
+    # ======================
+    # CORES
+    # ======================
+
+    if cores:
+
+        elementos.append(Paragraph("<b>Cores</b>", styles["Heading4"]))
+
+        dados = [["Cor","Observação"]]
+
+        for item in cores:
+            dados.append([
+                item.cor.descricao,
+                item.obs_item or ""
+            ])
+
+        tabela = Table(dados)
+
+        tabela.setStyle(TableStyle([
+            ("GRID",(0,0),(-1,-1),1,colors.grey),
+            ("BACKGROUND",(0,0),(-1,0),colors.lightgrey)
+        ]))
+
+        elementos.append(tabela)
+        elementos.append(Spacer(1,15))
+
+    # ======================
+    # ESPUMAS
+    # ======================
+
+    if espumas:
+
+        elementos.append(Paragraph("<b>Espumas</b>", styles["Heading4"]))
+
+        dados = [["Tipo","Observação"]]
+
+        for item in espumas:
+            dados.append([
+                item.espuma.tipo,
+                item.obs_item or ""
+            ])
+
+        tabela = Table(dados)
+
+        tabela.setStyle(TableStyle([
+            ("GRID",(0,0),(-1,-1),1,colors.grey),
+            ("BACKGROUND",(0,0),(-1,0),colors.lightgrey)
+        ]))
+
+        elementos.append(tabela)
+        elementos.append(Spacer(1,15))
+
+    # ======================
+    # VALOR
+    # ======================
+
+    elementos.append(Spacer(1,20))
+
+    elementos.append(
+        Paragraph(
+            f"<b>Valor do orçamento: R$ {orcamento.valor}</b>",
+            styles["Heading3"]
+        )
+    )
+
+    elementos.append(Spacer(1,20))
+
+    # ======================
+    # OBSERVAÇÕES
+    # ======================
+
+    if orcamento.obs:
+
+        elementos.append(
+            Paragraph(f"<b>Observações:</b> {orcamento.obs}", styles["Normal"])
+        )
+
+        elementos.append(Spacer(1,20))
+
+    # ======================
+    # ASSINATURA
+    # ======================
+
+    assinatura = Table([
+        ["",""],
+        ["___________________________","___________________________"],
+        ["Cliente","Zito Tapeçaria"]
+    ], colWidths=[9*cm,9*cm])
+
+    elementos.append(Spacer(1,40))
+    elementos.append(assinatura)
+
+    # ======================
+    # GERAR PDF
+    # ======================
+
+    doc.build(elementos)
+
+    buffer.seek(0)
+
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=f"orcamento_{id_orcamento}.pdf",
+        mimetype="application/pdf"
     )

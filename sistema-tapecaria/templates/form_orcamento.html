@@ -1,0 +1,310 @@
+{% extends "base.html" %}
+
+{% block title %}
+Novo Orçamento
+{% endblock %}
+
+{% block page_title %}
+Criar Orçamento
+{% endblock %}
+
+{% block content %}
+
+<h2>Dados do Cliente e Veículo</h2>
+
+<div class="box-info">
+<p><strong>Cliente:</strong> {{ cliente.nome }}</p>
+<p><strong>Placa:</strong> {{ veiculo.placa }}</p>
+<p><strong>Modelo:</strong> {{ veiculo.modelo }}</p>
+<p><strong>Data do Orçamento:</strong> {{ today }}</p>
+</div>
+
+<hr>
+
+<form method="POST" action="{{ url_for('main.salvar_orcamento') }}">
+
+<input type="hidden" name="id_veiculo" value="{{ veiculo.id_veiculo }}">
+<input type="hidden" name="dat_orcamento" value="{{ today }}">
+
+<!-- BANCOS -->
+
+<h3>Bancos</h3>
+
+<label>
+<input type="checkbox" class="banco" name="bancos" value="motorista">
+Motorista
+</label>
+
+<br>
+
+<label>
+<input type="checkbox" class="banco" name="bancos" value="passageiro">
+Passageiro
+</label>
+
+<br>
+
+<label>
+<input type="checkbox" class="banco" name="bancos" value="traseiro">
+Traseiro
+</label>
+
+<input type="hidden" name="qtd_bancos" id="qtd_bancos" value="0">
+
+<hr>
+
+<!-- APOIO CABEÇA -->
+
+<label>Quantidade de apoios de cabeça</label>
+
+<input type="number"
+name="qtd_apoio_cabeca"
+min="0"
+value="0">
+
+<hr>
+
+<!-- OPÇÕES -->
+
+<label>
+<input type="checkbox" name="bool_original">
+Manter padrão original
+</label>
+
+<br>
+
+<label>
+<input type="checkbox" name="bool_logo_prensada">
+Aplicar logo prensada
+</label>
+
+<br>
+
+<label>
+<input type="checkbox"
+id="bool_espuma"
+name="bool_espuma">
+Haverá troca de espuma
+</label>
+
+<hr>
+
+<!-- TECIDOS -->
+
+<h3>Tecidos</h3>
+
+{% for tecido in tecidos %}
+
+<label>
+
+<input type="checkbox"
+class="item-checkbox"
+data-target="tecido{{ tecido.id_tecido }}"
+name="tecidos"
+value="{{ tecido.id_tecido }}">
+
+{{ tecido.material }} - {{ tecido.cor }}
+
+</label>
+
+<div id="tecido{{ tecido.id_tecido }}" style="display:none">
+
+<input type="text"
+name="obs_tecido_{{ tecido.id_tecido }}"
+placeholder="Observação">
+
+</div>
+
+<br>
+
+{% endfor %}
+
+<hr>
+
+<!-- COSTURAS -->
+
+<h3>Costuras</h3>
+
+{% for costura in costuras %}
+
+<label>
+
+<input type="checkbox"
+class="item-checkbox"
+data-target="costura{{ costura.id_costura }}"
+name="costuras"
+value="{{ costura.id_costura }}">
+
+{{ costura.tipo }}
+
+</label>
+
+<div id="costura{{ costura.id_costura }}" style="display:none">
+
+<input type="text"
+name="obs_costura_{{ costura.id_costura }}"
+placeholder="Observação">
+
+</div>
+
+<br>
+
+{% endfor %}
+
+<hr>
+
+<!-- CORES -->
+
+<h3>Cores</h3>
+
+{% for cor in cores %}
+
+<label>
+
+<input type="checkbox"
+class="item-checkbox"
+data-target="cor{{ cor.id_cor }}"
+name="cores"
+value="{{ cor.id_cor }}">
+
+{{ cor.descricao }}
+
+</label>
+
+<div id="cor{{ cor.id_cor }}" style="display:none">
+
+<input type="text"
+name="obs_cor_{{ cor.id_cor }}"
+placeholder="Observação">
+
+</div>
+
+<br>
+
+{% endfor %}
+
+<hr>
+
+<!-- ESPUMA -->
+
+<div id="area_espuma" style="display:none">
+
+<h3>Tipos de Espuma</h3>
+
+{% for espuma in espumas %}
+
+<label>
+
+<input type="checkbox"
+class="item-checkbox"
+data-target="espuma{{ espuma.id_espuma }}"
+name="espumas"
+value="{{ espuma.id_espuma }}">
+
+{{ espuma.tipo }}
+
+</label>
+
+<div id="espuma{{ espuma.id_espuma }}" style="display:none">
+
+<input type="text"
+name="obs_espuma_{{ espuma.id_espuma }}"
+placeholder="Observação">
+
+</div>
+
+<br>
+
+{% endfor %}
+
+</div>
+
+<hr>
+
+<label>Valor do orçamento (R$)</label>
+
+<input type="number"
+step="0.01"
+name="valor"
+required>
+
+<hr>
+
+<label>Observações gerais</label>
+
+<br>
+
+<textarea
+name="obs"
+rows="4"
+cols="50"
+placeholder="Detalhes adicionais do serviço"></textarea>
+
+<br><br>
+
+<button type="submit">
+Salvar Orçamento
+</button>
+
+</form>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function(){
+
+const bancos = document.querySelectorAll(".banco")
+const campoQtd = document.getElementById("qtd_bancos")
+const checkboxEspuma = document.getElementById("bool_espuma")
+const areaEspuma = document.getElementById("area_espuma")
+
+function atualizarQtd(){
+
+let total = 0
+
+bancos.forEach(cb=>{
+if(cb.checked){
+total++
+}
+})
+
+campoQtd.value = total
+
+}
+
+bancos.forEach(cb=>{
+cb.addEventListener("change", atualizarQtd)
+})
+
+checkboxEspuma.addEventListener("change", function(){
+
+if(this.checked){
+areaEspuma.style.display = "block"
+}else{
+areaEspuma.style.display = "none"
+}
+
+})
+
+const itemCheckboxes = document.querySelectorAll(".item-checkbox")
+
+itemCheckboxes.forEach(cb=>{
+
+cb.addEventListener("change", function(){
+
+const target = document.getElementById(this.dataset.target)
+
+if(this.checked){
+target.style.display = "block"
+}else{
+target.style.display = "none"
+}
+
+})
+
+})
+
+})
+
+</script>
+
+{% endblock %}
