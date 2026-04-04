@@ -153,4 +153,8 @@ Orçamento #{{ orcamento.id_orcamento }}
 
 <h3>R$ {{ orcamento.valor }}</h3>
 
+<a href="{{ url_for('main.gerar_pdf_orcamento', id_orcamento=orcamento.id_orcamento) }}">
+    <button>Exportar PDF</button>
+</a>
+
 {% endblock %}
