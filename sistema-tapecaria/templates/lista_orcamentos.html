@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}
+Lista de Orçamentos
+{% endblock %}
+
+{% block page_title %}
+Orçamentos
+{% endblock %}
+
+{% block content %}
+
+<h2>Lista de Orçamentos</h2>
+
+<table>
+
+<tr>
+<th>ID</th>
+<th>Cliente</th>
+<th>Veículo</th>
+<th>Data</th>
+<th>Valor</th>
+<th>Ações</th>
+</tr>
+
+{% for orcamento in orcamentos %}
+
+<tr>
+
+<td>{{ orcamento.id_orcamento }}</td>
+
+<td>{{ orcamento.veiculo.cliente.nome }}</td>
+
+<td>{{ orcamento.veiculo.modelo }} - {{ orcamento.veiculo.placa }}</td>
+
+<td>{{ orcamento.dat_orcamento }}</td>
+
+<td>R$ {{ orcamento.valor }}</td>
+
+<td>
+
+<a href="{{ url_for('main.visualizar_orcamento', id_orcamento=orcamento.id_orcamento) }}">
+<button>Visualizar</button>
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+{% endblock %}

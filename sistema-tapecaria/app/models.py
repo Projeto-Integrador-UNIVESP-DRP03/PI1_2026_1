@@ -125,6 +125,10 @@ class Orcamento(db.Model):
     obs = db.Column(db.Text)
 
     pedidos = db.relationship("Pedido", backref="orcamento", lazy=True)
+    tecidos = db.relationship("OrcamentoTecido")
+    costuras = db.relationship("OrcamentoCostura")
+    cores = db.relationship("OrcamentoCor")
+    espumas = db.relationship("OrcamentoEspuma")
 
 
 # =========================
@@ -132,41 +136,87 @@ class Orcamento(db.Model):
 # =========================
 
 class OrcamentoEspuma(db.Model):
+
     __tablename__ = "orcamento_espuma"
 
-    id_orcamento = db.Column(db.Integer, db.ForeignKey("orcamento.id_orcamento"), primary_key=True)
-    id_espuma = db.Column(db.Integer, db.ForeignKey("espuma.id_espuma"), primary_key=True)
+    id_orcamento_espuma = db.Column(db.Integer, primary_key=True)
 
-    obs_item = db.Column(db.Text)
+    id_orcamento = db.Column(
+        db.Integer,
+        db.ForeignKey("orcamento.id_orcamento")
+    )
+
+    id_espuma = db.Column(
+        db.Integer,
+        db.ForeignKey("espuma.id_espuma")
+    )
+
+    obs_item = db.Column(db.String(200))
+
+    espuma = db.relationship("Espuma")
 
 
 class OrcamentoCostura(db.Model):
+
     __tablename__ = "orcamento_costura"
 
-    id_orcamento = db.Column(db.Integer, db.ForeignKey("orcamento.id_orcamento"), primary_key=True)
-    id_costura = db.Column(db.Integer, db.ForeignKey("costura.id_costura"), primary_key=True)
+    id_orcamento_costura = db.Column(db.Integer, primary_key=True)
 
-    obs_item = db.Column(db.Text)
+    id_orcamento = db.Column(
+        db.Integer,
+        db.ForeignKey("orcamento.id_orcamento")
+    )
+
+    id_costura = db.Column(
+        db.Integer,
+        db.ForeignKey("costura.id_costura")
+    )
+
+    obs_item = db.Column(db.String(200))
+
+    costura = db.relationship("Costura")
 
 
 class OrcamentoCor(db.Model):
+
     __tablename__ = "orcamento_cor"
 
-    id_orcamento = db.Column(db.Integer, db.ForeignKey("orcamento.id_orcamento"), primary_key=True)
-    id_cor = db.Column(db.Integer, db.ForeignKey("cor.id_cor"), primary_key=True)
+    id_orcamento_cor = db.Column(db.Integer, primary_key=True)
 
-    obs_item = db.Column(db.Text)
+    id_orcamento = db.Column(
+        db.Integer,
+        db.ForeignKey("orcamento.id_orcamento")
+    )
+
+    id_cor = db.Column(
+        db.Integer,
+        db.ForeignKey("cor.id_cor")
+    )
+
+    obs_item = db.Column(db.String(200))
+
+    cor = db.relationship("Cor")
 
 
 class OrcamentoTecido(db.Model):
+
     __tablename__ = "orcamento_tecido"
 
-    id_orcamento = db.Column(db.Integer, db.ForeignKey("orcamento.id_orcamento"), primary_key=True)
-    id_tecido = db.Column(db.Integer, db.ForeignKey("tecido.id_tecido"), primary_key=True)
+    id_orcamento_tecido = db.Column(db.Integer, primary_key=True)
 
-    obs_item = db.Column(db.Text)
+    id_orcamento = db.Column(
+        db.Integer,
+        db.ForeignKey("orcamento.id_orcamento")
+    )
 
+    id_tecido = db.Column(
+        db.Integer,
+        db.ForeignKey("tecido.id_tecido")
+    )
 
+    obs_item = db.Column(db.String(200))
+
+    tecido = db.relationship("Tecido")
 # =========================
 # PEDIDOS
 # =========================

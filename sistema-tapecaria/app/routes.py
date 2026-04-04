@@ -308,28 +308,38 @@ def form_orcamento(id_veiculo):
 # =========================
 # SALVAR ORÇAMENTO
 # =========================
+from datetime import datetime
+from flask import request, redirect, url_for
+
 @main.route("/salvar_orcamento", methods=["POST"])
 def salvar_orcamento():
 
     id_veiculo = request.form.get("id_veiculo")
 
-    data_str = request.form.get("dat_orcamento")  # data no formato "dd/mm/yyyy"
+    # data
+    data_str = request.form.get("dat_orcamento")
     dat_orcamento = datetime.strptime(data_str, "%d/%m/%Y").date()
 
-    qtd_bancos = request.form.get("qtd_bancos")
-    qtd_apoio_cabeca = request.form.get("qtd_apoio_cabeca")
+    # números
+    qtd_bancos = int(request.form.get("qtd_bancos") or 0)
+    qtd_apoio_cabeca = int(request.form.get("qtd_apoio_cabeca") or 0)
 
+    valor = float(request.form.get("valor") or 0)
+
+    # booleanos
     bool_original = True if request.form.get("bool_original") else False
     bool_logo_prensada = True if request.form.get("bool_logo_prensada") else False
     bool_espuma = True if request.form.get("bool_espuma") else False
 
-    valor = request.form.get("valor")
     obs = request.form.get("obs")
 
-    # cria orçamento
+    # =========================
+    # CRIAR ORÇAMENTO
+    # =========================
+
     novo_orcamento = Orcamento(
         id_veiculo=id_veiculo,
-        dat_orcamento=datetime.today().date(),
+        dat_orcamento=dat_orcamento,
         qtd_bancos=qtd_bancos,
         qtd_apoio_cabeca=qtd_apoio_cabeca,
         bool_original=bool_original,
@@ -350,26 +360,14 @@ def salvar_orcamento():
 
     tecidos = request.form.getlist("tecidos")
 
-    for tecido in tecidos:
+    for tecido_id in tecidos:
+
+        obs_item = request.form.get(f"obs_tecido_{tecido_id}")
 
         item = OrcamentoTecido(
             id_orcamento=id_orcamento,
-            id_tecido=tecido
-        )
-
-        db.session.add(item)
-
-    # =========================
-    # ESPUMAS
-    # =========================
-
-    espumas = request.form.getlist("espumas")
-
-    for espuma in espumas:
-
-        item = OrcamentoEspuma(
-            id_orcamento=id_orcamento,
-            id_espuma=espuma
+            id_tecido=tecido_id,
+            obs_item=obs_item
         )
 
         db.session.add(item)
@@ -380,11 +378,14 @@ def salvar_orcamento():
 
     costuras = request.form.getlist("costuras")
 
-    for costura in costuras:
+    for costura_id in costuras:
+
+        obs_item = request.form.get(f"obs_costura_{costura_id}")
 
         item = OrcamentoCostura(
             id_orcamento=id_orcamento,
-            id_costura=costura
+            id_costura=costura_id,
+            obs_item=obs_item
         )
 
         db.session.add(item)
@@ -395,15 +396,74 @@ def salvar_orcamento():
 
     cores = request.form.getlist("cores")
 
-    for cor in cores:
+    for cor_id in cores:
+
+        obs_item = request.form.get(f"obs_cor_{cor_id}")
 
         item = OrcamentoCor(
             id_orcamento=id_orcamento,
-            id_cor=cor
+            id_cor=cor_id,
+            obs_item=obs_item
         )
 
         db.session.add(item)
 
+    # =========================
+    # ESPUMAS
+    # =========================
+
+    if bool_espuma:
+
+        espumas = request.form.getlist("espumas")
+
+        for espuma_id in espumas:
+
+            obs_item = request.form.get(f"obs_espuma_{espuma_id}")
+
+            item = OrcamentoEspuma(
+                id_orcamento=id_orcamento,
+                id_espuma=espuma_id,
+                obs_item=obs_item
+            )
+
+            db.session.add(item)
+
     db.session.commit()
 
     return redirect(url_for("main.home"))
+
+
+@main.route("/orcamentos")
+def lista_orcamentos():
+
+    orcamentos = Orcamento.query.order_by(Orcamento.dat_orcamento.desc()).all()
+
+    return render_template(
+        "lista_orcamentos.html",
+        orcamentos=orcamentos
+    )
+    
+    
+@main.route("/orcamento/<int:id_orcamento>/visualizar")
+def visualizar_orcamento(id_orcamento):
+
+    orcamento = Orcamento.query.get_or_404(id_orcamento)
+
+    veiculo = orcamento.veiculo
+    cliente = veiculo.cliente
+
+    tecidos = OrcamentoTecido.query.filter_by(id_orcamento=id_orcamento).all()
+    costuras = OrcamentoCostura.query.filter_by(id_orcamento=id_orcamento).all()
+    cores = OrcamentoCor.query.filter_by(id_orcamento=id_orcamento).all()
+    espumas = OrcamentoEspuma.query.filter_by(id_orcamento=id_orcamento).all()
+
+    return render_template(
+        "visualizar_orcamento.html",
+        orcamento=orcamento,
+        veiculo=veiculo,
+        cliente=cliente,
+        tecidos=tecidos,
+        costuras=costuras,
+        cores=cores,
+        espumas=espumas
+    )

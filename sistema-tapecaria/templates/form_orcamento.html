@@ -13,7 +13,6 @@ Criar Orçamento
 <h2>Dados do Cliente e Veículo</h2>
 
 <div class="box-info">
-
 <p><strong>Cliente:</strong> {{ cliente.nome }}</p>
 <p><strong>Placa:</strong> {{ veiculo.placa }}</p>
 <p><strong>Modelo:</strong> {{ veiculo.modelo }}</p>
@@ -27,31 +26,30 @@ Criar Orçamento
 <input type="hidden" name="id_veiculo" value="{{ veiculo.id_veiculo }}">
 <input type="hidden" name="dat_orcamento" value="{{ today }}">
 
-
 <!-- BANCOS -->
 
 <h3>Bancos</h3>
 
 <label>
-<input type="checkbox" class="banco" value="motorista">
+<input type="checkbox" class="banco" name="bancos" value="motorista">
 Motorista
 </label>
 
 <br>
 
 <label>
-<input type="checkbox" class="banco" value="passageiro">
+<input type="checkbox" class="banco" name="bancos" value="passageiro">
 Passageiro
 </label>
 
 <br>
 
 <label>
-<input type="checkbox" class="banco" value="traseiro">
+<input type="checkbox" class="banco" name="bancos" value="traseiro">
 Traseiro
 </label>
 
-<input type="hidden" name="qtd_bancos" id="qtd_bancos">
+<input type="hidden" name="qtd_bancos" id="qtd_bancos" value="0">
 
 <hr>
 
@@ -69,34 +67,24 @@ value="0">
 <!-- OPÇÕES -->
 
 <label>
-
 <input type="checkbox" name="bool_original">
-
 Manter padrão original
-
 </label>
 
 <br>
 
 <label>
-
 <input type="checkbox" name="bool_logo_prensada">
-
 Aplicar logo prensada
-
 </label>
 
 <br>
 
 <label>
-
 <input type="checkbox"
 id="bool_espuma"
-name="bool_espuma"
-onclick="toggleEspuma()">
-
+name="bool_espuma">
 Haverá troca de espuma
-
 </label>
 
 <hr>
@@ -110,7 +98,8 @@ Haverá troca de espuma
 <label>
 
 <input type="checkbox"
-onclick="toggleObs('tecido{{ tecido.id_tecido }}')"
+class="item-checkbox"
+data-target="tecido{{ tecido.id_tecido }}"
 name="tecidos"
 value="{{ tecido.id_tecido }}">
 
@@ -141,7 +130,8 @@ placeholder="Observação">
 <label>
 
 <input type="checkbox"
-onclick="toggleObs('costura{{ costura.id_costura }}')"
+class="item-checkbox"
+data-target="costura{{ costura.id_costura }}"
 name="costuras"
 value="{{ costura.id_costura }}">
 
@@ -172,7 +162,8 @@ placeholder="Observação">
 <label>
 
 <input type="checkbox"
-onclick="toggleObs('cor{{ cor.id_cor }}')"
+class="item-checkbox"
+data-target="cor{{ cor.id_cor }}"
 name="cores"
 value="{{ cor.id_cor }}">
 
@@ -205,7 +196,8 @@ placeholder="Observação">
 <label>
 
 <input type="checkbox"
-onclick="toggleObs('espuma{{ espuma.id_espuma }}')"
+class="item-checkbox"
+data-target="espuma{{ espuma.id_espuma }}"
 name="espumas"
 value="{{ espuma.id_espuma }}">
 
@@ -229,8 +221,6 @@ placeholder="Observação">
 
 <hr>
 
-<!-- VALOR -->
-
 <label>Valor do orçamento (R$)</label>
 
 <input type="number"
@@ -239,8 +229,6 @@ name="valor"
 required>
 
 <hr>
-
-<!-- OBSERVAÇÃO -->
 
 <label>Observações gerais</label>
 
@@ -255,25 +243,25 @@ placeholder="Detalhes adicionais do serviço"></textarea>
 <br><br>
 
 <button type="submit">
-
 Salvar Orçamento
-
 </button>
 
 </form>
 
-<!-- SCRIPTS -->
-
 <script>
 
-const checkboxes = document.querySelectorAll(".banco")
+document.addEventListener("DOMContentLoaded", function(){
+
+const bancos = document.querySelectorAll(".banco")
 const campoQtd = document.getElementById("qtd_bancos")
+const checkboxEspuma = document.getElementById("bool_espuma")
+const areaEspuma = document.getElementById("area_espuma")
 
 function atualizarQtd(){
 
 let total = 0
 
-checkboxes.forEach(cb=>{
+bancos.forEach(cb=>{
 if(cb.checked){
 total++
 }
@@ -283,36 +271,39 @@ campoQtd.value = total
 
 }
 
-checkboxes.forEach(cb=>{
+bancos.forEach(cb=>{
 cb.addEventListener("change", atualizarQtd)
 })
 
-function toggleObs(id){
+checkboxEspuma.addEventListener("change", function(){
 
-let campo = document.getElementById(id)
-
-if(campo.style.display === "none"){
-campo.style.display = "block"
-}
-else{
-campo.style.display = "none"
+if(this.checked){
+areaEspuma.style.display = "block"
+}else{
+areaEspuma.style.display = "none"
 }
 
+})
+
+const itemCheckboxes = document.querySelectorAll(".item-checkbox")
+
+itemCheckboxes.forEach(cb=>{
+
+cb.addEventListener("change", function(){
+
+const target = document.getElementById(this.dataset.target)
+
+if(this.checked){
+target.style.display = "block"
+}else{
+target.style.display = "none"
 }
 
-function toggleEspuma(){
+})
 
-let checkbox = document.getElementById("bool_espuma")
-let area = document.getElementById("area_espuma")
+})
 
-if(checkbox.checked){
-area.style.display = "block"
-}
-else{
-area.style.display = "none"
-}
-
-}
+})
 
 </script>
 
