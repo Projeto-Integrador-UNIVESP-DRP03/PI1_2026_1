@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from .models import db, Cliente, TelefoneCliente, EnderecoCliente, Veiculo, OrdemServico
+from .models import db, Cliente, TelefoneCliente, EnderecoCliente, Veiculo, Tecido, Espuma, Costura, Cor,  Orcamento, OrcamentoEspuma, OrcamentoTecido, OrcamentoCostura, Pedido
 from datetime import datetime
 main = Blueprint("main", __name__)
 

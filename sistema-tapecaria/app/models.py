@@ -1,58 +1,42 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import relationship
 
 db = SQLAlchemy()
 
-
+# =========================
+# CLIENTES
+# =========================
 class Cliente(db.Model):
-    __tablename__ = "clientes"  # padronizei no plural
+    __tablename__ = "clientes"
 
     id_cliente = db.Column(db.Integer, primary_key=True)
     cod_cliente = db.Column(db.String(20), unique=True, nullable=False)
     nome = db.Column(db.String(120), nullable=False)
 
-    telefone = db.relationship(
-        "TelefoneCliente",
-        backref="cliente",
-        uselist=False,
-        cascade="all, delete"
-    )
-
-    endereco = db.relationship(
-        "EnderecoCliente",
-        backref="cliente",
-        uselist=False,
-        cascade="all, delete"
-    )
-
-    veiculos = db.relationship(
-        "Veiculo",
-        backref="cliente",
-        cascade="all, delete"
-    )
+    telefones = db.relationship("TelefoneCliente", backref="cliente", lazy=True)
+    enderecos = db.relationship("EnderecoCliente", backref="cliente", lazy=True)
+    veiculos = db.relationship("Veiculo", backref="cliente", lazy=True)
 
 
+# =========================
+# TELEFONES
+# =========================
 class TelefoneCliente(db.Model):
     __tablename__ = "telefones_cliente"
 
     id_telefone = db.Column(db.Integer, primary_key=True)
-    id_cliente = db.Column(
-        db.Integer,
-        db.ForeignKey("clientes.id_cliente"),  # corrigido
-        nullable=False
-    )
+    id_cliente = db.Column(db.Integer, db.ForeignKey("clientes.id_cliente"), nullable=False)
     telefone = db.Column(db.String(20), nullable=False)
 
 
+# =========================
+# ENDEREÇOS
+# =========================
 class EnderecoCliente(db.Model):
     __tablename__ = "enderecos_cliente"
 
     id_endereco = db.Column(db.Integer, primary_key=True)
-    id_cliente = db.Column(
-        db.Integer,
-        db.ForeignKey("clientes.id_cliente"),  # corrigido
-        nullable=False
-    )
+    id_cliente = db.Column(db.Integer, db.ForeignKey("clientes.id_cliente"), nullable=False)
+
     rua = db.Column(db.String(150))
     numero = db.Column(db.String(10))
     bairro = db.Column(db.String(100))
@@ -62,129 +46,153 @@ class EnderecoCliente(db.Model):
     complemento = db.Column(db.String(100))
 
 
+# =========================
+# VEÍCULOS
+# =========================
 class Veiculo(db.Model):
-    __tablename__ = "veiculos"  # padronizei no plural
+    __tablename__ = "veiculos"
 
     id_veiculo = db.Column(db.Integer, primary_key=True)
-    id_cliente = db.Column(
-        db.Integer,
-        db.ForeignKey("clientes.id_cliente"),  # corrigido
-        nullable=False
-    )
-    placa = db.Column(db.String(10), unique=True, nullable=False)
+    id_cliente = db.Column(db.Integer, db.ForeignKey("clientes.id_cliente"), nullable=False)
+
+    placa = db.Column(db.String(7), unique=True, nullable=False)
     marca = db.Column(db.String(50), nullable=False)
     modelo = db.Column(db.String(80), nullable=False)
     ano = db.Column(db.Integer)
     cor = db.Column(db.String(30))
 
+    orcamentos = db.relationship("Orcamento", backref="veiculo", lazy=True)
 
-class OrdemServico(db.Model):
-    __tablename__ = "ordens_servico"  # plural para consistência
 
-    id_os = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    id_veiculo = db.Column(db.Integer, db.ForeignKey("veiculos.id_veiculo"), nullable=False)  # corrigido
-    data_abertura = db.Column(db.Date)
-    quantidade_bancos = db.Column(db.Integer)
-    padrao_veiculo = db.Column(db.Boolean)
-    personalizacao_igual = db.Column(db.Boolean)
-    observacoes = db.Column(db.String(1020))
-    
-    veiculo = relationship("Veiculo", backref="ordens_servico")
-    bancos = relationship("Banco", back_populates="ordem_servico")
+# =========================
+# CATÁLOGO
+# =========================
+
+class Tecido(db.Model):
+    __tablename__ = "tecido"
+
+    id_tecido = db.Column(db.Integer, primary_key=True)
+    material = db.Column(db.String(50), nullable=False)
+    cor = db.Column(db.String(30))
+    descricao = db.Column(db.Text)
 
 
 class Espuma(db.Model):
-    __tablename__ = "espumas"
+    __tablename__ = "espuma"
 
-    id_espuma = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    tipo = db.Column(db.String)
+    id_espuma = db.Column(db.Integer, primary_key=True)
+    tipo = db.Column(db.String(50), nullable=False)
     densidade = db.Column(db.String(20))
-    descricao = db.Column(db.String(1020))
-
-    bancos = relationship("Banco", back_populates="espuma")
-
-
-class Banco(db.Model):
-    __tablename__ = "bancos"
-
-    id_banco = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    id_os = db.Column(db.Integer, db.ForeignKey("ordens_servico.id_os"), nullable=False)  # corrigido
-    posicao = db.Column(db.String(100))
-    troca_espuma = db.Column(db.Boolean)
-    id_espuma = db.Column(db.Integer, db.ForeignKey("espumas.id_espuma"))
-
-    ordem_servico = relationship("OrdemServico", back_populates="bancos")
-    espuma = relationship("Espuma", back_populates="bancos")
-    personalizacoes = relationship("Personalizacao", back_populates="banco")
-    tecidos = relationship("BancoTecido", back_populates="banco")
+    descricao = db.Column(db.Text)
 
 
 class Costura(db.Model):
-    __tablename__ = "costuras"
+    __tablename__ = "costura"
 
-    id_costura = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    nome = db.Column(db.String(100))
-    descricao = db.Column(db.String(1020))
-
-    personalizacoes = relationship("Personalizacao", back_populates="costura")
+    id_costura = db.Column(db.Integer, primary_key=True)
+    tipo = db.Column(db.String(50), nullable=False)
+    descricao = db.Column(db.Text)
 
 
 class Cor(db.Model):
-    __tablename__ = "cores"
+    __tablename__ = "cor"
 
-    id_cor = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    nome = db.Column(db.String)
-
-    personalizacoes = relationship("Personalizacao", back_populates="cor_linha")
-    banco_tecidos = relationship("BancoTecido", back_populates="cor")
+    id_cor = db.Column(db.Integer, primary_key=True)
+    descricao = db.Column(db.Text)
 
 
-class Personalizacao(db.Model):
-    __tablename__ = "personalizacoes"
+# =========================
+# ORÇAMENTO
+# =========================
+class Orcamento(db.Model):
+    __tablename__ = "orcamento"
 
-    id_personalizacao = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    id_banco = db.Column(db.Integer, db.ForeignKey("bancos.id_banco"), nullable=False)
-    id_costura = db.Column(db.Integer, db.ForeignKey("costuras.id_costura"))
-    id_cor_linha = db.Column(db.Integer, db.ForeignKey("cores.id_cor"))
+    id_orcamento = db.Column(db.Integer, primary_key=True)
+    id_veiculo = db.Column(db.Integer, db.ForeignKey("veiculos.id_veiculo"), nullable=False)
 
-    banco = relationship("Banco", back_populates="personalizacoes")
-    costura = relationship("Costura", back_populates="personalizacoes")
-    cor_linha = relationship("Cor", back_populates="personalizacoes")
+    dat_orcamento = db.Column(db.Date, nullable=False)
+
+    bool_original = db.Column(db.Boolean, default=False)
+    bool_logo_prensada = db.Column(db.Boolean, default=False)
+
+    qtd_bancos = db.Column(db.Integer, default=0)
+    qtd_apoio_cabeca = db.Column(db.Integer, default=0)
+
+    bool_espuma = db.Column(db.Boolean, default=False)
+
+    valor = db.Column(db.Numeric(10,2), nullable=False)
+
+    obs = db.Column(db.Text)
+
+    pedidos = db.relationship("Pedido", backref="orcamento", lazy=True)
 
 
-class Tecido(db.Model):
-    __tablename__ = "tecidos"
+# =========================
+# ITENS DO ORÇAMENTO
+# =========================
 
-    id_tecido = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    nome = db.Column(db.String(100))
-    material = db.Column(db.String(100))
-    fornecedor = db.Column(db.String(100))
+class OrcamentoEspuma(db.Model):
+    __tablename__ = "orcamento_espuma"
 
-    banco_tecidos = relationship("BancoTecido", back_populates="tecido")
+    id_orcamento = db.Column(db.Integer, db.ForeignKey("orcamento.id_orcamento"), primary_key=True)
+    id_espuma = db.Column(db.Integer, db.ForeignKey("espuma.id_espuma"), primary_key=True)
+
+    obs_item = db.Column(db.Text)
 
 
-class BancoTecido(db.Model):
-    __tablename__ = "banco_tecidos"
+class OrcamentoCostura(db.Model):
+    __tablename__ = "orcamento_costura"
 
-    id_banco = db.Column(db.Integer, db.ForeignKey("bancos.id_banco"), primary_key=True)
-    id_tecido = db.Column(db.Integer, db.ForeignKey("tecidos.id_tecido"), primary_key=True)
-    parte_banco = db.Column(db.String(100), primary_key=True)
-    id_cor = db.Column(db.Integer, db.ForeignKey("cores.id_cor"))
+    id_orcamento = db.Column(db.Integer, db.ForeignKey("orcamento.id_orcamento"), primary_key=True)
+    id_costura = db.Column(db.Integer, db.ForeignKey("costura.id_costura"), primary_key=True)
 
-    banco = relationship("Banco", back_populates="tecidos")
-    tecido = relationship("Tecido", back_populates="banco_tecidos")
-    cor = relationship("Cor", back_populates="banco_tecidos")
+    obs_item = db.Column(db.Text)
 
-class Pedidos(db.Model):
+
+class OrcamentoCor(db.Model):
+    __tablename__ = "orcamento_cor"
+
+    id_orcamento = db.Column(db.Integer, db.ForeignKey("orcamento.id_orcamento"), primary_key=True)
+    id_cor = db.Column(db.Integer, db.ForeignKey("cor.id_cor"), primary_key=True)
+
+    obs_item = db.Column(db.Text)
+
+
+class OrcamentoTecido(db.Model):
+    __tablename__ = "orcamento_tecido"
+
+    id_orcamento = db.Column(db.Integer, db.ForeignKey("orcamento.id_orcamento"), primary_key=True)
+    id_tecido = db.Column(db.Integer, db.ForeignKey("tecido.id_tecido"), primary_key=True)
+
+    obs_item = db.Column(db.Text)
+
+
+# =========================
+# PEDIDOS
+# =========================
+class Pedido(db.Model):
     __tablename__ = "pedidos"
 
-    id_pedido = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    id_os = db.Column(db.Integer, db.ForeignKey("ordens_servico.id_os"), nullable=False)
+    id_pedido = db.Column(db.Integer, primary_key=True)
+
+    id_orcamento = db.Column(
+        db.Integer,
+        db.ForeignKey("orcamento.id_orcamento"),
+        nullable=False
+    )
+
+    boolean_aceite_cliente = db.Column(db.Boolean, default=False)
+
+    dat_aceite_cliente = db.Column(db.Date)
     data_inicio = db.Column(db.Date)
     data_conclusao = db.Column(db.Date)
-    observacoes = db.Column(db.String(1020))
+
+    observacoes_pedido = db.Column(db.Text)
+
     aceite_cliente = db.Column(db.Boolean)
-    valor_total = db.Column(db.Float)
+
     status = db.Column(db.String(50))
-    
-    ordem_servico = relationship("OrdemServico", backref="pedido")
+
+    valor_total = db.Column(db.Float)
+
+    metodo_pagamento = db.Column(db.String(50))
