@@ -1,6 +1,19 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from .models import db, Cliente, TelefoneCliente, EnderecoCliente, Veiculo, Tecido, Espuma, Costura, Cor,  Orcamento, OrcamentoEspuma, OrcamentoTecido, OrcamentoCostura, Pedido
 from datetime import datetime
+from .models import (
+    db,
+    Cliente,
+    Veiculo,
+    Tecido,
+    Espuma,
+    Costura,
+    Cor,
+    Orcamento,
+    OrcamentoTecido,
+    OrcamentoEspuma,
+    OrcamentoCostura,
+    OrcamentoCor
+)
 main = Blueprint("main", __name__)
 
 
@@ -269,44 +282,128 @@ def editar_veiculo(id_veiculo):
     )
     
 
-    
-# =========================
-# ADICIONAR PEDIDO
-# =========================
-@main.route("/ordem_servico/cadastrar/<int:id_cliente>/<int:id_veiculo>", methods=["GET", "POST"])
-def cadastrar_ordem_servico(id_cliente, id_veiculo):
-    cliente = Cliente.query.get_or_404(id_cliente)
+@main.route("/orcamento/<int:id_veiculo>")
+def form_orcamento(id_veiculo):
+
     veiculo = Veiculo.query.get_or_404(id_veiculo)
+    cliente = veiculo.cliente
 
-    if request.method == "POST":
-        data_abertura_str = request.form.get("data_abertura")
-        data_abertura = None
-        if data_abertura_str:
-            data_abertura = datetime.strptime(data_abertura_str, "%Y-%m-%d").date() # transforma a string em objeto date
-        else:
-            data_abertura = datetime.today().date() # se não for fornecida, usa a data atual
-        quantidade_bancos = request.form.get("quantidade_bancos")
-        padrao_veiculo = request.form.get("padrao_veiculo") == "true"
-        personalizacao_igual = request.form.get("personalizacao_igual") == "true"
-        observacoes = request.form.get("observacoes")
+    tecidos = Tecido.query.all()
+    espumas = Espuma.query.all()
+    costuras = Costura.query.all()
+    cores = Cor.query.all()
+    
+    data_br = datetime.today().strftime("%d/%m/%Y")
 
-        nova_os = OrdemServico(
-            id_veiculo=id_veiculo,
-            data_abertura=data_abertura,
-            quantidade_bancos=quantidade_bancos,
-            padrao_veiculo=padrao_veiculo,
-            personalizacao_igual=personalizacao_igual,
-            observacoes=observacoes
+    return render_template(
+        "form_orcamento.html",
+        cliente=cliente,
+        veiculo=veiculo,
+        tecidos=tecidos,
+        espumas=espumas,
+        costuras=costuras,
+        cores=cores,
+        today=data_br
+    )
+# =========================
+# SALVAR ORÇAMENTO
+# =========================
+@main.route("/salvar_orcamento", methods=["POST"])
+def salvar_orcamento():
+
+    id_veiculo = request.form.get("id_veiculo")
+
+    data_str = request.form.get("dat_orcamento")  # data no formato "dd/mm/yyyy"
+    dat_orcamento = datetime.strptime(data_str, "%d/%m/%Y").date()
+
+    qtd_bancos = request.form.get("qtd_bancos")
+    qtd_apoio_cabeca = request.form.get("qtd_apoio_cabeca")
+
+    bool_original = True if request.form.get("bool_original") else False
+    bool_logo_prensada = True if request.form.get("bool_logo_prensada") else False
+    bool_espuma = True if request.form.get("bool_espuma") else False
+
+    valor = request.form.get("valor")
+    obs = request.form.get("obs")
+
+    # cria orçamento
+    novo_orcamento = Orcamento(
+        id_veiculo=id_veiculo,
+        dat_orcamento=datetime.today().date(),
+        qtd_bancos=qtd_bancos,
+        qtd_apoio_cabeca=qtd_apoio_cabeca,
+        bool_original=bool_original,
+        bool_logo_prensada=bool_logo_prensada,
+        bool_espuma=bool_espuma,
+        valor=valor,
+        obs=obs
+    )
+
+    db.session.add(novo_orcamento)
+    db.session.commit()
+
+    id_orcamento = novo_orcamento.id_orcamento
+
+    # =========================
+    # TECIDOS
+    # =========================
+
+    tecidos = request.form.getlist("tecidos")
+
+    for tecido in tecidos:
+
+        item = OrcamentoTecido(
+            id_orcamento=id_orcamento,
+            id_tecido=tecido
         )
 
-        db.session.add(nova_os)
-        db.session.commit()
+        db.session.add(item)
 
-        return redirect(url_for("main.listar_clientes"))  # ajuste se sua função estiver dentro de blueprint "main"
+    # =========================
+    # ESPUMAS
+    # =========================
 
-    # Passa os objetos cliente e veiculo para o template
-    return render_template(
-        "ordem_servico.html",
-        cliente=cliente,
-        veiculo=veiculo
-    )
+    espumas = request.form.getlist("espumas")
+
+    for espuma in espumas:
+
+        item = OrcamentoEspuma(
+            id_orcamento=id_orcamento,
+            id_espuma=espuma
+        )
+
+        db.session.add(item)
+
+    # =========================
+    # COSTURAS
+    # =========================
+
+    costuras = request.form.getlist("costuras")
+
+    for costura in costuras:
+
+        item = OrcamentoCostura(
+            id_orcamento=id_orcamento,
+            id_costura=costura
+        )
+
+        db.session.add(item)
+
+    # =========================
+    # CORES
+    # =========================
+
+    cores = request.form.getlist("cores")
+
+    for cor in cores:
+
+        item = OrcamentoCor(
+            id_orcamento=id_orcamento,
+            id_cor=cor
+        )
+
+        db.session.add(item)
+
+    db.session.commit()
+
+    return redirect(url_for("main.home"))

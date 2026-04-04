@@ -1,105 +1,319 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Cadastro de Orçamento - Personalização de Bancos</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-<h2>Cadastro de Orçamento de Personalização</h2>
+{% block title %}
+Novo Orçamento
+{% endblock %}
 
-<form action="/salvar_orcamento" method="post">
-    <fieldset>
-        <legend>Dados do Cliente e Veículo</legend>
-        <label for="nome_cliente">Nome do Cliente:</label>
-        <input type="text" id="nome_cliente" name="nome_cliente" required>
+{% block page_title %}
+Criar Orçamento
+{% endblock %}
 
-        <label for="telefone_cliente">Telefone:</label>
-        <input type="tel" id="telefone_cliente" name="telefone_cliente" required>
+{% block content %}
 
-        <label for="placa">Placa do Carro:</label>
-        <input type="text" id="placa" name="placa" required>
+<h2>Dados do Cliente e Veículo</h2>
 
-        <label for="modelo">Modelo do Carro:</label>
-        <input type="text" id="modelo" name="modelo" required>
+<div class="box-info">
 
-        <label for="cor_carro">Cor do Carro:</label>
-        <input type="text" id="cor_carro" name="cor_carro" required>
-    </fieldset>
+<p><strong>Cliente:</strong> {{ cliente.nome }}</p>
+<p><strong>Placa:</strong> {{ veiculo.placa }}</p>
+<p><strong>Modelo:</strong> {{ veiculo.modelo }}</p>
+<p><strong>Data do Orçamento:</strong> {{ today }}</p>
+</div>
 
-<form action="/salvar_orcamento" method="post">
-    <fieldset>
-        <legend>Dados do Orçamento</legend>
-        <label for="id_veiculo">ID do Veículo:</label>
-        <input type="number" id="id_veiculo" name="id_veiculo" required>
+<hr>
 
-        <label for="dat_orcamento">Data do Orçamento:</label>
-        <input type="date" id="dat_orcamento" name="dat_orcamento" required>
+<form method="POST" action="{{ url_for('main.salvar_orcamento') }}">
 
-        <label><input type="checkbox" name="bool_original"> Seguir modelo original</label>
-        <label><input type="checkbox" name="bool_logo_prensada"> Logo prensada</label>
-        <label><input type="checkbox" name="bool_espuma"> Troca da espuma</label>
+<input type="hidden" name="id_veiculo" value="{{ veiculo.id_veiculo }}">
+<input type="hidden" name="dat_orcamento" value="{{ today }}">
 
-        <label for="qtd_bancos">Quantidade de bancos:</label>
-        <input type="number" id="qtd_bancos" name="qtd_bancos">
 
-        <label for="qtd_apoio_cabeca">Quantidade de apoios de cabeça:</label>
-        <input type="number" id="qtd_apoio_cabeca" name="qtd_apoio_cabeca">
+<!-- BANCOS -->
 
-        <label for="valor">Valor total:</label>
-        <input type="number" step="0.01" id="valor" name="valor">
+<h3>Bancos</h3>
 
-        <label for="obs">Observações gerais:</label>
-        <textarea id="obs" name="obs"></textarea>
-    </fieldset>
+<label>
+<input type="checkbox" class="banco" value="motorista">
+Motorista
+</label>
 
-    <fieldset>
-        <legend>Espumas</legend>
-        <label for="espuma">Selecione as espumas:</label>
-        <select id="espuma" name="espuma[]" multiple>
-            <option value="1">Espuma Padrão</option>
-            <option value="2">Espuma Densidade Alta</option>
-            <option value="3">Espuma Viscoelástica</option>
-        </select>
-        <label for="obs_espuma">Observações sobre uso da espuma:</label>
-        <textarea id="obs_espuma" name="obs_espuma"></textarea>
-    </fieldset>
+<br>
 
-    <fieldset>
-        <legend>Costuras</legend>
-        <select id="costura" name="costura[]" multiple>
-            <option value="1">Costura Simples</option>
-            <option value="2">Costura Dupla</option>
-            <option value="3">Costura Decorativa</option>
-        </select>
-        <label for="obs_costura">Observações sobre uso da costura:</label>
-        <textarea id="obs_costura" name="obs_costura"></textarea>
-    </fieldset>
+<label>
+<input type="checkbox" class="banco" value="passageiro">
+Passageiro
+</label>
 
-    <fieldset>
-        <legend>Cores</legend>
-        <select id="cor" name="cor[]" multiple>
-            <option value="1">Preto</option>
-            <option value="2">Cinza</option>
-            <option value="3">Bege</option>
-        </select>
-        <label for="obs_cor">Observações sobre uso da cor:</label>
-        <textarea id="obs_cor" name="obs_cor"></textarea>
-    </fieldset>
+<br>
 
-    <fieldset>
-        <legend>Tecidos</legend>
-        <select id="tecido" name="tecido[]" multiple>
-            <option value="1">Couro Natural</option>
-            <option value="2">Couro Sintético</option>
-            <option value="3">Tecido Premium</option>
-        </select>
-        <label for="obs_tecido">Observações sobre uso do tecido:</label>
-        <textarea id="obs_tecido" name="obs_tecido"></textarea>
-    </fieldset>
+<label>
+<input type="checkbox" class="banco" value="traseiro">
+Traseiro
+</label>
 
-    <button type="submit">Salvar Orçamento</button>
+<input type="hidden" name="qtd_bancos" id="qtd_bancos">
+
+<hr>
+
+<!-- APOIO CABEÇA -->
+
+<label>Quantidade de apoios de cabeça</label>
+
+<input type="number"
+name="qtd_apoio_cabeca"
+min="0"
+value="0">
+
+<hr>
+
+<!-- OPÇÕES -->
+
+<label>
+
+<input type="checkbox" name="bool_original">
+
+Manter padrão original
+
+</label>
+
+<br>
+
+<label>
+
+<input type="checkbox" name="bool_logo_prensada">
+
+Aplicar logo prensada
+
+</label>
+
+<br>
+
+<label>
+
+<input type="checkbox"
+id="bool_espuma"
+name="bool_espuma"
+onclick="toggleEspuma()">
+
+Haverá troca de espuma
+
+</label>
+
+<hr>
+
+<!-- TECIDOS -->
+
+<h3>Tecidos</h3>
+
+{% for tecido in tecidos %}
+
+<label>
+
+<input type="checkbox"
+onclick="toggleObs('tecido{{ tecido.id_tecido }}')"
+name="tecidos"
+value="{{ tecido.id_tecido }}">
+
+{{ tecido.material }} - {{ tecido.cor }}
+
+</label>
+
+<div id="tecido{{ tecido.id_tecido }}" style="display:none">
+
+<input type="text"
+name="obs_tecido_{{ tecido.id_tecido }}"
+placeholder="Observação">
+
+</div>
+
+<br>
+
+{% endfor %}
+
+<hr>
+
+<!-- COSTURAS -->
+
+<h3>Costuras</h3>
+
+{% for costura in costuras %}
+
+<label>
+
+<input type="checkbox"
+onclick="toggleObs('costura{{ costura.id_costura }}')"
+name="costuras"
+value="{{ costura.id_costura }}">
+
+{{ costura.tipo }}
+
+</label>
+
+<div id="costura{{ costura.id_costura }}" style="display:none">
+
+<input type="text"
+name="obs_costura_{{ costura.id_costura }}"
+placeholder="Observação">
+
+</div>
+
+<br>
+
+{% endfor %}
+
+<hr>
+
+<!-- CORES -->
+
+<h3>Cores</h3>
+
+{% for cor in cores %}
+
+<label>
+
+<input type="checkbox"
+onclick="toggleObs('cor{{ cor.id_cor }}')"
+name="cores"
+value="{{ cor.id_cor }}">
+
+{{ cor.descricao }}
+
+</label>
+
+<div id="cor{{ cor.id_cor }}" style="display:none">
+
+<input type="text"
+name="obs_cor_{{ cor.id_cor }}"
+placeholder="Observação">
+
+</div>
+
+<br>
+
+{% endfor %}
+
+<hr>
+
+<!-- ESPUMA -->
+
+<div id="area_espuma" style="display:none">
+
+<h3>Tipos de Espuma</h3>
+
+{% for espuma in espumas %}
+
+<label>
+
+<input type="checkbox"
+onclick="toggleObs('espuma{{ espuma.id_espuma }}')"
+name="espumas"
+value="{{ espuma.id_espuma }}">
+
+{{ espuma.tipo }}
+
+</label>
+
+<div id="espuma{{ espuma.id_espuma }}" style="display:none">
+
+<input type="text"
+name="obs_espuma_{{ espuma.id_espuma }}"
+placeholder="Observação">
+
+</div>
+
+<br>
+
+{% endfor %}
+
+</div>
+
+<hr>
+
+<!-- VALOR -->
+
+<label>Valor do orçamento (R$)</label>
+
+<input type="number"
+step="0.01"
+name="valor"
+required>
+
+<hr>
+
+<!-- OBSERVAÇÃO -->
+
+<label>Observações gerais</label>
+
+<br>
+
+<textarea
+name="obs"
+rows="4"
+cols="50"
+placeholder="Detalhes adicionais do serviço"></textarea>
+
+<br><br>
+
+<button type="submit">
+
+Salvar Orçamento
+
+</button>
+
 </form>
 
-</body>
-</html>
+<!-- SCRIPTS -->
+
+<script>
+
+const checkboxes = document.querySelectorAll(".banco")
+const campoQtd = document.getElementById("qtd_bancos")
+
+function atualizarQtd(){
+
+let total = 0
+
+checkboxes.forEach(cb=>{
+if(cb.checked){
+total++
+}
+})
+
+campoQtd.value = total
+
+}
+
+checkboxes.forEach(cb=>{
+cb.addEventListener("change", atualizarQtd)
+})
+
+function toggleObs(id){
+
+let campo = document.getElementById(id)
+
+if(campo.style.display === "none"){
+campo.style.display = "block"
+}
+else{
+campo.style.display = "none"
+}
+
+}
+
+function toggleEspuma(){
+
+let checkbox = document.getElementById("bool_espuma")
+let area = document.getElementById("area_espuma")
+
+if(checkbox.checked){
+area.style.display = "block"
+}
+else{
+area.style.display = "none"
+}
+
+}
+
+</script>
+
+{% endblock %}
