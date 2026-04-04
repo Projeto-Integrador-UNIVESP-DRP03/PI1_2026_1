@@ -10,151 +10,85 @@ Orçamento #{{ orcamento.id_orcamento }}
 
 {% block content %}
 
-<h2>Cliente</h2>
+<!-- GRID DE INFORMAÇÕES PRINCIPAIS -->
+<div class="info-grid">
+  <div class="info-card">
+    <h2>Cliente</h2>
+    <p><strong>Nome:</strong> {{ cliente.nome }}</p>
+  </div>
 
-<p><strong>Nome:</strong> {{ cliente.nome }}</p>
+  <div class="info-card">
+    <h2>Veículo</h2>
+    <p><strong>Modelo:</strong> {{ veiculo.modelo }}</p>
+    <p><strong>Placa:</strong> {{ veiculo.placa }}</p>
+  </div>
 
-<hr>
+  <div class="info-card">
+    <h2>Detalhes do Pedido</h2>
+    <p><strong>Data:</strong> {{ orcamento.dat_orcamento }}</p>
+    <p><strong>Bancos reformados:</strong> {{ orcamento.qtd_bancos }}</p>
+    <p><strong>Apoios de cabeça:</strong> {{ orcamento.qtd_apoio_cabeca }}</p>
+    <p><strong>Padrão original:</strong> {{ "Sim" if orcamento.bool_original else "Não" }}</p>
+    <p><strong>Logo prensada:</strong> {{ "Sim" if orcamento.bool_logo_prensada else "Não" }}</p>
+    <p><strong>Troca de espuma:</strong> {{ "Sim" if orcamento.bool_espuma else "Não" }}</p>
+  </div>
+</div>
 
-<h2>Veículo</h2>
-
-<p><strong>Modelo:</strong> {{ veiculo.modelo }}</p>
-<p><strong>Placa:</strong> {{ veiculo.placa }}</p>
-
-<hr>
-
-<h2>Detalhes do Pedido</h2>
-
-<p><strong>Data:</strong> {{ orcamento.dat_orcamento }}</p>
-
-<p><strong>Bancos reformados:</strong> {{ orcamento.qtd_bancos }}</p>
-
-<p><strong>Apoios de cabeça:</strong> {{ orcamento.qtd_apoio_cabeca }}</p>
-
-<p><strong>Padrão original:</strong>
-{{ "Sim" if orcamento.bool_original else "Não" }}
-</p>
-
-<p><strong>Logo prensada:</strong>
-{{ "Sim" if orcamento.bool_logo_prensada else "Não" }}
-</p>
-
-<p><strong>Troca de espuma:</strong>
-{{ "Sim" if orcamento.bool_espuma else "Não" }}
-</p>
-
-<hr>
-
+<!-- TABELA DE MATERIAIS -->
 <h2>Materiais Escolhidos</h2>
+<table class="materiais">
+  <thead>
+    <tr>
+      <th>Categoria</th>
+      <th>Descrição</th>
+      <th>Observações</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in tecidos %}
+    <tr>
+      <td>Tecido</td>
+      <td>{{ item.tecido.material }} - {{ item.tecido.cor }}</td>
+      <td>{{ item.obs_item or "-" }}</td>
+    </tr>
+    {% endfor %}
+    {% for item in costuras %}
+    <tr>
+      <td>Costura</td>
+      <td>{{ item.costura.tipo }}</td>
+      <td>{{ item.obs_item or "-" }}</td>
+    </tr>
+    {% endfor %}
+    {% for item in cores %}
+    <tr>
+      <td>Cor da Linha</td>
+      <td>{{ item.cor.descricao }}</td>
+      <td>{{ item.obs_item or "-" }}</td>
+    </tr>
+    {% endfor %}
+    {% if espumas %}
+      {% for item in espumas %}
+      <tr>
+        <td>Espuma</td>
+        <td>{{ item.espuma.tipo }}</td>
+        <td>{{ item.obs_item or "-" }}</td>
+      </tr>
+      {% endfor %}
+    {% endif %}
+  </tbody>
+</table>
 
-<h3>Tecidos</h3>
-
-<ul>
-
-{% for item in tecidos %}
-
-<li>
-
-{{ item.tecido.material }} - {{ item.tecido.cor }}
-
-{% if item.obs_item %}
-<br>
-<em>Obs:</em> {{ item.obs_item }}
-{% endif %}
-
-</li>
-
-{% endfor %}
-
-</ul>
-
----
-
-<h3>Costuras</h3>
-
-<ul>
-
-{% for item in costuras %}
-
-<li>
-
-{{ item.costura.tipo }}
-
-{% if item.obs_item %}
-<br>
-<em>Obs:</em> {{ item.obs_item }}
-{% endif %}
-
-</li>
-
-{% endfor %}
-
-</ul>
-
----
-
-<h3>Cores</h3>
-
-<ul>
-
-{% for item in cores %}
-
-<li>
-
-{{ item.cor.descricao }}
-
-{% if item.obs_item %}
-<br>
-<em>Obs:</em> {{ item.obs_item }}
-{% endif %}
-
-</li>
-
-{% endfor %}
-
-</ul>
-
----
-
-{% if espumas %}
-
-<h3>Espumas</h3>
-
-<ul>
-
-{% for item in espumas %}
-
-<li>
-
-{{ item.espuma.tipo }}
-
-{% if item.obs_item %}
-<br>
-<em>Obs:</em> {{ item.obs_item }}
-{% endif %}
-
-</li>
-
-{% endfor %}
-
-</ul>
-
-{% endif %}
-
-<hr>
-
+<!-- OBSERVAÇÕES -->
 <h2>Observações Gerais</h2>
-
 <p>{{ orcamento.obs }}</p>
 
-<hr>
-
+<!-- VALOR -->
 <h2>Valor do Orçamento</h2>
+<p class="valor-orcamento">R$ {{ orcamento.valor }}</p>
 
-<h3>R$ {{ orcamento.valor }}</h3>
-
+<!-- BOTÃO DE EXPORTAR -->
 <a href="{{ url_for('main.gerar_pdf_orcamento', id_orcamento=orcamento.id_orcamento) }}">
-    <button>Exportar PDF</button>
+  <button>Exportar PDF</button>
 </a>
 
 {% endblock %}

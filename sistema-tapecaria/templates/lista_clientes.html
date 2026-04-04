@@ -36,11 +36,11 @@ Clientes Cadastrados
             <td>{{ cliente.cod_cliente }}</td>
 
             <td>
-                {{ cliente.telefone.telefone if cliente.telefone else "Não cadastrado" }}
+                {{ cliente.telefones[0].telefone if cliente.telefones else "Não cadastrado" }}
             </td>
 
             <td>
-                {{ cliente.endereco.rua if cliente.endereco else "Não cadastrada" }}
+                {{ cliente.enderecos[0].rua if cliente.enderecos else "Não cadastrada" }}
             </td>
 
             <td>
@@ -67,7 +67,7 @@ Clientes Cadastrados
                                   method="post">
 
                                 <button type="submit"
-                                        class="btn-danger"
+                                        class="btn-delete"
                                         onclick="return confirm('Excluir veículo?');">
                                     Excluir
                                 </button>
@@ -103,16 +103,16 @@ Clientes Cadastrados
                 </a>
 
                 <a href="{{ url_for('main.editar_cliente', id_cliente=cliente.id_cliente) }}">
-                    <button class="btn-edit">Editar</button>
+                    <button class="btn-edit">Editar Perfil</button>
                 </a>
 
                 <form action="{{ url_for('main.deletar_cliente', id_cliente=cliente.id_cliente) }}"
                       method="post">
 
                     <button type="submit" 
-                            class="btn-danger"
+                            class="btn-delete"
                             onclick="return confirm('Tem certeza que deseja excluir este cliente?');">
-                        Excluir
+                        Excluir Perfil
                     </button>
 
                 </form>

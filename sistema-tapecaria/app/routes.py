@@ -6,6 +6,8 @@ from .models import (
     db,
     Cliente,
     Veiculo,
+    TelefoneCliente,
+    EnderecoCliente,
     Tecido,
     Espuma,
     Costura,
@@ -20,11 +22,29 @@ from .models import (
 # para gerar pdf
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
 from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm
 from reportlab.lib import colors
 import io
 import os
+
+
+
+
+# função para criar slugs a partir de textos, para nomes de arquivos
+import unicodedata
+import re
+def slugify(texto):
+    # Normaliza acentos (ex: João -> Joao)
+    texto = unicodedata.normalize("NFKD", texto)
+    texto = texto.encode("ascii", "ignore").decode("utf-8")
+    # Substitui espaços por underscore
+    texto = re.sub(r"\s+", "_", texto)
+    # Remove caracteres especiais
+    texto = re.sub(r"[^\w\-]", "", texto)
+    # Converte para minúsculas
+    return texto.lower()
 
 
 main = Blueprint("main", __name__)
@@ -121,26 +141,26 @@ def salvar_cliente():
         cod_cliente=cod_cliente,
         nome=nome
     )
-
-    cliente = Cliente(
-        cod_cliente=cod_cliente,
-        nome=nome
-    )
-    if telefone:
-        cliente.telefone = TelefoneCliente(telefone=telefone)
-
-    if any(request.form.get(field) for field in ["rua", "numero", "bairro", "cidade", "estado", "cep", "complemento"]):
-        cliente.endereco = EnderecoCliente(
-            rua=request.form.get("rua"),
-            numero=request.form.get("numero"),
-            bairro=request.form.get("bairro"),
-            cidade=request.form.get("cidade"),
-            estado=request.form.get("estado"),
-            cep=request.form.get("cep"),
-            complemento=request.form.get("complemento")
+    db.session.add(cliente)
+    
+    if request.form.get("telefone"):
+        cliente.telefones.append(
+            TelefoneCliente(telefone=request.form.get("telefone"))
         )
 
-    db.session.add(cliente)
+    
+    if any(request.form.get(field) for field in ["rua", "numero", "bairro", "cidade", "estado", "cep", "complemento"]):
+        cliente.enderecos.append(
+            EnderecoCliente(
+                rua=request.form.get("rua"),
+                numero=request.form.get("numero"),
+                bairro=request.form.get("bairro"),
+                cidade=request.form.get("cidade"),
+                estado=request.form.get("estado"),
+                cep=request.form.get("cep"),
+                complemento=request.form.get("complemento")
+            )
+        )
     db.session.commit()
 
     return redirect(url_for("main.listar_clientes"))
@@ -188,15 +208,37 @@ def atualizar_cliente(id_cliente):
 
     cliente.nome = request.form["nome"]
 
-    cliente.telefone.telefone = request.form["telefone"]
+    # Telefone
+    if cliente.telefones:  # já existe pelo menos um telefone
+        # atualiza o telefone da posição zero
+        cliente.telefones[0].telefone = request.form["telefone"]
+    else:
+        # adiciona um novo telefone como primeiro da lista
+        cliente.telefones.append(
+            TelefoneCliente(telefone=request.form.get("telefone"))
+        )
 
-    cliente.endereco.rua = request.form["rua"]
-    cliente.endereco.numero = request.form["numero"]
-    cliente.endereco.bairro = request.form["bairro"]
-    cliente.endereco.cidade = request.form["cidade"]
-    cliente.endereco.estado = request.form["estado"]
-    cliente.endereco.cep = request.form["cep"]
-    cliente.endereco.complemento = request.form["complemento"]
+
+    # Endereço
+    if cliente.enderecos:
+        cliente.enderecos[0].rua = request.form["rua"]
+        cliente.enderecos[0].numero = request.form["numero"]
+        cliente.enderecos[0].bairro = request.form["bairro"]
+        cliente.enderecos[0].cidade = request.form["cidade"]
+        cliente.enderecos[0].estado = request.form["estado"]
+        cliente.enderecos[0].cep = request.form["cep"]
+        cliente.enderecos[0].complemento = request.form["complemento"]
+    else:
+        cliente.enderecos.append(
+            EnderecoCliente(
+                rua=request.form["rua"],
+                numero=request.form["numero"],
+                bairro=request.form["bairro"],
+                cidade=request.form["cidade"],
+                estado=request.form["estado"],
+                cep=request.form["cep"],
+                complemento=request.form["complemento"])
+        )
 
     db.session.commit()
 
@@ -220,10 +262,11 @@ def deletar_cliente(id_cliente):
     for veiculo in veiculos:
         veiculo.placa = f"Descadastrado_{veiculo.id_veiculo}"
     # Remove telefone e endereço, se existirem
-    if cliente.telefone:
-        db.session.delete(cliente.telefone)
-    if cliente.endereco:
-        db.session.delete(cliente.endereco)
+    for tel in cliente.telefones:
+        db.session.delete(tel)
+
+    for end in cliente.enderecos:
+        db.session.delete(end)
 
     db.session.commit()
 
@@ -443,7 +486,7 @@ def salvar_orcamento():
 
     db.session.commit()
 
-    return redirect(url_for("main.home"))
+    return redirect(url_for("main.lista_orcamentos"))
 
 
 @main.route("/orcamentos")
@@ -510,14 +553,33 @@ def gerar_pdf_orcamento(id_orcamento):
     elementos = []
 
     # ======================
+    # ESTILOS PADRÃO
+    # ======================
+    estilo_tabela = TableStyle([
+        ("GRID", (0,0), (-1,-1), 0.5, colors.grey),
+        ("BACKGROUND", (0,0), (-1,0), colors.lightgrey),
+        ("ALIGN", (0,0), (-1,-1), "LEFT"),
+        ("VALIGN", (0,0), (-1,-1), "MIDDLE"),
+        ("FONTSIZE", (0,0), (-1,-1), 10),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 6),
+        ("TOPPADDING", (0,0), (-1,-1), 6),
+    ])
+
+    valor_style = ParagraphStyle(
+        "Valor",
+        parent=styles["Heading2"],
+        textColor=colors.red,
+        alignment=1,  # centralizado
+        fontSize=14
+    )
+
+    # ======================
     # CABEÇALHO
     # ======================
-
     logo_path = os.path.join(
         current_app.root_path,
         "static/imagens/Identidade_visual/logo_zito.png"
     )
-
     logo = Image(logo_path, width=4*cm, height=4*cm)
 
     dados_empresa = Paragraph("""
@@ -530,10 +592,12 @@ def gerar_pdf_orcamento(id_orcamento):
     Email: zitotapecaria@gmail.com
     """, styles["Normal"])
 
-    cabecalho = Table(
-        [[dados_empresa, logo]],
-        colWidths=[14*cm,4*cm]
-    )
+    cabecalho = Table([[dados_empresa, logo]], colWidths=[14*cm,4*cm])
+    cabecalho.setStyle(TableStyle([
+        ("VALIGN", (0,0), (-1,-1), "TOP"),
+        ("ALIGN", (0,0), (0,0), "LEFT"),
+        ("ALIGN", (1,0), (1,0), "RIGHT"),
+    ]))
 
     elementos.append(cabecalho)
     elementos.append(Spacer(1,20))
@@ -541,54 +605,27 @@ def gerar_pdf_orcamento(id_orcamento):
     # ======================
     # CLIENTE
     # ======================
-
-    telefone = ""
-    if cliente.telefones:
-        telefone = cliente.telefones[0].telefone
-
+    telefone = cliente.telefones[0].telefone if cliente.telefones else ""
     elementos.append(Paragraph(f"<b>Cliente:</b> {cliente.nome}", styles["Normal"]))
     elementos.append(Paragraph(f"<b>Telefone:</b> {telefone}", styles["Normal"]))
-
     elementos.append(Spacer(1,20))
 
     # ======================
-    # TEXTO FORMAL
+    # VEÍCULO
     # ======================
-
-    texto = """
-    Levamos ao conhecimento de Vossa Senhoria, as nossas condições de orçamento,
-    para realização de serviços de tapeçaria.
-    """
-
-    elementos.append(Paragraph(texto, styles["Normal"]))
-
-    elementos.append(Spacer(1,20))
-
-    # ======================
-    # DADOS DO VEÍCULO
-    # ======================
-
     dados_veiculo = [
         ["Modelo", veiculo.modelo],
         ["Placa", veiculo.placa],
         ["Data do orçamento", str(orcamento.dat_orcamento)]
     ]
-
     tabela_veiculo = Table(dados_veiculo)
-
-    tabela_veiculo.setStyle(TableStyle([
-        ("GRID",(0,0),(-1,-1),1,colors.grey),
-        ("BACKGROUND",(0,0),(0,-1),colors.lightgrey)
-    ]))
-
+    tabela_veiculo.setStyle(estilo_tabela)
     elementos.append(tabela_veiculo)
-
     elementos.append(Spacer(1,20))
 
     # ======================
-    # DETALHES DO SERVIÇO
+    # SERVIÇOS
     # ======================
-
     servicos = [
         ["Quantidade de bancos", orcamento.qtd_bancos],
         ["Apoios de cabeça", orcamento.qtd_apoio_cabeca],
@@ -596,173 +633,83 @@ def gerar_pdf_orcamento(id_orcamento):
         ["Logo prensada", "Sim" if orcamento.bool_logo_prensada else "Não"],
         ["Troca de espuma", "Sim" if orcamento.bool_espuma else "Não"]
     ]
-
     tabela_servicos = Table(servicos)
-
-    tabela_servicos.setStyle(TableStyle([
-        ("GRID",(0,0),(-1,-1),1,colors.grey),
-        ("BACKGROUND",(0,0),(0,-1),colors.lightgrey)
-    ]))
-
+    tabela_servicos.setStyle(estilo_tabela)
     elementos.append(tabela_servicos)
-
     elementos.append(Spacer(1,20))
 
     # ======================
-    # TECIDOS
+    # MATERIAIS
     # ======================
+    def tabela_materiais(titulo, cabecalho, dados):
+        elementos.append(Paragraph(f"<b>{titulo}</b>", styles["Heading4"]))
+        tabela = Table([cabecalho] + dados)
+        tabela.setStyle(estilo_tabela)
+        elementos.append(tabela)
+        elementos.append(Spacer(1,15))
 
     if tecidos:
-
-        elementos.append(Paragraph("<b>Tecidos</b>", styles["Heading4"]))
-
-        dados = [["Material","Observação"]]
-
-        for item in tecidos:
-            dados.append([
-                item.tecido.material,
-                item.obs_item or ""
-            ])
-
-        tabela = Table(dados)
-
-        tabela.setStyle(TableStyle([
-            ("GRID",(0,0),(-1,-1),1,colors.grey),
-            ("BACKGROUND",(0,0),(-1,0),colors.lightgrey)
-        ]))
-
-        elementos.append(tabela)
-        elementos.append(Spacer(1,15))
-
-    # ======================
-    # COSTURAS
-    # ======================
+        tabela_materiais("Tecidos", ["Material","Observação"],
+            [[item.tecido.material, item.obs_item or ""] for item in tecidos])
 
     if costuras:
-
-        elementos.append(Paragraph("<b>Costuras</b>", styles["Heading4"]))
-
-        dados = [["Tipo","Observação"]]
-
-        for item in costuras:
-            dados.append([
-                item.costura.tipo,
-                item.obs_item or ""
-            ])
-
-        tabela = Table(dados)
-
-        tabela.setStyle(TableStyle([
-            ("GRID",(0,0),(-1,-1),1,colors.grey),
-            ("BACKGROUND",(0,0),(-1,0),colors.lightgrey)
-        ]))
-
-        elementos.append(tabela)
-        elementos.append(Spacer(1,15))
-
-    # ======================
-    # CORES
-    # ======================
+        tabela_materiais("Costuras", ["Tipo","Observação"],
+            [[item.costura.tipo, item.obs_item or ""] for item in costuras])
 
     if cores:
-
-        elementos.append(Paragraph("<b>Cores</b>", styles["Heading4"]))
-
-        dados = [["Cor","Observação"]]
-
-        for item in cores:
-            dados.append([
-                item.cor.descricao,
-                item.obs_item or ""
-            ])
-
-        tabela = Table(dados)
-
-        tabela.setStyle(TableStyle([
-            ("GRID",(0,0),(-1,-1),1,colors.grey),
-            ("BACKGROUND",(0,0),(-1,0),colors.lightgrey)
-        ]))
-
-        elementos.append(tabela)
-        elementos.append(Spacer(1,15))
-
-    # ======================
-    # ESPUMAS
-    # ======================
+        tabela_materiais("Cores de Linha", ["Cor","Observação"],
+            [[item.cor.descricao, item.obs_item or ""] for item in cores])
 
     if espumas:
-
-        elementos.append(Paragraph("<b>Espumas</b>", styles["Heading4"]))
-
-        dados = [["Tipo","Observação"]]
-
-        for item in espumas:
-            dados.append([
-                item.espuma.tipo,
-                item.obs_item or ""
-            ])
-
-        tabela = Table(dados)
-
-        tabela.setStyle(TableStyle([
-            ("GRID",(0,0),(-1,-1),1,colors.grey),
-            ("BACKGROUND",(0,0),(-1,0),colors.lightgrey)
-        ]))
-
-        elementos.append(tabela)
-        elementos.append(Spacer(1,15))
+        tabela_materiais("Espumas", ["Tipo","Observação"],
+            [[item.espuma.tipo, item.obs_item or ""] for item in espumas])
 
     # ======================
     # VALOR
     # ======================
-
     elementos.append(Spacer(1,20))
-
-    elementos.append(
-        Paragraph(
-            f"<b>Valor do orçamento: R$ {orcamento.valor}</b>",
-            styles["Heading3"]
-        )
-    )
-
+    elementos.append(Paragraph(f"Valor do orçamento: R$ {orcamento.valor}", valor_style))
     elementos.append(Spacer(1,20))
 
     # ======================
     # OBSERVAÇÕES
     # ======================
-
     if orcamento.obs:
-
-        elementos.append(
-            Paragraph(f"<b>Observações:</b> {orcamento.obs}", styles["Normal"])
-        )
-
+        elementos.append(Paragraph(f"<b>Observações:</b> {orcamento.obs}", styles["Normal"]))
         elementos.append(Spacer(1,20))
 
     # ======================
     # ASSINATURA
     # ======================
-
     assinatura = Table([
         ["",""],
         ["___________________________","___________________________"],
         ["Cliente","Zito Tapeçaria"]
     ], colWidths=[9*cm,9*cm])
-
+    assinatura.setStyle(TableStyle([
+        ("ALIGN", (0,1), (-1,-1), "CENTER"),
+        ("LINEABOVE", (0,1), (0,1), 0.5, colors.black),
+        ("LINEABOVE", (1,1), (1,1), 0.5, colors.black),
+    ]))
     elementos.append(Spacer(1,40))
     elementos.append(assinatura)
 
     # ======================
     # GERAR PDF
     # ======================
-
     doc.build(elementos)
-
     buffer.seek(0)
+
+    # Normaliza os textos para evitar espaços e acentos no nome do arquivo
+    modelo = slugify(veiculo.modelo)
+    cliente_nome = slugify(cliente.nome)
+
+    nome_arquivo = f"orc_{modelo}_{cliente_nome}_{orcamento.id_orcamento}.pdf"
 
     return send_file(
         buffer,
         as_attachment=True,
-        download_name=f"orcamento_{id_orcamento}.pdf",
+        download_name=nome_arquivo,
         mimetype="application/pdf"
-    )
+)
+
