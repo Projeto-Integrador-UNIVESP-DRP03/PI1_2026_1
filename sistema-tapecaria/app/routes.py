@@ -9,6 +9,7 @@ from .models import (
     Veiculo,
     TelefoneCliente,
     EnderecoCliente,
+    EmailCliente,
     Tecido,
     Espuma,
     Costura,
@@ -103,7 +104,7 @@ def listar_clientes():
     # apenas clientes com nome preenchido, para evitar mostrar registros "deletados" (soft delete)
     query = (
         Cliente.query
-        .filter(~Cliente.nome.ilike("%Descadastrado%"))
+        .filter(Cliente.cliente_ativo == 1)
         .order_by(Cliente.nome.asc())
     )
     pagination = query.paginate(page=page, per_page=per_page, error_out=False)
@@ -259,26 +260,26 @@ def atualizar_cliente(id_cliente):
 # =========================
 # DELETAR CLIENTE
 # =========================
-# soft delete - para preservar o histórico de pedidos e veículos associados ao cliente, vamos apenas limpar os dados sensíveis e remover as associações com telefone e endereço, em vez de deletar o registro completamente.
-## Para proteger a privacidade do cliente, em vez de deletar o registro, vamos apenas limpar os dados sensíveis e remover as associações com telefone e endereço.
+# soft delete - para preservar o histórico de pedidos e veículos associados ao cliente, vamos apenas ocultar os clientes da lista.
 @main.route("/deletar_cliente/<int:id_cliente>", methods=["POST"])
 def deletar_cliente(id_cliente):
     cliente = Cliente.query.get_or_404(id_cliente)
 
-    # Remove dados sensíveis
-    # Marca como "Descadastrado" em vez de apagar
-    cliente.nome = f"Descadastrado_{cliente.id_cliente}"
-    cliente.cod_cliente = f"Descadastrado_{cliente.id_cliente}"
+    # Ocultando dados sensíveis
+    cliente.cliente_ativo = 0
     # Atualiza veículos vinculados
     veiculos = Veiculo.query.filter_by(id_cliente=id_cliente).all()
     for veiculo in veiculos:
-        veiculo.placa = f"Descadastrado_{veiculo.id_veiculo}"
+        veiculo.veiculo_ativo = 0  # marca veículo como inativo
     # Remove telefone e endereço, se existirem
     for tel in cliente.telefones:
         db.session.delete(tel)
 
     for end in cliente.enderecos:
         db.session.delete(end)
+
+    for email in cliente.emails:
+        db.session.delete(email)
 
     db.session.commit()
 
@@ -297,7 +298,7 @@ def deletar_veiculo(id_veiculo):
 
     id_cliente = veiculo.id_cliente
 
-    veiculo.placa = f"Descadastrado_{veiculo.id_veiculo}"
+    veiculo.veiculo_ativo = 0
     db.session.commit()
 
     return redirect(url_for(
@@ -867,8 +868,8 @@ def atualizar_status_pedido(id_pedido):
 
 @main.route("/novo_pedido")
 def novo_pedido():
-    # apenas clientes com nome preenchido, para evitar mostrar registros "deletados" (soft delete)
-    clientes = Cliente.query.filter(~Cliente.nome.ilike("%Descadastrado%")).all()
+    # apenas clientes ativos, para evitar mostrar registros "deletados" (soft delete)
+    clientes = Cliente.query.filter(Cliente.cliente_ativo == 1).all()
     return render_template(
         "selecionar_cliente_pedido.html",
         clientes=clientes
@@ -1280,7 +1281,7 @@ def dashboard():
 @main.route("/api/dashboard/stats")
 def dashboard_stats():
     # KPI 1: Total de Clientes (não descadastrados)
-    total_clientes = Cliente.query.filter(~Cliente.nome.ilike("%Descadastrado%")).count()
+    total_clientes = Cliente.query.filter(Cliente.cliente_ativo == 1).count()
     
     # KPI 2: Total de Orçamentos
     total_orcamentos = Orcamento.query.count()

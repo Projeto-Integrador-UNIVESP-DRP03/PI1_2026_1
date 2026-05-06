@@ -150,7 +150,7 @@ Dados do Cliente - {{ cliente.nome }}
             <div class="header-badge">
                 {% set veiculos_ativos = [] %}
                 {% for v in cliente.veiculos %}
-                    {% if 'descadastrado' not in v.placa.lower() %}
+                    {% if v.veiculo_ativo == 1 %}
                         {% set _ = veiculos_ativos.append(v) %}
                     {% endif %}
                 {% endfor %}
@@ -160,7 +160,7 @@ Dados do Cliente - {{ cliente.nome }}
         
         {% set veiculos_ativos = [] %}
         {% for v in cliente.veiculos %}
-            {% if 'descadastrado' not in v.placa.lower() %}
+            {% if v.veiculo_ativo == 1 %}
                 {% set _ = veiculos_ativos.append(v) %}
             {% endif %}
         {% endfor %}

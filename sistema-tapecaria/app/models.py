@@ -11,8 +11,10 @@ class Cliente(db.Model):
     id_cliente = db.Column(db.Integer, primary_key=True, autoincrement=True)
     cod_cliente = db.Column(db.String(20), unique=True, nullable=False)
     nome = db.Column(db.String(120), nullable=False)
+    cliente_ativo = db.Column(db.Integer, default=1)
     
     telefones = db.relationship("TelefoneCliente", backref="cliente", lazy=True, cascade="all, delete-orphan")
+    emails = db.relationship("EmailCliente", backref="cliente", lazy=True, cascade="all, delete-orphan")
     enderecos = db.relationship("EnderecoCliente", backref="cliente", lazy=True, cascade="all, delete-orphan")
     veiculos = db.relationship("Veiculo", backref="cliente", lazy=True, cascade="all, delete-orphan")
 
@@ -26,6 +28,17 @@ class TelefoneCliente(db.Model):
     id_telefone = db.Column(db.Integer, primary_key=True, autoincrement=True)
     id_cliente = db.Column(db.Integer, db.ForeignKey("clientes.id_cliente"), nullable=False)
     telefone = db.Column(db.String(20), nullable=False)
+    
+    
+# =========================
+# E-MAIL
+# =========================
+class EmailCliente(db.Model):
+    __tablename__ = "emails_cliente"
+
+    id_email = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id_cliente = db.Column(db.Integer, db.ForeignKey("clientes.id_cliente"), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
 
 
 # =========================
@@ -54,6 +67,7 @@ class Veiculo(db.Model):
 
     id_veiculo = db.Column(db.Integer, primary_key=True, autoincrement=True)
     id_cliente = db.Column(db.Integer, db.ForeignKey("clientes.id_cliente"), nullable=False)
+    veiculo_ativo = db.Column(db.Integer, default=1)
 
     placa = db.Column(db.String(7), unique=True, nullable=False)
     marca = db.Column(db.String(50), nullable=False)
