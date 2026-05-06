@@ -98,7 +98,7 @@ Clientes Cadastrados
 
                 <ul class="lista-veiculos">
 
-                    {% for veiculo in cliente.veiculos if 'descadastrado' not in veiculo.placa.lower() %}
+                    {% for veiculo in cliente.veiculos if veiculo.veiculo_ativo == 1 %}
 
                     <li class="veiculo-item">
 

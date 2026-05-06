@@ -50,7 +50,7 @@ Selecionar Veículo
                 </tr>
             </thead>
             <tbody id="tabelaVeiculosBody">
-                {% for veiculo in cliente.veiculos if 'descadastrado' not in veiculo.placa.lower() %}
+                {% for veiculo in cliente.veiculos if veiculo.veiculo_ativo == 1 %}
                 <tr>
                     <td><strong>{{ veiculo.placa.upper() }}</strong></td>
                     <td>{{ veiculo.marca }}</td>
