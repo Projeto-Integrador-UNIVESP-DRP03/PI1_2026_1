@@ -1,76 +1,261 @@
 {% extends "base.html" %}
 
 {% block title %}
-{{ "Editar Veículo" if veiculo else "Cadastrar Veículo" }}
+{{ 'Editar Veículo' if veiculo else 'Novo Veículo' }}
 {% endblock %}
 
 {% block page_title %}
-{{ "Editar Veículo" if veiculo else "Cadastrar Veículo" }}
+{{ 'Editar Veículo' if veiculo else 'Cadastrar Veículo' }}
 {% endblock %}
 
 {% block content %}
 
-<div class="card">
+<div class="veiculo-form-container">
+    
+    <!-- Cabeçalho -->
+    <div class="screen-header">
+        <div>
+            <p class="screen-subtitle">Preencha os dados do veículo abaixo</p>
+        </div>
+        <div class="header-actions">
+            <a href="{{ url_for('main.listar_clientes') }}" class="btn-outline">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+            <button type="submit" form="formVeiculo" class="btn-primary">
+                <i class="fas fa-save"></i> {{ 'Atualizar' if veiculo else 'Cadastrar' }} Veículo
+            </button>
+        </div>
+    </div>
 
-    <form method="POST" action="{{ url_for('main.salvar_veiculo') }}">
+    <div class="form-card-principal">
+        <form id="formVeiculo" method="POST" action="{{ url_for('main.salvar_veiculo') }}">
+            
+            <input type="hidden" name="id_veiculo" value="{{ veiculo.id_veiculo if veiculo else '' }}">
+            <input type="hidden" name="id_cliente" value="{{ id_cliente }}">
 
-        <input type="hidden" name="id_cliente" value="{{ id_cliente }}">
+            <div class="form-grid">
+                <div class="input-group full-width">
+                    <label for="placa">Placa <span class="required">*</span></label>
+                    <div class="input-icon">
+                        <i class="fas fa-id-card"></i>
+                        <input type="text" id="placa" name="placa" class="form-input" 
+                               value="{{ veiculo.placa.upper() if veiculo else '' }}" 
+                               required placeholder="ABC-1234 ou ABC1234">
+                    </div>
+                </div>
 
-        <input type="hidden"
-               name="id_veiculo"
-               value="{{ veiculo.id_veiculo if veiculo else '' }}">
+                <div class="input-group">
+                    <label for="marca">Marca</label>
+                    <div class="input-icon">
+                        <i class="fas fa-trademark"></i>
+                        <input type="text" id="marca" name="marca" class="form-input" 
+                               value="{{ veiculo.marca if veiculo else '' }}" placeholder="Ex: Fiat, Volkswagen, Chevrolet">
+                    </div>
+                </div>
 
-        <label for="placa">Placa</label>
-        <input 
-            type="text"
-            id="placa"
-            name="placa"
-            value="{{ veiculo.placa if veiculo else '' }}"
-            required
-        >
+                <div class="input-group">
+                    <label for="modelo">Modelo</label>
+                    <div class="input-icon">
+                        <i class="fas fa-car"></i>
+                        <input type="text" id="modelo" name="modelo" class="form-input" 
+                               value="{{ veiculo.modelo if veiculo else '' }}" placeholder="Ex: Gol, Civic, Corolla">
+                    </div>
+                </div>
 
-        <label for="marca">Marca</label>
-        <input 
-            type="text"
-            id="marca"
-            name="marca"
-            value="{{ veiculo.marca if veiculo else '' }}"
-            required
-        >
+                <div class="input-group">
+                    <label for="ano">Ano</label>
+                    <div class="input-icon">
+                        <i class="fas fa-calendar"></i>
+                        <input type="text" id="ano" name="ano" class="form-input" 
+                               value="{{ veiculo.ano if veiculo else '' }}" placeholder="Ex: 2020">
+                    </div>
+                </div>
 
-        <label for="modelo">Modelo</label>
-        <input 
-            type="text"
-            id="modelo"
-            name="modelo"
-            value="{{ veiculo.modelo if veiculo else '' }}"
-            required
-        >
+                <div class="input-group">
+                    <label for="cor">Cor</label>
+                    <div class="input-icon">
+                        <i class="fas fa-palette"></i>
+                        <input type="text" id="cor" name="cor" class="form-input" 
+                               value="{{ veiculo.cor if veiculo else '' }}" placeholder="Ex: Preto, Branco, Vermelho">
+                    </div>
+                </div>
+            </div>
 
-        <label for="ano">Ano</label>
-        <input 
-            type="number"
-            id="ano"
-            name="ano"
-            value="{{ veiculo.ano if veiculo else '' }}"
-        >
-
-        <label for="cor">Cor</label>
-        <input 
-            type="text"
-            id="cor"
-            name="cor"
-            value="{{ veiculo.cor if veiculo else '' }}"
-        >
-
-        <br><br>
-
-        <button type="submit">
-            {{ "Atualizar veículo" if veiculo else "Salvar veículo" }}
-        </button>
-
-    </form>
-
+        </form>
+    </div>
 </div>
+
+<script>
+// Máscara para placa
+const placaInput = document.getElementById('placa');
+if (placaInput) {
+    placaInput.addEventListener('input', function(e) {
+        let value = e.target.value.toUpperCase();
+        value = value.replace(/[^A-Z0-9]/g, '');
+        if (value.length > 3 && value.length <= 7) {
+            value = value.slice(0, 3) + '-' + value.slice(3);
+        }
+        e.target.value = value;
+    });
+}
+</script>
+
+<style>
+/* ============================================
+   ESTILOS DO FORMULÁRIO DE VEÍCULO
+   ============================================ */
+.veiculo-form-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.screen-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.screen-subtitle {
+    color: #64748b;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-primary, .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #4f46e5, #4338ca);
+    color: white;
+    border: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+}
+
+.btn-outline {
+    background: white;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+}
+
+.btn-outline:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.form-card-principal {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    padding: 2rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.input-group.full-width {
+    grid-column: span 2;
+}
+
+.input-group label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.required {
+    color: #ef4444;
+}
+
+.input-icon {
+    position: relative;
+}
+
+.input-icon i {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 1rem;
+    pointer-events: none;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.625rem 0.75rem 0.625rem 2.25rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    background: #f8fafc;
+    color: #0f172a;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    background: white;
+}
+
+@media (max-width: 768px) {
+    .screen-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .header-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .input-group.full-width {
+        grid-column: span 1;
+    }
+    
+    .form-card-principal {
+        padding: 1.5rem;
+    }
+}
+</style>
 
 {% endblock %}

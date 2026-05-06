@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}
+Selecionar Cliente - Novo Orçamento
+{% endblock %}
+
+{% block page_title %}
+Selecionar Cliente
+{% endblock %}
+
+{% block content %}
+
+<div class="table-container">
+
+    <div class="screen-header" style="margin-bottom: 2rem;">
+        <div>
+            <h2 class="screen-title title-font" style="margin-bottom: 0.5rem;">Novo Orçamento</h2>
+            <p class="screen-subtitle">Selecione o cliente para criar um novo orçamento</p>
+        </div>
+    </div>
+
+    <!-- PESQUISA -->
+    <div class="panel filter-panel" style="margin-bottom: 1.5rem; padding: 1.5rem;">
+        <div class="input-icon">
+            <i class="fas fa-search"></i>
+            <input
+                type="text"
+                id="filterCliente"
+                placeholder="Pesquisar por nome, CPF/CNPJ ou telefone..."
+                autofocus
+            >
+        </div>
+        <p id="searchCount" class="search-count-text" style="display: none;"></p>
+    </div>
+
+    <!-- TABELA DE CLIENTES -->
+    <div class="table-wrapper">
+        <table class="table-clientes">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>CPF/CNPJ</th>
+                    <th>Telefone</th>
+                    <th>Veículos</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody id="tabelaClientesBody">
+                {% for cliente in clientes %}
+                <tr>
+                    <td>
+                        <div class="cliente-header">
+                            <div class="cliente-nome">{{ cliente.nome }}</div>
+                        </div>
+                    </td>
+                    <td>{{ cliente.cod_cliente }}</td>
+                    <td>
+                        {{ cliente.telefones[0].telefone if cliente.telefones else "Não cadastrado" }}
+                    </td>
+                    <td>
+                        {% if cliente.veiculos %}
+                            {{ cliente.veiculos|length }} veículo{{ 's' if cliente.veiculos|length > 1 else '' }}
+                        {% else %}
+                            Nenhum veículo
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('main.selecionar_veiculo_pedido', id_cliente=cliente.id_cliente) }}"
+                           class="btn-primary"
+                           style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                            Selecionar
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 2rem; color: #94a3b8;">
+                        <i class="fas fa-users" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+                        Nenhum cliente cadastrado
+                        <br>
+                        <a href="{{ url_for('main.cadastrar_cliente') }}" class="btn-primary" style="margin-top: 1rem; display: inline-block;">
+                            Cadastrar Primeiro Cliente
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<style>
+    .filter-panel {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    }
+
+    .filter-panel .input-icon {
+        position: relative;
+    }
+
+    .filter-panel .input-icon i {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 0.9rem;
+    }
+
+    .filter-panel .input-icon input {
+        width: 100%;
+        padding: 0.7rem 0.75rem 0.7rem 2.2rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 0.5rem;
+        font-size: 0.95rem;
+        background: #ffffff;
+        transition: all 0.2s ease;
+    }
+
+    .filter-panel .input-icon input::placeholder {
+        color: #cbd5e1;
+    }
+
+    .filter-panel .input-icon input:focus {
+        border-color: #0ea5e9;
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        outline: none;
+    }
+
+    .search-count-text {
+        margin: 0.6rem 0 0;
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('filterCliente');
+    const tbody = document.getElementById('tabelaClientesBody');
+    const countEl = document.getElementById('searchCount');
+    if (!input || !tbody) return;
+
+    const removeAccents = str => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+    input.addEventListener('input', function() {
+        const term = removeAccents(this.value.toLowerCase().trim());
+        const rows = tbody.querySelectorAll('tr');
+        let visible = 0;
+
+        rows.forEach(row => {
+            if (row.querySelector('td[colspan]')) return;
+
+            const nome = removeAccents((row.cells[0]?.textContent || '').toLowerCase());
+            const cpf  = removeAccents((row.cells[1]?.textContent || '').toLowerCase());
+            const tel  = removeAccents((row.cells[2]?.textContent || '').toLowerCase());
+
+            const match = !term || nome.includes(term) || cpf.includes(term) || tel.includes(term);
+            row.style.display = match ? '' : 'none';
+            if (match) visible++;
+        });
+
+        if (term) {
+            countEl.style.display = 'block';
+            countEl.textContent = visible + ' cliente' + (visible !== 1 ? 's' : '') + ' encontrado' + (visible !== 1 ? 's' : '');
+        } else {
+            countEl.style.display = 'none';
+        }
+    });
+});
+</script>
+
+{% endblock %}

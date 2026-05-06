@@ -6,17 +6,6 @@ Consultar Cliente
 
 
 {% block page_title %}
-
-<div class="home-header">
-
-    <img src="{{ url_for('static', filename='imagens/Identidade_visual/logo_zito.png') }}"
-         alt="Zito Tapeçaria"
-         class="logo-home">
-
-    <h1>Consultar Cliente</h1>
-
-</div>
-
 {% endblock %}
 
 
@@ -26,10 +15,16 @@ Consultar Cliente
 
     <div class="card search-container">
 
+        <div class="home-header">
+            <img src="{{ url_for('static', filename='imagens/Identidade_visual/logo_zito.png') }}"
+                 alt="Zito Tapeçaria"
+                 class="logo-home">
+        </div>
+
         <form action="{{ url_for('main.buscar') }}" method="post" class="search-form">
 
-            <label for="cod_cliente">
-                CPF ou CNPJ
+            <label for="cod_cliente" class="search-label">
+                Consultar Cliente
             </label>
 
             <input 
@@ -38,6 +33,7 @@ Consultar Cliente
                 name="cod_cliente"
                 placeholder="Digite o CPF ou CNPJ"
                 required
+                class="form-input"
             >
 
             <button type="submit" class="btn-primary">

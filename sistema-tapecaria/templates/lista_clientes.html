@@ -10,7 +10,38 @@ Clientes Cadastrados
 
 {% block content %}
 
-<div class="card table-container">
+<div class="table-container">
+    
+    <div class="screen-header" style="margin-bottom: 2rem;">
+        <div>
+            <h2 class="screen-title title-font" style="margin-bottom: 0.5rem;">Clientes Cadastrados</h2>
+            <p class="screen-subtitle">Gerencie as informações dos seus clientes e seus veículos.</p>
+        </div>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="panel filter-panel" style="margin-bottom: 1.5rem; padding: 1.5rem;">
+        <div class="filter-row">
+            <div class="filter-search-col">
+                <div class="input-icon">
+                    <i class="fas fa-search"></i>
+                    <input 
+                        type="text" 
+                        id="filterCliente" 
+                        placeholder="Pesquisar por nome, CPF/CNPJ, telefone, carro ou placa..."
+                        class="form-input"
+                    >
+                </div>
+            </div>
+            <div class="filter-sort-col"><div class="input-icon">
+                <i class="fas fa-sort"></i>
+                <select id="sortSelect" class="w-full">
+                    <option value="nome_asc">Nome (A-Z)</option>
+                    <option value="nome_desc">Nome (Z-A)</option>
+                </select>
+            </div></div>
+        </div>
+    </div>
 
     <table class="table-clientes">
 
@@ -21,17 +52,35 @@ Clientes Cadastrados
                 <th>Telefone</th>
                 <th>Rua</th>
                 <th>Veículos</th>
-                <th>Ações</th>
             </tr>
         </thead>
 
-        <tbody>
+        <tbody id="tabelaClientesBody">
 
         {% for cliente in clientes %}
 
         <tr>
 
-            <td>{{ cliente.nome }}</td>
+            <td>
+                <div class="cliente-header">
+                    <div class="cliente-nome">{{ cliente.nome }}</div>
+                    <div class="cliente-icons">
+                        <a href="{{ url_for('main.perfil_cliente', id_cliente=cliente.id_cliente) }}" class="icon-btn" data-tooltip="Ver perfil">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="{{ url_for('main.editar_cliente', id_cliente=cliente.id_cliente) }}" class="icon-btn" data-tooltip="Editar perfil">
+                            <i class="fas fa-user-edit"></i>
+                        </a>
+                        <form id="form-delete-cliente-{{ cliente.id_cliente }}" action="{{ url_for('main.deletar_cliente', id_cliente=cliente.id_cliente) }}" method="post" style="display: none;"></form>
+                        <button type="button" class="icon-btn" data-tooltip="Excluir perfil" onclick="openDeleteModal('cliente', '{{ cliente.nome }}', 'form-delete-cliente-{{ cliente.id_cliente }}');">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                        <a href="{{ url_for('main.novo_veiculo', id_cliente=cliente.id_cliente) }}" class="icon-btn" data-tooltip="Adicionar veículo">
+                            <i class="fas fa-car-side"></i>
+                        </a>
+                    </div>
+                </div>
+            </td>
 
             <td>{{ cliente.cod_cliente }}</td>
 
@@ -58,22 +107,13 @@ Clientes Cadastrados
                         </span>
 
                         <div class="veiculo-acoes">
-
-                            <a href="{{ url_for('main.editar_veiculo', id_veiculo=veiculo.id_veiculo) }}">
-                                <button class="btn-edit">Editar</button>
+                            <a href="{{ url_for('main.editar_veiculo', id_veiculo=veiculo.id_veiculo) }}" class="icon-btn" data-tooltip="Editar veículo">
+                                <i class="fas fa-edit"></i>
                             </a>
-
-                            <form action="{{ url_for('main.deletar_veiculo', id_veiculo=veiculo.id_veiculo) }}"
-                                  method="post">
-
-                                <button type="submit"
-                                        class="btn-delete"
-                                        onclick="return confirm('Excluir veículo?');">
-                                    Excluir
-                                </button>
-
-                            </form>
-
+                            <form id="form-delete-veiculo-{{ veiculo.id_veiculo }}" action="{{ url_for('main.deletar_veiculo', id_veiculo=veiculo.id_veiculo) }}" method="post" style="display: none;"></form>
+                            <button type="button" class="icon-btn" data-tooltip="Excluir veículo" onclick="openDeleteModal('veiculo', '{{ veiculo.placa.upper() }} - {{ veiculo.modelo }}', 'form-delete-veiculo-{{ veiculo.id_veiculo }}');">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
                         </div>
 
                     </li>
@@ -88,35 +128,6 @@ Clientes Cadastrados
 
                 {% endif %}
 
-                <div class="add-veiculo">
-                    <a href="{{ url_for('main.novo_veiculo', id_cliente=cliente.id_cliente) }}">
-                        <button class="btn-primary">Adicionar veículo</button>
-                    </a>
-                </div>
-
-            </td>
-
-            <td class="cliente-acoes">
-
-                <a href="{{ url_for('main.perfil_cliente', id_cliente=cliente.id_cliente) }}">
-                    <button class="btn-primary">Ver perfil</button>
-                </a>
-
-                <a href="{{ url_for('main.editar_cliente', id_cliente=cliente.id_cliente) }}">
-                    <button class="btn-edit">Editar Perfil</button>
-                </a>
-
-                <form action="{{ url_for('main.deletar_cliente', id_cliente=cliente.id_cliente) }}"
-                      method="post">
-
-                    <button type="submit" 
-                            class="btn-delete"
-                            onclick="return confirm('Tem certeza que deseja excluir este cliente?');">
-                        Excluir Perfil
-                    </button>
-
-                </form>
-
             </td>
 
         </tr>
@@ -128,5 +139,127 @@ Clientes Cadastrados
     </table>
 
 </div>
+
+{% if pagination and pagination.pages > 1 %}
+<nav class="mt-6 flex items-center justify-between gap-3 flex-wrap" aria-label="Paginação">
+    <div class="text-sm text-slate-500">
+        {% set first_item = ((pagination.page - 1) * pagination.per_page) + 1 if pagination.total else 0 %}
+        {% set last_item = (pagination.page * pagination.per_page) if (pagination.page * pagination.per_page) < pagination.total else pagination.total %}
+        Mostrando {{ first_item }}-{{ last_item }} de {{ pagination.total }} clientes
+    </div>
+
+    <div class="flex items-center gap-1 flex-wrap">
+        {% if pagination.has_prev %}
+            <a class="px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+               href="{{ url_for('main.listar_clientes', page=pagination.prev_num) }}">Anterior</a>
+        {% else %}
+            <span class="px-3 py-2 rounded-lg border border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed">Anterior</span>
+        {% endif %}
+
+        {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+            {% if p %}
+                {% if p == pagination.page %}
+                    <span class="px-3 py-2 rounded-lg bg-slate-900 text-white">{{ p }}</span>
+                {% else %}
+                    <a class="px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                       href="{{ url_for('main.listar_clientes', page=p) }}">{{ p }}</a>
+                {% endif %}
+            {% else %}
+                <span class="px-2 text-slate-400">…</span>
+            {% endif %}
+        {% endfor %}
+
+        {% if pagination.has_next %}
+            <a class="px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+               href="{{ url_for('main.listar_clientes', page=pagination.next_num) }}">Próxima</a>
+        {% else %}
+            <span class="px-3 py-2 rounded-lg border border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed">Próxima</span>
+        {% endif %}
+    </div>
+</nav>
+{% endif %}
+
+<style>
+    .panel {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    }
+    
+    .screen-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .screen-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .screen-subtitle {
+        color: #64748b;
+        font-size: 0.875rem;
+    }
+
+    .filter-row {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+    }
+    .filter-search-col { flex: 1; }
+    .filter-sort-col { flex-shrink: 0; min-width: 150px; }
+    @media (max-width: 768px) {
+        .filter-row { flex-wrap: wrap; }
+        .filter-sort-col { width: 100%; display: flex; gap: 0.5rem; }
+        .sort-btn { flex: 1; justify-content: center; }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sortSelect = document.getElementById('sortSelect');
+        const removeAccents = str => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+        function sortTable() {
+            const rows = Array.from(tbody.querySelectorAll('tr')).filter(r => !r.querySelector('td[colspan]'));
+            const isAsc = sortSelect ? sortSelect.value === 'nome_asc' : true;
+            rows.sort((a, b) => {
+                const na = removeAccents((a.cells[0]?.querySelector('.cliente-nome')?.textContent || '').toLowerCase().trim());
+                const nb = removeAccents((b.cells[0]?.querySelector('.cliente-nome')?.textContent || '').toLowerCase().trim());
+                return isAsc ? na.localeCompare(nb, 'pt') : nb.localeCompare(na, 'pt');
+            });
+            rows.forEach(r => tbody.appendChild(r));
+        }
+
+        if (sortSelect) {
+            sortSelect.addEventListener('change', sortTable);
+        }
+
+        // Ordenar A-Z ao carregar
+        sortTable();
+
+        const filterInput = document.getElementById('filterCliente');
+        if (filterInput) {
+            filterInput.addEventListener('input', function() {
+                const filterValue = removeAccents(this.value.toLowerCase());
+                const rows = document.querySelectorAll('#tabelaClientesBody tr');
+                rows.forEach(row => {
+                    if (row.querySelector('td[colspan]')) return;
+                    const nome = removeAccents(row.cells[0]?.querySelector('.cliente-nome')?.textContent.toLowerCase() || '');
+                    const cpfCnpj = removeAccents(row.cells[1]?.textContent.toLowerCase() || '');
+                    const telefone = removeAccents(row.cells[2]?.textContent.toLowerCase() || '');
+                    const veiculos = removeAccents(row.cells[4]?.textContent.toLowerCase() || '');
+                    const match = nome.includes(filterValue) || cpfCnpj.includes(filterValue) || telefone.includes(filterValue) || veiculos.includes(filterValue);
+                    row.style.display = match ? '' : 'none';
+                });
+            });
+        }
+    });
+</script>
 
 {% endblock %}

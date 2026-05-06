@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard - Indicadores
+{% endblock %}
+
+{% block page_title %}
+Dashboard de Indicadores
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-container">
+    
+    <!-- CARDS DE KPIs -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-icon" style="background: linear-gradient(135deg, #e11d2e, #b91c1c);">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="kpi-value" id="totalClientes">0</div>
+            <div class="kpi-label">Total de Clientes</div>
+            <div class="kpi-meta">
+                <i class="fas fa-user-plus"></i>
+                <span id="novosClientesMes">0</span> novos este mês
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                <i class="fas fa-clipboard-list"></i>
+            </div>
+            <div class="kpi-value" id="totalOrcamentos">0</div>
+            <div class="kpi-label">Total de Orçamentos</div>
+            <div class="kpi-meta">
+                <i class="fas fa-chart-line"></i>
+                <span id="orcamentosMes">0</span> este mês
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="kpi-value" id="taxaConversao">0%</div>
+            <div class="kpi-label">Taxa de Conversão</div>
+            <div class="kpi-meta">
+                <i class="fas fa-file-invoice-dollar"></i>
+                Orçamentos → Pedidos
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="kpi-value" id="valorConcluidosMes">R$ 0</div>
+            <div class="kpi-label">Valor de Pedidos Concluídos (Mês)</div>
+            <div class="kpi-meta">
+                <i class="fas fa-chart-bar"></i>
+                Ticket médio: <span id="ticketConcluidosMes">R$ 0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- GRÁFICO 1: Orçamentos por Mês -->
+    <div class="chart-card">
+        <div class="chart-header">
+            <h3><i class="fas fa-chart-line"></i> Orçamentos por Mês</h3>
+            <p>Evolução mensal de orçamentos</p>
+        </div>
+        <div class="chart-container">
+            <canvas id="orcamentosChart" style="height: 250px; width: 100%;"></canvas>
+        </div>
+    </div>
+
+    <!-- GRÁFICO 3: Top 5 Clientes -->
+    <div class="chart-card">
+        <div class="chart-header">
+            <h3><i class="fas fa-chart-bar"></i> Top 5 Clientes</h3>
+            <p>Clientes com mais pedidos</p>
+        </div>
+        <div class="chart-container">
+            <canvas id="topClientesChart" style="height: 250px; width: 100%;"></canvas>
+        </div>
+    </div>
+
+    <!-- GRÁFICO 4: Conversão Mensal -->
+    <div class="chart-card">
+        <div class="chart-header">
+            <h3><i class="fas fa-chart-line"></i> Conversão Mensal</h3>
+            <p>Orçamentos convertidos em pedidos</p>
+        </div>
+        <div class="chart-container">
+            <canvas id="conversaoChart" style="height: 250px; width: 100%;"></canvas>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<script>
+let orcamentosChart = null;
+let topClientesChart = null;
+let conversaoChart = null;
+let orcamentosData = [];
+let pedidosData = [];
+let concluidosData = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    carregarDadosBackend();
+});
+
+async function carregarDadosBackend() {
+    try {
+        const response = await fetch('{{ url_for("main.dashboard_stats") }}');
+        const stats = await response.json();
+        
+        atualizarKPIs(stats);
+        criarGraficos(stats);
+    } catch (error) {
+        console.error('Erro ao carregar dados do dashboard:', error);
+        mostrarSemDados();
+    }
+}
+
+function atualizarKPIs(stats) {
+    document.getElementById('totalClientes').textContent = stats.totalClientes;
+    document.getElementById('totalOrcamentos').textContent = stats.totalOrcamentos;
+    document.getElementById('taxaConversao').textContent = `${stats.taxaConversao}%`;
+    document.getElementById('novosClientesMes').textContent = stats.novosClientesMes || 0;
+    document.getElementById('orcamentosMes').textContent = stats.orcamentosEsteMes;
+    document.getElementById('valorConcluidosMes').innerHTML = `R$ ${stats.valorConcluidosMes.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+    document.getElementById('ticketConcluidosMes').innerHTML = `R$ ${stats.ticketConcluidosMes.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+}
+
+function criarGraficos(stats) {
+    const data = stats.chartData;
+    
+    // Gráfico 1: Orçamentos por Mês
+    const ctxOrcamentos = document.getElementById('orcamentosChart').getContext('2d');
+    if (orcamentosChart) orcamentosChart.destroy();
+    orcamentosChart = new Chart(ctxOrcamentos, {
+        type: 'line',
+        data: {
+            labels: data.labels.length ? data.labels : ['Sem dados'],
+            datasets: [{
+                label: 'Orçamentos',
+                data: data.orcamentos.length ? data.orcamentos : [0],
+                borderColor: '#e11d2e',
+                backgroundColor: 'rgba(225, 29, 46, 0.1)',
+                tension: 0.3, fill: true,
+                pointBackgroundColor: '#e11d2e', pointBorderColor: '#fff',
+                pointRadius: 4, pointHoverRadius: 6
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: true }
+    });
+    
+    // Gráfico de Conversão Mensal
+    const ctxConversao = document.getElementById('conversaoChart').getContext('2d');
+    if (conversaoChart) conversaoChart.destroy();
+    conversaoChart = new Chart(ctxConversao, {
+        type: 'bar',
+        data: {
+            labels: data.labels.length ? data.labels : ['Sem dados'],
+            datasets: [
+                { label: 'Orçamentos', data: data.orcamentos.length ? data.orcamentos : [0], backgroundColor: 'rgba(225, 29, 46, 0.6)', borderRadius: 6 },
+                { label: 'Convertidos', data: data.pedidos.length ? data.pedidos : [0], backgroundColor: 'rgba(16, 185, 129, 0.8)', borderRadius: 6 }
+            ]
+        },
+        options: { responsive: true, maintainAspectRatio: true }
+    });
+
+    // Para o Top Clientes, ainda poderíamos fazer um fetch específico ou deixar como está se não for crítico agora, 
+    // mas vamos ocultar ou deixar fixo para não dar erro já que removemos o extrairTopClientes.
+    // O usuário focou nos números de orçamentos e conversão.
+}
+
+function mostrarSemDados() {
+    document.getElementById('totalClientes').textContent = '0';
+    document.getElementById('totalOrcamentos').textContent = '0';
+    document.getElementById('taxaConversao').textContent = '0%';
+    document.getElementById('novosClientesMes').textContent = '0';
+    document.getElementById('orcamentosMes').textContent = '0';
+    document.getElementById('valorConcluidosMes').innerHTML = 'R$ 0';
+    document.getElementById('ticketConcluidosMes').innerHTML = 'R$ 0';
+}
+
+function parseData(texto) {
+    if (!texto) return new Date(0);
+    const raw = texto.trim();
+    if (raw.includes('/')) {
+        const partes = raw.split('/');
+        if (partes.length >= 3) {
+            const dia = parseInt(partes[0], 10);
+            const mes = parseInt(partes[1], 10) - 1;
+            const ano = parseInt(partes[2], 10);
+            return new Date(ano, mes, dia);
+        }
+    }
+    return new Date(raw);
+}
+</script>
+
+<style>
+.dashboard-container { width: 100%; max-width: 1400px; margin: 0 auto; }
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+.kpi-card { background: linear-gradient(135deg, #ffffff, #f8fafc); border: 1px solid #e2e8f0; border-radius: 1rem; padding: 1rem; transition: all 0.3s ease; }
+.kpi-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); }
+.kpi-icon { width: 40px; height: 40px; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem; }
+.kpi-icon i { font-size: 1.25rem; color: white; }
+.kpi-value { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin-bottom: 0.25rem; }
+.kpi-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; font-weight: 600; margin-bottom: 0.5rem; }
+.kpi-meta { font-size: 0.7rem; color: #475569; display: flex; align-items: center; gap: 0.35rem; }
+.chart-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 1rem; margin-bottom: 1rem; }
+.chart-header { margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0; }
+.chart-header h3 { font-size: 0.95rem; font-weight: 700; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem; }
+.chart-header h3 i { color: #e11d2e; }
+.chart-header p { font-size: 0.7rem; color: #64748b; margin: 0.2rem 0 0 0; }
+.chart-container { width: 100%; position: relative; }
+.half-width-container { max-width: 400px; margin: 0 auto; }
+.table-wrapper { overflow-x: auto; }
+.table-clientes { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+.table-clientes thead { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+.table-clientes thead th { color: #ffffff; padding: 0.5rem 0.75rem; text-align: left; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; }
+.table-clientes tbody tr { border-bottom: 1px solid #e2e8f0; }
+.table-clientes tbody tr:nth-child(even) { background-color: #f8fafc; }
+.table-clientes td { padding: 0.5rem 0.75rem; color: #0f172a; }
+.badge-status { display: inline-flex; align-items: center; padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.65rem; font-weight: 600; }
+.badge-status[data-status="pendente"] { background: #fef3c7; color: #b45309; }
+.badge-status[data-status="em andamento"] { background: #dbeafe; color: #1e40af; }
+.badge-status[data-status="concluido"] { background: #dcfce7; color: #166534; }
+@media (max-width: 1024px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; } }
+@media (max-width: 640px) { .kpi-grid { grid-template-columns: 1fr; } .kpi-value { font-size: 1.25rem; } .half-width-container { max-width: 100%; } }
+</style>
+
+{% endblock %}

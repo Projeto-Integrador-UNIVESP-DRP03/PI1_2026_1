@@ -3,47 +3,69 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Sistema de Gestão{% endblock %}</title>
-
-    <!-- CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>{% block title %}Gerenciamento de pedidos{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo.css') }}">
 </head>
 
 <body>
 
-<div class="container">
+<div class="app-shell">
 
-    <!-- =========================
+    <!-- =========================f
          BARRA LATERAL
     ========================== -->
-    <aside class="sidebar">
+    <aside id="sidebar" class="sidebar collapsed bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 text-white flex flex-col shadow-2xl z-10">
 
-        <!-- LOGO -->
-        <div class="logo">
-            <img src="{{ url_for('static', filename='imagens/Identidade_visual/logo_aplicacao.png') }}" alt="logo_aplicacao">
+        <!-- LOGO + TOGGLE -->
+        <div class="sidebar-header p-5 border-b border-white/10 flex items-center justify-between gap-3">
+            <div>
+                <div class="brand-logo">
+                    <img src="{{ url_for('static', filename='imagens/Identidade_visual/logo_aplicacao.png') }}" alt="logo_aplicacao">
+                </div>
+                <div class="brand-tagline mt-2 text-xs uppercase tracking-[0.18em] text-slate-300">Ger. de pedidos</div>
+            </div>
+            <button id="sidebarCollapse" type="button" class="sidebar-toggle" aria-label="Abrir menu">
+                <i class="fas fa-angle-right"></i>
+            </button>
         </div>
 
         <!-- MENU -->
-        <nav class="menu">
-
-            <a href="{{ url_for('main.home') }}">
-                Home
+        <div class="flex-1 py-6 px-4 space-y-1 sidebar-menu">
+            <a href="{{ url_for('main.home') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-3 hover:bg-white/10 transition-all">
+                <i class="fas fa-home w-5"></i> <span class="nav-label">Home</span>
             </a>
 
-            <a href="{{ url_for('main.listar_clientes') }}">
-                Lista de Clientes
+            <a href="{{ url_for('main.lista_orcamentos') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-3 hover:bg-white/10 transition-all">
+                <i class="fas fa-file-invoice-dollar w-5"></i> <span class="nav-label">Orçamentos</span>
             </a>
 
-            <a href="{{ url_for('main.cadastrar_cliente') }}">
-                Novo Cliente
+            <a href="{{ url_for('main.lista_pedidos') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-3 hover:bg-white/10 transition-all">
+                <i class="fas fa-clipboard-list w-5"></i> <span class="nav-label">Pedidos</span>
             </a>
 
-            <a href="{{ url_for('main.lista_orcamentos') }}">
-                Orçamentos
+            <a href="{{ url_for('main.pedidos_concluidos') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-3 hover:bg-white/10 transition-all">
+                <i class="fas fa-check-circle w-5"></i> <span class="nav-label">Concluídos</span>
             </a>
 
+            <a href="{{ url_for('main.listar_clientes') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-3 hover:bg-white/10 transition-all">
+                <i class="fas fa-users w-5"></i> <span class="nav-label">Lista de Clientes</span>
+            </a>
 
-        </nav>
+            <a href="{{ url_for('main.cadastrar_cliente') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-3 hover:bg-white/10 transition-all">
+                <i class="fas fa-user-plus w-5"></i> <span class="nav-label">Novo Cliente</span>
+            </a>
+
+            <a href="{{ url_for('main.dashboard') }}" class="menu-item">
+                <i class="fas fa-chart-line"></i> <span class="nav-label">Dashboard</span>
+            </a>
+
+        </div>
 
     </aside>
 
@@ -51,30 +73,170 @@
     <!-- =========================
          CONTEÚDO PRINCIPAL
     ========================== -->
-    <main class="content">
+    <main class="content-area">
 
-        <header>
-            <h1>{% block page_title %}Sistema{% endblock %}</h1>
-        </header>
-
-        <!-- ALERTAS -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for categoria, mensagem in messages %}
-                    <div class="alert alert-{{ categoria }}">
-                        {{ mensagem }}
+        <div class="w-full">
+            <div class="topbar">
+                <div class="flex items-center gap-3">
+                    <div>
+                        <div id="pageTitle" class="topbar-title title-font">{% block page_title %}Sistema{% endblock %}</div>
                     </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+                </div>
+            </div>
 
-        <!-- CONTEÚDO DAS PÁGINAS -->
-        {% block content %}
-        {% endblock %}
+            <div class="screen">
+                <!-- ALERTAS -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for categoria, mensagem in messages %}
+                            <div class="alert alert-{{ categoria }}">
+                                {{ mensagem }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- CONTEÚDO DAS PÁGINAS -->
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
 
     </main>
 
 </div>
 
+<script src="{{ url_for('static', filename='js/modal.js') }}"></script>
+
+<!-- =============================================
+     MODAIS POST
+     ============================================ -->
+
+<!-- MODAL - EXCLUSÃO DE CLIENTE -->
+<div id="modal-delete-cliente" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <div class="modal-icon danger">
+                <i class="fas fa-trash-alt"></i>
+            </div>
+            <div class="modal-header-content">
+                <h2>Excluir Cliente</h2>
+                <p>Ação irreversível</p>
+            </div>
+        </div>
+        <div class="modal-body">
+            <p>Tem certeza que deseja excluir o cliente <strong class="modal-delete-name">-</strong>?</p>
+            <p style="margin-top: 1rem; color: #ef4444; font-size: 0.875rem;">
+                <i class="fas fa-exclamation-circle"></i> Todos os seus veículos e orçamentos também serão removidos.
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn modal-btn-cancel">Cancelar</button>
+            <button class="modal-btn modal-btn-confirm">
+                <i class="fas fa-trash-alt"></i> Excluir Cliente
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL - EXCLUSÃO DE VEÍCULO -->
+<div id="modal-delete-veiculo" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <div class="modal-icon danger">
+                <i class="fas fa-car-crash"></i>
+            </div>
+            <div class="modal-header-content">
+                <h2>Excluir Veículo</h2>
+                <p>Ação irreversível</p>
+            </div>
+        </div>
+        <div class="modal-body">
+            <p>Tem certeza que deseja excluir o veículo <strong class="modal-delete-name">-</strong>?</p>
+            <p style="margin-top: 1rem; color: #f59e0b; font-size: 0.875rem;">
+                <i class="fas fa-exclamation-triangle"></i> Todos os orçamentos associados também serão removidos.
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn modal-btn-cancel">Cancelar</button>
+            <button class="modal-btn modal-btn-confirm">
+                <i class="fas fa-trash-alt"></i> Excluir Veículo
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL - APROVAR ORÇAMENTO -->
+<div id="modal-approve-budget" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <div class="modal-icon success">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="modal-header-content">
+                <h2>Aprovar Orçamento</h2>
+                <p>Cliente: <strong class="modal-budget-client">-</strong></p>
+            </div>
+        </div>
+        <div class="modal-body">
+            <p>Confirmar aprovação deste orçamento?</p>
+            <p style="margin-top: 1rem; font-size: 0.875rem; color: #10b981;">
+                <i class="fas fa-info-circle"></i> O orçamento será enviado para a lista de pedidos.
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn modal-btn-cancel">Cancelar</button>
+            <button class="modal-btn modal-btn-approve">
+                <i class="fas fa-check-circle"></i> Aprovar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL - RECUSAR ORÇAMENTO -->
+<div id="modal-reject-budget" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <div class="modal-icon warning">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <div class="modal-header-content">
+                <h2>Recusar Orçamento</h2>
+                <p>Cliente: <strong class="modal-budget-client">-</strong></p>
+            </div>
+        </div>
+        <div class="modal-body">
+            <p>Confirmar recusa deste orçamento?</p>
+            <p style="margin-top: 1rem; font-size: 0.875rem; color: #f59e0b;">
+                <i class="fas fa-exclamation-triangle"></i> O orçamento será marcado como recusado.
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn modal-btn-cancel">Cancelar</button>
+            <button class="modal-btn modal-btn-reject">
+                <i class="fas fa-times-circle"></i> Recusar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- =============================================
+     FIM DOS MODAIS
+     ============================================ -->
+
+<script>
+    const sidebar = document.getElementById('sidebar');
+    const sidebarCollapse = document.getElementById('sidebarCollapse');
+    const sidebarIcon = sidebarCollapse.querySelector('i');
+
+    function toggleSidebar() {
+        const collapsed = sidebar.classList.toggle('collapsed');
+        sidebarIcon.classList.toggle('fa-angle-right', collapsed);
+        sidebarIcon.classList.toggle('fa-angle-left', !collapsed);
+        sidebarCollapse.setAttribute('aria-label', collapsed ? 'Abrir menu' : 'Fechar menu');
+    }
+
+    sidebarCollapse.addEventListener('click', toggleSidebar);
+</script>
 </body>
 </html>

@@ -10,85 +10,470 @@ Orçamento #{{ orcamento.id_orcamento }}
 
 {% block content %}
 
-<!-- GRID DE INFORMAÇÕES PRINCIPAIS -->
-<div class="info-grid">
-  <div class="info-card">
-    <h2>Cliente</h2>
-    <p><strong>Nome:</strong> {{ cliente.nome }}</p>
-  </div>
+<div class="orcamento-visualizacao-container">
+    
+    <!-- Cabeçalho com botão voltar -->
+    <div class="screen-header">
+        <div>
+            <p class="screen-subtitle">Visualize todos os detalhes do orçamento</p>
+        </div>
+        <div class="header-actions">
+            <a href="{{ url_for('main.lista_orcamentos') }}" class="btn-outline">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+            <a href="{{ url_for('main.gerar_pdf_orcamento', id_orcamento=orcamento.id_orcamento) }}" class="btn-pdf">
+                <i class="fas fa-file-pdf"></i> Exportar PDF
+            </a>
+        </div>
+    </div>
 
-  <div class="info-card">
-    <h2>Veículo</h2>
-    <p><strong>Modelo:</strong> {{ veiculo.modelo }}</p>
-    <p><strong>Placa:</strong> {{ veiculo.placa }}</p>
-  </div>
+    <!-- GRID DE INFORMAÇÕES PRINCIPAIS -->
+    <div class="info-grid">
+        <div class="info-card">
+            <div class="info-card-icon" style="background: linear-gradient(135deg, #e11d2e, #b91c1c);">
+                <i class="fas fa-user"></i>
+            </div>
+            <h3>Cliente</h3>
+            <div class="info-card-content">
+                <p><strong>Nome:</strong> {{ cliente.nome }}</p>
+                <p><strong>CPF/CNPJ:</strong> {{ cliente.cod_cliente }}</p>
+                {% if cliente.telefones %}
+                <p><strong>Telefone:</strong> {{ cliente.telefones[0].telefone }}</p>
+                {% endif %}
+            </div>
+        </div>
 
-  <div class="info-card">
-    <h2>Detalhes do Pedido</h2>
-    <p><strong>Data:</strong> {{ orcamento.dat_orcamento }}</p>
-    <p><strong>Bancos reformados:</strong> {{ orcamento.qtd_bancos }}</p>
-    <p><strong>Apoios de cabeça:</strong> {{ orcamento.qtd_apoio_cabeca }}</p>
-    <p><strong>Padrão original:</strong> {{ "Sim" if orcamento.bool_original else "Não" }}</p>
-    <p><strong>Logo prensada:</strong> {{ "Sim" if orcamento.bool_logo_prensada else "Não" }}</p>
-    <p><strong>Troca de espuma:</strong> {{ "Sim" if orcamento.bool_espuma else "Não" }}</p>
-  </div>
+        <div class="info-card">
+            <div class="info-card-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                <i class="fas fa-car"></i>
+            </div>
+            <h3>Veículo</h3>
+            <div class="info-card-content">
+                <p><strong>Modelo:</strong> {{ veiculo.modelo }}</p>
+                <p><strong>Placa:</strong> {{ veiculo.placa.upper() }}</p>
+                <p><strong>Marca:</strong> {{ veiculo.marca }}</p>
+                <p><strong>Ano:</strong> {{ veiculo.ano }}</p>
+                <p><strong>Cor:</strong> {{ veiculo.cor }}</p>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-card-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                <i class="fas fa-clipboard-list"></i>
+            </div>
+            <h3>Detalhes do Pedido</h3>
+            <div class="info-card-content">
+                <p><strong>Data:</strong> {{ orcamento.dat_orcamento.strftime('%d/%m/%Y') if orcamento.dat_orcamento else '-' }}</p>
+                <p><strong>Bancos reformados:</strong> {{ orcamento.qtd_bancos or 0 }}
+                    {% if orcamento.banco_motorista or orcamento.banco_passageiro or orcamento.banco_traseiro %}
+                        ({% set separator = "" %}
+                        {% if orcamento.banco_motorista %}Motorista{% set separator = ", " %}{% endif %}
+                        {% if orcamento.banco_passageiro %}{{ separator }}Passageiro{% set separator = ", " %}{% endif %}
+                        {% if orcamento.banco_traseiro %}{{ separator }}Traseiro{% endif %})
+                    {% endif %}
+                </p>
+                <p><strong>Apoios de cabeça:</strong> {{ orcamento.qtd_apoio_cabeca or 0 }}</p>
+                <p><strong>Padrão original:</strong> {{ "Sim" if orcamento.bool_original else "Não" }}</p>
+                <p><strong>Logo prensada:</strong> {{ "Sim" if orcamento.bool_logo_prensada else "Não" }}</p>
+                <p><strong>Troca de espuma:</strong> 
+                    {{ "Sim" if orcamento.bool_espuma else "Não" }}
+                    {% if orcamento.bool_espuma and espumas %}
+                        ({% for item in espumas %}{{ item.espuma.tipo }}{% if not loop.last %}, {% endif %}{% endfor %})
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABELA DE MATERIAIS -->
+    <div class="materiais-card">
+        <div class="card-header-custom">
+            <div class="header-icon">
+                <i class="fas fa-boxes"></i>
+            </div>
+            <h3>Materiais Escolhidos</h3>
+        </div>
+        
+        <div class="table-wrapper">
+	            <table class="table-materiais">
+	                <thead>
+	                    <tr>
+	                        <th>Categoria</th>
+	                        <th>Descrição</th>
+	                        <th>Observação</th>
+	                    </tr>
+	                </thead>
+                <tbody>
+	                    {% for item in tecidos %}
+	                    <tr class="materiais-row">
+	                        <td><span class="categoria-badge tecido">Tecido</span></td>
+	                        <td><strong>{{ item.tecido.material if item.tecido else '-' }}</strong>{% if item.tecido and item.tecido.cor %} - {{ item.tecido.cor }}{% endif %}</td>
+	                        <td class="obs-cell"><span class="obs-text">{{ item.obs_item if item.obs_item else '-' }}</span></td>
+	                    </tr>
+	                    {% endfor %}
+                    
+	                    {% for item in costuras %}
+	                    <tr class="materiais-row">
+	                        <td><span class="categoria-badge costura">Costura</span></td>
+	                        <td><strong>{{ item.costura.tipo if item.costura else '-' }}</strong></td>
+	                        <td class="obs-cell"><span class="obs-text">{{ item.obs_item if item.obs_item else '-' }}</span></td>
+	                    </tr>
+	                    {% endfor %}
+                    
+	                    {% for item in cores %}
+	                    <tr class="materiais-row">
+	                        <td><span class="categoria-badge cor">Cor da Linha</span></td>
+	                        <td><strong>{{ item.cor.descricao if item.cor else '-' }}</strong></td>
+	                        <td class="obs-cell"><span class="obs-text">{{ item.obs_item if item.obs_item else '-' }}</span></td>
+	                    </tr>
+	                    {% endfor %}
+                    
+                    {% if espumas %}
+                        {% for item in espumas %}
+                        <tr class="materiais-row">
+                            <td><span class="categoria-badge espuma">Espuma</span></td>
+                            <td><strong>{{ item.espuma.tipo if item.espuma else '-' }}</strong></td>
+                            <td class="obs-cell"><span class="obs-text">{{ item.obs_item if item.obs_item else '-' }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- OBSERVAÇÕES GERAIS -->
+    {% if orcamento.obs %}
+    <div class="observacoes-card">
+        <div class="card-header-custom">
+            <div class="header-icon">
+                <i class="fas fa-comment-dots"></i>
+            </div>
+            <h3>Observações Gerais</h3>
+        </div>
+        <div class="observacoes-content">
+            <p>{{ orcamento.obs }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- VALOR DO ORÇAMENTO -->
+    <div class="valor-card">
+        <div class="valor-content">
+            <span class="valor-label">Valor do Orçamento</span>
+            <span class="valor-number">R$ {{ "%.2f"|format(orcamento.valor|float) }}</span>
+        </div>
+    </div>
+
 </div>
 
-<!-- TABELA DE MATERIAIS -->
-<h2>Materiais Escolhidos</h2>
-<table class="materiais">
-  <thead>
-    <tr>
-      <th>Categoria</th>
-      <th>Descrição</th>
-      <th>Observações</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for item in tecidos %}
-    <tr>
-      <td>Tecido</td>
-      <td>{{ item.tecido.material }} - {{ item.tecido.cor }}</td>
-      <td>{{ item.obs_item or "-" }}</td>
-    </tr>
-    {% endfor %}
-    {% for item in costuras %}
-    <tr>
-      <td>Costura</td>
-      <td>{{ item.costura.tipo }}</td>
-      <td>{{ item.obs_item or "-" }}</td>
-    </tr>
-    {% endfor %}
-    {% for item in cores %}
-    <tr>
-      <td>Cor da Linha</td>
-      <td>{{ item.cor.descricao }}</td>
-      <td>{{ item.obs_item or "-" }}</td>
-    </tr>
-    {% endfor %}
-    {% if espumas %}
-      {% for item in espumas %}
-      <tr>
-        <td>Espuma</td>
-        <td>{{ item.espuma.tipo }}</td>
-        <td>{{ item.obs_item or "-" }}</td>
-      </tr>
-      {% endfor %}
-    {% endif %}
-  </tbody>
-</table>
+<style>
+/* ============================================
+   ESTILOS DA PÁGINA DE VISUALIZAÇÃO
+   ============================================ */
+.orcamento-visualizacao-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
 
-<!-- OBSERVAÇÕES -->
-<h2>Observações Gerais</h2>
-<p>{{ orcamento.obs }}</p>
+.screen-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
 
-<!-- VALOR -->
-<h2>Valor do Orçamento</h2>
-<p class="valor-orcamento">R$ {{ orcamento.valor }}</p>
+.screen-subtitle {
+    color: #64748b;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
 
-<!-- BOTÃO DE EXPORTAR -->
-<a href="{{ url_for('main.gerar_pdf_orcamento', id_orcamento=orcamento.id_orcamento) }}">
-  <button>Exportar PDF</button>
-</a>
+.header-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-outline, .btn-pdf {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-pdf {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border: none;
+}
+
+.btn-pdf:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+}
+
+.btn-outline {
+    background: white;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+}
+
+.btn-outline:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+/* Info Cards */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.info-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.25rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+}
+
+.info-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.info-card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.info-card-icon i {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.info-card h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.info-card-content p {
+    font-size: 0.875rem;
+    color: #334155;
+    margin: 0.5rem 0;
+    line-height: 1.4;
+}
+
+.info-card-content strong {
+    color: #0f172a;
+    font-weight: 600;
+}
+
+/* Materiais Card */
+.materiais-card, .observacoes-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.card-header-custom {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.card-header-custom .header-icon {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #e11d2e, #b91c1c);
+    border-radius: 0.5rem;
+    color: white;
+}
+
+.card-header-custom h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+/* Tabela de Materiais */
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.table-materiais {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-materiais thead th {
+    background: #f8fafc;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.table-materiais th:last-child,
+.table-materiais td:last-child {
+    width: 220px;
+}
+
+.obs-cell {
+    color: #475569;
+}
+
+.obs-text {
+    display: inline-block;
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.materiais-row td {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: #334155;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.materiais-row:last-child td {
+    border-bottom: none;
+}
+
+.categoria-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.categoria-badge.tecido {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.categoria-badge.costura {
+    background: #fed7aa;
+    color: #9a3412;
+}
+
+.categoria-badge.cor {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.categoria-badge.espuma {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+/* Observações */
+.observacoes-content {
+    padding: 1.25rem;
+}
+
+.observacoes-content p {
+    font-size: 0.875rem;
+    color: #334155;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Valor Card */
+.valor-card {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.valor-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.valor-label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.valor-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fbbf24;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .screen-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .header-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .valor-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .valor-number {
+        font-size: 1.5rem;
+    }
+}
+</style>
 
 {% endblock %}

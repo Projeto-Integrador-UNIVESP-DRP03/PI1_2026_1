@@ -1,0 +1,584 @@
+{% extends "base.html" %}
+
+{% block title %}
+Pedidos e Orçamentos
+{% endblock %}
+
+{% block page_title %}
+{% endblock %}
+
+{% block content %}
+
+<div class="table-container">
+
+    <div class="screen-header" style="margin-bottom: 2rem;">
+        <div>
+            <h2 class="screen-title title-font" style="margin-bottom: 0.5rem;">Pedidos e Orçamentos</h2>
+            <p class="screen-subtitle">Controle prazos, status e comunicação com clientes.</p>
+        </div>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="panel filter-panel" style="margin-bottom: 1.5rem; padding: 1.5rem;">
+        <div class="filter-row">
+            <div class="filter-search-col">
+                <div class="input-icon">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="filterCliente" placeholder="Cliente, carro ou placa" class="w-full">
+                </div>
+            </div>
+            <div class="filter-sort-col"><div class="input-icon">
+                <i class="fas fa-sort"></i>
+                <select id="sortSelect" class="w-full">
+                    <optgroup label="Tempo">
+                        <option value="data_desc">Mais Novo</option>
+                        <option value="data_asc">Mais Antigo</option>
+                    </optgroup>
+                    <optgroup label="Alfabeticamente">
+                        <option value="nome_asc">Nome (A-Z)</option>
+                        <option value="nome_desc">Nome (Z-A)</option>
+                    </optgroup>
+                </select>
+            </div></div>
+            <div class="filter-status-col">
+                <div class="input-icon">
+                    <i class="fas fa-filter"></i>
+                    <select id="filterStatus" class="w-full">
+                        <option value="">Todos os status</option>
+                        <option value="Pendente">Pendente</option>
+                        <option value="Em Andamento">Em Andamento</option>
+                        <option value="Concluído">Concluído</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-dates-col flex items-center gap-3">
+                <div class="filter-date-group">
+                    <span class="filter-label">De:</span>
+                    <div class="input-icon small-date">
+                        <i class="fas fa-calendar"></i>
+                        <input type="date" id="filterDataInicio" class="w-full">
+                    </div>
+                </div>
+                <div class="filter-date-group">
+                    <span class="filter-label">Até:</span>
+                    <div class="input-icon small-date">
+                        <i class="fas fa-calendar"></i>
+                        <input type="date" id="filterDataFim" class="w-full">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ESTATÍSTICAS -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center mb-6">
+        <div class="stat-card p-4">
+            <p class="text-slate-500 text-xs uppercase font-semibold">Total de Pedidos</p>
+            <p id="totalPedidos" class="text-2xl font-bold text-slate-900 mt-2">0</p>
+        </div>
+        <div class="stat-card p-4">
+            <p class="text-slate-500 text-xs uppercase font-semibold">Em Andamento</p>
+            <p id="pedidosAndamento" class="text-2xl font-bold text-slate-900 mt-2">0</p>
+        </div>
+        <div class="stat-card p-4">
+            <p class="text-slate-500 text-xs uppercase font-semibold">Concluídos</p>
+            <p id="pedidosConcluidos" class="text-2xl font-bold text-slate-900 mt-2">0</p>
+        </div>
+        <div class="stat-card p-4">
+            <p class="text-slate-500 text-xs uppercase font-semibold">Valor Total</p>
+            <p id="valorTotal" class="text-2xl font-bold text-slate-900 mt-2">R$ 0,00</p>
+        </div>
+    </div>
+
+    <!-- TABELA -->
+    <div class="table-wrapper">
+        <table class="table-clientes">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Cliente</th>
+                    <th>Veículo</th>
+                    <th>Placa</th>
+                    <th>Data de Entrada</th>
+                    <th>Valor (R$)</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="tabelaPedidosBody">
+                {% for orcamento in orcamentos %}
+                <tr>
+                    <td>{{ orcamento.id_orcamento }}</td>
+                    <td>{{ orcamento.veiculo.cliente.nome }}</td>
+                    <td>{{ orcamento.veiculo.modelo }}</td>
+                    <td><strong>{{ orcamento.veiculo.placa.upper() }}</strong></td>
+                    <td
+                        data-date="{{ orcamento.dat_orcamento.strftime('%Y-%m-%d') if orcamento.dat_orcamento else '' }}">
+                        {{ orcamento.dat_orcamento.strftime('%d/%m/%Y') if orcamento.dat_orcamento else '-' }}</td>
+                    <td>{{ "%.2f"|format(orcamento.valor|float) }}</td>
+                    <td>
+                        {% if orcamento.pedidos %}
+                        <form method="POST"
+                            action="{{ url_for('main.atualizar_status_pedido', id_pedido=orcamento.pedidos[0].id_pedido) }}">
+                            {% set pedido_status = (orcamento.pedidos[0].status or 'Pendente') %}
+                            {% set status_key = 'pendente' %}
+                            {% if pedido_status == 'Em Andamento' %}
+                            {% set status_key = 'em-andamento' %}
+                            {% elif pedido_status == 'Concluído' %}
+                            {% set status_key = 'concluido' %}
+                            {% endif %}
+                            <select name="status" class="status-select" data-status="{{ status_key }}"
+                                onfocus="this.dataset.prev=this.value" onchange="handleStatusChange(this)">
+                                <option value="Pendente" {% if (orcamento.pedidos[0].status or 'Pendente' )=='Pendente'
+                                    %}selected{% endif %}>Pendente</option>
+                                <option value="Em Andamento" {% if orcamento.pedidos[0].status=='Em Andamento'
+                                    %}selected{% endif %}>Em Andamento</option>
+                                <option value="Concluído" {% if orcamento.pedidos[0].status=='Concluído' %}selected{%
+                                    endif %}>Concluído</option>
+                            </select>
+                        </form>
+                        {% else %}
+                        <span class="badge-status" data-status="pendente">Pendente</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="cliente-icons">
+                            <a href="{{ url_for('main.visualizar_orcamento', id_orcamento=orcamento.id_orcamento) }}"
+                                class="icon-btn" data-tooltip="Visualizar detalhes">
+                                <i class="fas fa-eye"></i>
+                            </a>
+
+                            <a href="{{ url_for('main.editar_orcamento', id_orcamento=orcamento.id_orcamento) }}"
+                                class="icon-btn" data-tooltip="Editar orçamento">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="9" style="text-align: center; padding: 2rem; color: #94a3b8;">
+                        <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+                        Nenhum pedido cadastrado
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if pagination and pagination.pages > 1 %}
+    <nav class="mt-6 flex items-center justify-between gap-3 flex-wrap" aria-label="Paginação">
+        <div class="text-sm text-slate-500">
+            {% set first_item = ((pagination.page - 1) * pagination.per_page) + 1 if pagination.total else 0 %}
+            {% set last_item = (pagination.page * pagination.per_page) if (pagination.page * pagination.per_page) <
+                pagination.total else pagination.total %} Mostrando {{ first_item }}-{{ last_item }} de {{
+                pagination.total }} pedidos </div>
+
+                <div class="flex items-center gap-1 flex-wrap">
+                    {% if pagination.has_prev %}
+                    <a class="px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                        href="{{ url_for('main.lista_pedidos', page=pagination.prev_num) }}">Anterior</a>
+                    {% else %}
+                    <span
+                        class="px-3 py-2 rounded-lg border border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed">Anterior</span>
+                    {% endif %}
+
+                    {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                    {% if p %}
+                    {% if p == pagination.page %}
+                    <span class="px-3 py-2 rounded-lg bg-slate-900 text-white">{{ p }}</span>
+                    {% else %}
+                    <a class="px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                        href="{{ url_for('main.lista_pedidos', page=p) }}">{{ p }}</a>
+                    {% endif %}
+                    {% else %}
+                    <span class="px-2 text-slate-400">…</span>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if pagination.has_next %}
+                    <a class="px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                        href="{{ url_for('main.lista_pedidos', page=pagination.next_num) }}">Próxima</a>
+                    {% else %}
+                    <span
+                        class="px-3 py-2 rounded-lg border border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed">Próxima</span>
+                    {% endif %}
+                </div>
+    </nav>
+    {% endif %}
+
+</div>
+
+<style>
+    .screen-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .screen-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0;
+    }
+
+    .screen-subtitle {
+        color: #64748b;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .filter-panel {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+    }
+
+    .input-icon {
+        position: relative;
+    }
+
+    .input-icon i {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 0.9rem;
+    }
+
+    .input-icon input,
+    .input-icon select {
+        width: 100%;
+        padding-left: 2.2rem;
+        padding-top: 0.6rem;
+        padding-bottom: 0.6rem;
+        padding-right: 0.75rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 0.5rem;
+        font-size: 0.9rem;
+        background: #ffffff;
+        transition: all 0.2s ease;
+    }
+
+    .input-icon input::placeholder {
+        color: #cbd5e1;
+    }
+
+    .input-icon input:focus,
+    .input-icon select:focus {
+        border-color: #0ea5e9;
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        outline: none;
+    }
+
+    .status-select {
+        width: 100%;
+        padding: 0.35rem 0.6rem;
+        border-radius: 999px;
+        border: 1px solid #e2e8f0;
+        background: #f8fafc;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        color: #0f172a;
+    }
+
+    .status-select[data-status="pendente"] {
+        background: #fef3c7;
+        border-color: #f59e0b;
+        color: #b45309;
+    }
+
+    .status-select[data-status="em-andamento"] {
+        background: #cffafe;
+        border-color: #06b6d4;
+        color: #0e7490;
+    }
+
+    .status-select[data-status="concluido"] {
+        background: #dcfce7;
+        border-color: #22c55e;
+        color: #166534;
+    }
+
+    .status-select:focus {
+        outline: none;
+        border-color: #0ea5e9;
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        background: #ffffff;
+    }
+
+    .badge-status {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+    }
+
+    .badge-status[data-status="pendente"] {
+        background: #fef3c7;
+        color: #b45309;
+    }
+
+    .badge-status[data-status="em andamento"] {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .badge-status[data-status="concluído"] {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+
+    .stat-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+        transition: all 0.2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
+    }
+
+    .table-wrapper {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 1.25rem;
+        overflow: visible;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    }
+
+    .panel {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    }
+
+    @media (max-width: 768px) {
+        .grid {
+            grid-template-columns: 1fr !important;
+        }
+
+        .screen-header {
+            flex-direction: column;
+        }
+
+        .input-icon input,
+        .input-icon select {
+            padding-left: 2.5rem;
+        }
+    }
+
+    .filter-row {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .filter-search-col {
+        flex: 1;
+        min-width: 180px;
+    }
+
+    .filter-sort-col { flex-shrink: 0; min-width: 160px; }
+    #sortSelect optgroup {
+        font-weight: 700;
+        color: #1e293b;
+        background-color: #f1f5f9;
+        font-style: normal;
+    }
+    #sortSelect option {
+        font-weight: 500;
+        color: #334155;
+        background-color: #ffffff;
+    }
+    .filter-status-col { flex-shrink: 0; min-width: 160px; }
+    .filter-dates-col { flex-shrink: 0; }
+
+    @media (max-width: 768px) {
+        .filter-row {
+            flex-direction: column;
+        }
+
+        .filter-sort-col,
+        .filter-status-col {
+            width: 100%;
+        }
+    }
+</style>
+
+<script>
+    const removeAccents = str => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+    document.addEventListener('DOMContentLoaded', function() {
+        setupStatusSelects();
+        updateStats();
+        setupFilters();
+        setupSort();
+        sortData();
+    });
+
+    function normalizeStatusText(value) {
+        return (value || '')
+            .toString()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase()
+            .trim();
+    }
+
+    function statusKeyFromValue(value) {
+        const n = normalizeStatusText(value);
+        if (n.startsWith('em andamento')) return 'em-andamento';
+        if (n.startsWith('conclu')) return 'concluido';
+        return 'pendente';
+    }
+
+    function setupStatusSelects() {
+        document.querySelectorAll('select.status-select').forEach(select => {
+            select.dataset.status = select.dataset.status || statusKeyFromValue(select.value);
+        });
+    }
+
+    function handleStatusChange(select) {
+        const key = statusKeyFromValue(select.value);
+
+        if (key === 'concluido') {
+            const prev = select.dataset.prev || 'Pendente';
+            const row = select.closest('tr');
+            const cliente = row?.cells?.[1]?.textContent?.trim() || '';
+            const veiculo = row?.cells?.[2]?.textContent?.trim() || '';
+            const placa = row?.cells?.[3]?.textContent?.trim() || '';
+            const clienteSafe = (typeof escapeHtml === 'function') ? escapeHtml(cliente) : cliente;
+            const veiculoSafe = (typeof escapeHtml === 'function') ? escapeHtml(veiculo) : veiculo;
+            const placaSafe = (typeof escapeHtml === 'function') ? escapeHtml(placa) : placa;
+
+            openApproveStyleConfirmModal({
+                title: 'Concluir Serviço',
+                subtitleHtml: clienteSafe ? `Cliente: <strong>${clienteSafe}</strong>` : '',
+                bodyHtml: `
+                    <p>Confirmar conclusão do serviço deste pedido?</p>
+                    <p style="margin-top: 1rem; font-size: 0.875rem; color: #10b981;">
+                        <i class="fas fa-info-circle"></i> ${veiculoSafe || placaSafe ? `Veículo: <strong>${veiculoSafe}</strong> ${placaSafe ? `(${placaSafe})` : ''}` : 'Ao concluir, o pedido vai para "Concluídos".'}
+                    </p>
+                `,
+                confirmHtml: '<i class="fas fa-check-circle"></i> Concluir',
+                onConfirm: () => {
+                    select.dataset.status = key;
+                    updateStats();
+                    if (select.form) select.form.submit();
+                },
+                onCancel: () => {
+                    select.value = prev;
+                    select.dataset.status = statusKeyFromValue(select.value);
+                    updateStats();
+                }
+            });
+            return;
+        }
+
+        select.dataset.status = key;
+        updateStats();
+        if (select.form) select.form.submit();
+    }
+
+    function sortData() {
+        const tbody = document.getElementById('tabelaPedidosBody');
+        const rows = Array.from(tbody.querySelectorAll('tr')).filter(r => !r.querySelector('td[colspan]'));
+        const sortSelect = document.getElementById('sortSelect');
+        const sortBy = sortSelect ? sortSelect.value : 'data_desc';
+
+        rows.sort((a, b) => {
+            if (sortBy === 'nome_asc' || sortBy === 'nome_desc') {
+                const na = removeAccents((a.cells[1]?.textContent || '').toLowerCase().trim());
+                const nb = removeAccents((b.cells[1]?.textContent || '').toLowerCase().trim());
+                return sortBy === 'nome_asc' ? na.localeCompare(nb, 'pt') : nb.localeCompare(na, 'pt');
+            } else {
+                const da = a.cells[4]?.dataset?.date || '';
+                const db = b.cells[4]?.dataset?.date || '';
+                return sortBy === 'data_desc' ? db.localeCompare(da) : da.localeCompare(db);
+            }
+        });
+        rows.forEach(r => tbody.appendChild(r));
+    }
+
+    function setupSort() {
+        const sortSelect = document.getElementById('sortSelect');
+        if (sortSelect) {
+            sortSelect.addEventListener('change', sortData);
+        }
+    }
+
+    function updateStats() {
+        const stats = {{ stats| tojson
+    }};
+
+    const total = Number(stats.total_pedidos || 0);
+    const andamento = Number(stats.pedidos_andamento || 0);
+    const concluidos = Number(stats.pedidos_concluidos || 0);
+    const valorTotal = Number(stats.valor_total || 0);
+
+    document.getElementById('totalPedidos').textContent = total;
+    document.getElementById('pedidosAndamento').textContent = andamento;
+    document.getElementById('pedidosConcluidos').textContent = concluidos;
+    document.getElementById('valorTotal').textContent = 'R$ ' + valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+    }
+
+    function setupFilters() {
+        const filterCliente = document.getElementById('filterCliente');
+        const filterStatus = document.getElementById('filterStatus');
+
+        if (filterCliente) {
+            filterCliente.addEventListener('input', applyFilters);
+        }
+        if (filterStatus) {
+            filterStatus.addEventListener('change', applyFilters);
+        }
+    }
+
+    function applyFilters() {
+        const removeAccents = str => str.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+        const filterCliente = removeAccents(document.getElementById('filterCliente').value.toLowerCase());
+        const filterStatus = document.getElementById('filterStatus').value.toLowerCase();
+        const rows = document.querySelectorAll('#tabelaPedidosBody tr');
+
+        rows.forEach(row => {
+            if (row.querySelector('td[colspan]')) return;
+
+            const clienteText = removeAccents(row.cells[1]?.textContent.toLowerCase() || '');
+            const veiculoText = removeAccents(row.cells[2]?.textContent.toLowerCase() || '');
+            const placaText = removeAccents(row.cells[3]?.textContent.toLowerCase() || '');
+            const statusEl = row.querySelector('select.status-select, .badge-status');
+            const currentStatusKey = statusEl
+                ? (statusEl.dataset.status || statusKeyFromValue(statusEl.value || statusEl.textContent))
+                : '';
+            const filterStatusKey = filterStatus ? statusKeyFromValue(filterStatus) : '';
+
+            const matchCliente = !filterCliente ||
+                clienteText.includes(filterCliente) ||
+                veiculoText.includes(filterCliente) ||
+                placaText.includes(filterCliente);
+
+            const matchStatus = !filterStatusKey || currentStatusKey === filterStatusKey;
+
+            row.style.display = (matchCliente && matchStatus) ? '' : 'none';
+        });
+    }
+</script>
+
+{% endblock %}

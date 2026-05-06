@@ -1,310 +1,625 @@
 {% extends "base.html" %}
 
 {% block title %}
-Novo Orçamento
+{% if orcamento %}Editar Orçamento{% else %}Novo Orçamento{% endif %}
 {% endblock %}
 
 {% block page_title %}
-Criar Orçamento
+{% if orcamento %}Editar Orçamento - {{ cliente.nome }} - {{ veiculo.modelo }}{% else %}Novo Orçamento - {{ cliente.nome }} - {{ veiculo.modelo }}{% endif %}
 {% endblock %}
 
 {% block content %}
 
-<h2>Dados do Cliente e Veículo</h2>
+<div class="orcamento-form-container">
+    
+    <!-- Cabeçalho -->
+    <div class="screen-header">
+        <div>
+            <p class="screen-subtitle">
+                {% if orcamento %}Atualize os dados do orçamento selecionado{% else %}Preencha os dados abaixo para gerar um novo orçamento{% endif %}
+            </p>
+        </div>
+        <div class="header-actions">
+            <a href="{{ url_for('main.lista_orcamentos') }}" class="btn-outline">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+            <button type="submit" form="formOrcamento" class="btn-primary">
+                <i class="fas fa-save"></i> Salvar Orçamento
+            </button>
+        </div>
+    </div>
 
-<div class="box-info">
-<p><strong>Cliente:</strong> {{ cliente.nome }}</p>
-<p><strong>Placa:</strong> {{ veiculo.placa }}</p>
-<p><strong>Modelo:</strong> {{ veiculo.modelo }}</p>
-<p><strong>Data do Orçamento:</strong> {{ today }}</p>
+    <form id="formOrcamento" method="POST" action="{{ url_for('main.salvar_orcamento') }}">
+        
+        <!-- Dados do Cliente e Veículo (apenas leitura) -->
+        <div class="form-card">
+            <div class="card-header-custom">
+                <div class="header-icon">
+                    <i class="fas fa-car"></i>
+                </div>
+                <h3>Dados do Cliente e Veículo</h3>
+            </div>
+            
+            <div class="form-grid grid-2cols">
+                <div class="input-group">
+                    <label>Cliente</label>
+                    <div class="input-icon">
+                        <i class="fas fa-user"></i>
+                        <input type="text" class="form-input" value="{{ cliente.nome }}" readonly disabled>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Veículo</label>
+                    <div class="input-icon">
+                        <i class="fas fa-car-side"></i>
+                        <input type="text" class="form-input" value="{{ veiculo.modelo }} - {{ veiculo.placa }}" readonly disabled>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Placa</label>
+                    <div class="input-icon">
+                        <i class="fas fa-id-card"></i>
+                        <input type="text" class="form-input" value="{{ veiculo.placa }}" readonly disabled>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Modelo</label>
+                    <div class="input-icon">
+                        <i class="fas fa-truck"></i>
+                        <input type="text" class="form-input" value="{{ veiculo.modelo }}" readonly disabled>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="data_orcamento">Data do Orçamento <span class="required">*</span></label>
+                    <div class="input-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                        <input type="date" id="data_orcamento" name="dat_orcamento" class="form-input" value="{{ orcamento.dat_orcamento.strftime('%Y-%m-%d') if orcamento and orcamento.dat_orcamento else today_iso }}" required>
+                    </div>
+                </div>
+                
+                <!-- Campos ocultos -->
+                <input type="hidden" name="id_veiculo" value="{{ veiculo.id_veiculo }}">
+                <input type="hidden" name="id_cliente" value="{{ cliente.id_cliente }}">
+                {% if orcamento %}
+                <input type="hidden" name="id_orcamento" value="{{ orcamento.id_orcamento }}">
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- CARD 2: BANCOS -->
+        <div class="form-card">
+            <div class="card-header-custom">
+                <div class="header-icon">
+                    <i class="fas fa-couch"></i>
+                </div>
+                <h3>Bancos</h3>
+            </div>
+
+            <div class="bancos-grid">
+                <label class="checkbox-card">
+                    <input type="checkbox" name="banco_motorista" value="1" {% if orcamento and orcamento.banco_motorista %}checked{% endif %}>
+                    <span class="checkbox-content">
+                        <i class="fas fa-user-check"></i>
+                        <strong>Motorista</strong>
+                    </span>
+                </label>
+
+                <label class="checkbox-card">
+                    <input type="checkbox" name="banco_passageiro" value="1" {% if orcamento and orcamento.banco_passageiro %}checked{% endif %}>
+                    <span class="checkbox-content">
+                        <i class="fas fa-user-friends"></i>
+                        <strong>Passageiro</strong>
+                    </span>
+                </label>
+
+                <label class="checkbox-card">
+                    <input type="checkbox" name="banco_traseiro" value="1" {% if orcamento and orcamento.banco_traseiro %}checked{% endif %}>
+                    <span class="checkbox-content">
+                        <i class="fas fa-users"></i>
+                        <strong>Traseiro</strong>
+                    </span>
+                </label>
+            </div>
+
+            <div class="form-row">
+                <div class="input-group half-width">
+                    <label for="qtd_bancos">Quantidade de bancos</label>
+                    <input type="number" id="qtd_bancos" name="qtd_bancos" class="form-input" min="0" max="10" value="{{ orcamento.qtd_bancos if orcamento else 0 }}">
+                </div>
+                <div class="input-group half-width">
+                    <label for="qtd_apoio_cabeca">Quantidade de apoios de cabeça</label>
+                    <input type="number" id="qtd_apoio_cabeca" name="qtd_apoio_cabeca" class="form-input" min="0" max="6" value="{{ orcamento.qtd_apoio_cabeca if orcamento else 0 }}">
+                </div>
+            </div>
+
+            <div class="checkbox-row">
+                <label class="checkbox-inline">
+                    <input type="checkbox" name="bool_original" value="1" {% if orcamento and orcamento.bool_original %}checked{% endif %}>
+                    <span>Manter padrão original</span>
+                </label>
+
+                <label class="checkbox-inline">
+                    <input type="checkbox" name="bool_logo_prensada" value="1" {% if orcamento and orcamento.bool_logo_prensada %}checked{% endif %}>
+                    <span>Aplicar logo prensada</span>
+                </label>
+
+                <label class="checkbox-inline">
+                    <input type="checkbox" name="bool_espuma" value="1" id="check_espuma" {% if orcamento and orcamento.bool_espuma %}checked{% endif %}>
+                    <span>Haverá troca de espuma</span>
+                </label>
+            </div>
+
+        </div>
+
+        <!-- CARD 3: TECIDOS -->
+        <div class="form-card">
+            <div class="card-header-custom">
+                <div class="header-icon">
+                    <i class="fas fa-tshirt"></i>
+                </div>
+                <h3>Tecidos</h3>
+            </div>
+
+            <div class="tecidos-grid">
+                <label class="radio-card">
+                    {% set tecido_nome = 'Courvin - Preto' %}
+                    <input type="radio" name="tecidos" value="Courvin - Preto" {% if tecidos_selecionados and 'Courvin - Preto' in tecidos_selecionados %}checked{% endif %}>
+                    <span class="radio-content" style="background: #2d2d2d; color: white;">Courvin - Preto</span>
+                </label>
+
+                <label class="radio-card">
+                    {% set tecido_nome = 'Courvin - Cinza' %}
+                    <input type="radio" name="tecidos" value="Courvin - Cinza" {% if tecidos_selecionados and 'Courvin - Cinza' in tecidos_selecionados %}checked{% endif %}>
+                    <span class="radio-content" style="background: #6b7280; color: white;">Courvin - Cinza</span>
+                </label>
+
+                <label class="radio-card">
+                    {% set tecido_nome = 'Courvin - Bege' %}
+                    <input type="radio" name="tecidos" value="Courvin - Bege" {% if tecidos_selecionados and 'Courvin - Bege' in tecidos_selecionados %}checked{% endif %}>
+                    <span class="radio-content" style="background: #d4a373; color: #5c3a21;">Courvin - Bege</span>
+                </label>
+
+                <label class="radio-card">
+                    {% set tecido_nome = 'Couro Natural - Preto' %}
+                    <input type="radio" name="tecidos" value="Couro Natural - Preto" {% if tecidos_selecionados and 'Couro Natural - Preto' in tecidos_selecionados %}checked{% endif %}>
+                    <span class="radio-content" style="background: #1a1a1a; color: white;">Couro Natural - Preto</span>
+                </label>
+
+                <label class="radio-card">
+                    {% set tecido_nome = 'Couro Natural - Marrom' %}
+                    <input type="radio" name="tecidos" value="Couro Natural - Marrom" {% if tecidos_selecionados and 'Couro Natural - Marrom' in tecidos_selecionados %}checked{% endif %}>
+                    <span class="radio-content" style="background: #8b5a2b; color: white;">Couro Natural - Marrom</span>
+                </label>
+
+                <label class="radio-card">
+                    {% set tecido_nome = 'Suede - Preto' %}
+                    <input type="radio" name="tecidos" value="Suede - Preto" {% if tecidos_selecionados and 'Suede - Preto' in tecidos_selecionados %}checked{% endif %}>
+                    <span class="radio-content" style="background: #1e1e1e; color: white;">Suede - Preto</span>
+                </label>
+
+                <label class="radio-card">
+                    {% set tecido_nome = 'Suede - Vermelho' %}
+                    <input type="radio" name="tecidos" value="Suede - Vermelho" {% if tecidos_selecionados and 'Suede - Vermelho' in tecidos_selecionados %}checked{% endif %}>
+                    <span class="radio-content" style="background: #991b1b; color: white;">Suede - Vermelho</span>
+                </label>
+
+                <label class="radio-card">
+                    {% set tecido_nome = 'Tecido Automotivo - Cinza' %}
+                    <input type="radio" name="tecidos" value="Tecido Automotivo - Cinza" {% if tecidos_selecionados and 'Tecido Automotivo - Cinza' in tecidos_selecionados %}checked{% endif %}>
+                    <span class="radio-content" style="background: #9ca3af; color: #1f2937;">Tecido Automotivo - Cinza</span>
+                </label>
+
+                <label class="radio-card">
+                    {% set tecido_nome = 'Tecido Automotivo - Grafite' %}
+                    <input type="radio" name="tecidos" value="Tecido Automotivo - Grafite" {% if tecidos_selecionados and 'Tecido Automotivo - Grafite' in tecidos_selecionados %}checked{% endif %}>
+                    <span class="radio-content" style="background: #374151; color: white;">Tecido Automotivo - Grafite</span>
+                </label>
+            </div>
+
+            <div class="obs-group">
+                <label for="obs_tecidos">Observação (máx. 30 caracteres)</label>
+                <input id="obs_tecidos" name="obs_tecidos" type="text" class="obs-group-input" maxlength="30" value="{{ obs_tecidos or '' }}">
+            </div>
+
+        </div>
+
+        <!-- CARD 4: COSTURAS -->
+        <div class="form-card">
+            <div class="card-header-custom">
+                <div class="header-icon">
+                    <i class="fas fa-stitch"></i>
+                </div>
+                <h3>Costuras</h3>
+            </div>
+
+            <div class="costuras-grid">
+                <label class="radio-card costura">
+                    {% set costura_nome = 'Costura Simples' %}
+                    <input type="radio" name="costuras" value="Costura Simples" {% if costuras_selecionadas and 'Costura Simples' in costuras_selecionadas %}checked{% endif %}>
+                    <span class="radio-content">Costura Simples</span>
+                </label>
+
+                <label class="radio-card costura">
+                    {% set costura_nome = 'Costura Dupla' %}
+                    <input type="radio" name="costuras" value="Costura Dupla" {% if costuras_selecionadas and 'Costura Dupla' in costuras_selecionadas %}checked{% endif %}>
+                    <span class="radio-content">Costura Dupla</span>
+                </label>
+
+                <label class="radio-card costura">
+                    {% set costura_nome = 'Costura Diamante' %}
+                    <input type="radio" name="costuras" value="Costura Diamante" {% if costuras_selecionadas and 'Costura Diamante' in costuras_selecionadas %}checked{% endif %}>
+                    <span class="radio-content">Costura Diamante</span>
+                </label>
+
+                <label class="radio-card costura">
+                    {% set costura_nome = 'Costura Francesa' %}
+                    <input type="radio" name="costuras" value="Costura Francesa" {% if costuras_selecionadas and 'Costura Francesa' in costuras_selecionadas %}checked{% endif %}>
+                    <span class="radio-content">Costura Francesa</span>
+                </label>
+
+                <label class="radio-card costura">
+                    {% set costura_nome = 'Costura Esportiva' %}
+                    <input type="radio" name="costuras" value="Costura Esportiva" {% if costuras_selecionadas and 'Costura Esportiva' in costuras_selecionadas %}checked{% endif %}>
+                    <span class="radio-content">Costura Esportiva</span>
+                </label>
+            </div>
+
+            <div class="obs-group">
+                <label for="obs_costuras">Observação (máx. 30 caracteres)</label>
+                <input id="obs_costuras" name="obs_costuras" type="text" class="obs-group-input" maxlength="30" value="{{ obs_costuras or '' }}">
+            </div>
+
+        </div>
+
+        <!-- CARD 5: CORES DE LINHA -->
+        <div class="form-card">
+            <div class="card-header-custom">
+                <div class="header-icon">
+                    <i class="fas fa-palette"></i>
+                </div>
+                <h3>Cores de Linha</h3>
+            </div>
+
+            <div class="cores-grid">
+                <label class="cor-item">
+                    {% set cor_nome = 'Preto' %}
+                    <input type="radio" name="cores" value="Preto" {% if cores_selecionadas and 'Preto' in cores_selecionadas %}checked{% endif %}>
+                    <span class="cor-badge" style="background: #1f2937;"></span>
+                    <span>Preto</span>
+                </label>
+
+                <label class="cor-item">
+                    {% set cor_nome = 'Cinza' %}
+                    <input type="radio" name="cores" value="Cinza" {% if cores_selecionadas and 'Cinza' in cores_selecionadas %}checked{% endif %}>
+                    <span class="cor-badge" style="background: #6b7280;"></span>
+                    <span>Cinza</span>
+                </label>
+
+                <label class="cor-item">
+                    {% set cor_nome = 'Grafite' %}
+                    <input type="radio" name="cores" value="Grafite" {% if cores_selecionadas and 'Grafite' in cores_selecionadas %}checked{% endif %}>
+                    <span class="cor-badge" style="background: #374151;"></span>
+                    <span>Grafite</span>
+                </label>
+
+                <label class="cor-item">
+                    {% set cor_nome = 'Bege' %}
+                    <input type="radio" name="cores" value="Bege" {% if cores_selecionadas and 'Bege' in cores_selecionadas %}checked{% endif %}>
+                    <span class="cor-badge" style="background: #d4a373;"></span>
+                    <span>Bege</span>
+                </label>
+
+                <label class="cor-item">
+                    {% set cor_nome = 'Marrom' %}
+                    <input type="radio" name="cores" value="Marrom" {% if cores_selecionadas and 'Marrom' in cores_selecionadas %}checked{% endif %}>
+                    <span class="cor-badge" style="background: #8b5a2b;"></span>
+                    <span>Marrom</span>
+                </label>
+
+                <label class="cor-item">
+                    {% set cor_nome = 'Caramelo' %}
+                    <input type="radio" name="cores" value="Caramelo" {% if cores_selecionadas and 'Caramelo' in cores_selecionadas %}checked{% endif %}>
+                    <span class="cor-badge" style="background: #d97706;"></span>
+                    <span>Caramelo</span>
+                </label>
+
+                <label class="cor-item">
+                    {% set cor_nome = 'Vermelho' %}
+                    <input type="radio" name="cores" value="Vermelho" {% if cores_selecionadas and 'Vermelho' in cores_selecionadas %}checked{% endif %}>
+                    <span class="cor-badge" style="background: #dc2626;"></span>
+                    <span>Vermelho</span>
+                </label>
+
+                <label class="cor-item">
+                    {% set cor_nome = 'Azul' %}
+                    <input type="radio" name="cores" value="Azul" {% if cores_selecionadas and 'Azul' in cores_selecionadas %}checked{% endif %}>
+                    <span class="cor-badge" style="background: #2563eb;"></span>
+                    <span>Azul</span>
+                </label>
+
+                <label class="cor-item">
+                    {% set cor_nome = 'Branco' %}
+                    <input type="radio" name="cores" value="Branco" {% if cores_selecionadas and 'Branco' in cores_selecionadas %}checked{% endif %}>
+                    <span class="cor-badge" style="background: #f3f4f6; border: 1px solid #d1d5db;"></span>
+                    <span>Branco</span>
+                </label>
+            </div>
+
+            <div class="obs-group">
+                <label for="obs_cores">Observação (máx. 30 caracteres)</label>
+                <input id="obs_cores" name="obs_cores" type="text" class="obs-group-input" maxlength="30" value="{{ obs_cores or '' }}">
+            </div>
+
+        </div>
+
+        <!-- CARD 6: ESPUMAS (aparece só se marcar troca de espuma) -->
+        <div class="form-card" id="espumas-card" style="display: {{ 'block' if orcamento and orcamento.bool_espuma else 'none' }};">
+            <div class="card-header-custom">
+                <div class="header-icon">
+                    <i class="fas fa-bed"></i>
+                </div>
+                <h3>Espumas</h3>
+            </div>
+
+            <div class="espumas-grid">
+                {% for espuma in espumas %}
+                <div class="material-option">
+                    <label class="checkbox-card-espuma">
+                        <input type="checkbox" name="espumas" value="{{ espuma.id_espuma }}" {% if espumas_selecionadas and espuma.id_espuma in espumas_selecionadas %}checked{% endif %}>
+                        <span class="checkbox-content">
+                            <i class="fas fa-cube"></i>
+                            <strong>{{ espuma.tipo }}</strong>
+                        </span>
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- CARD 7: VALOR E OBSERVAÇÕES -->
+        <div class="form-card">
+            <div class="card-header-custom">
+                <div class="header-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <h3>Valor e Observações</h3>
+            </div>
+
+            <div class="form-grid grid-2cols">
+                <div class="input-group">
+                    <label for="valor">Valor do orçamento (R$) <span class="required">*</span></label>
+                    <div class="input-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <input type="text" id="valor" name="valor" class="form-input money-mask" placeholder="0,00" value="{{ ('%.2f'|format(orcamento.valor|float))|replace('.', ',') if orcamento else '' }}" required>
+                    </div>
+                </div>
+
+                <div class="input-group full-width">
+                    <label for="obs">Observações gerais</label>
+                    <div class="input-icon">
+                        <i class="fas fa-comment"></i>
+                        <textarea id="obs" name="obs" class="form-textarea" rows="4" placeholder="Digite observações importantes sobre o serviço...">{{ orcamento.obs if orcamento else '' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
 </div>
-
-<hr>
-
-<form method="POST" action="{{ url_for('main.salvar_orcamento') }}">
-
-<input type="hidden" name="id_veiculo" value="{{ veiculo.id_veiculo }}">
-<input type="hidden" name="dat_orcamento" value="{{ today }}">
-
-<!-- BANCOS -->
-
-<h3>Bancos</h3>
-
-<label>
-<input type="checkbox" class="banco" name="bancos" value="motorista">
-Motorista
-</label>
-
-<br>
-
-<label>
-<input type="checkbox" class="banco" name="bancos" value="passageiro">
-Passageiro
-</label>
-
-<br>
-
-<label>
-<input type="checkbox" class="banco" name="bancos" value="traseiro">
-Traseiro
-</label>
-
-<input type="hidden" name="qtd_bancos" id="qtd_bancos" value="0">
-
-<hr>
-
-<!-- APOIO CABEÇA -->
-
-<label>Quantidade de apoios de cabeça</label>
-
-<input type="number"
-name="qtd_apoio_cabeca"
-min="0"
-value="0">
-
-<hr>
-
-<!-- OPÇÕES -->
-
-<label>
-<input type="checkbox" name="bool_original">
-Manter padrão original
-</label>
-
-<br>
-
-<label>
-<input type="checkbox" name="bool_logo_prensada">
-Aplicar logo prensada
-</label>
-
-<br>
-
-<label>
-<input type="checkbox"
-id="bool_espuma"
-name="bool_espuma">
-Haverá troca de espuma
-</label>
-
-<hr>
-
-<!-- TECIDOS -->
-
-<h3>Tecidos</h3>
-
-{% for tecido in tecidos %}
-
-<label>
-
-<input type="checkbox"
-class="item-checkbox"
-data-target="tecido{{ tecido.id_tecido }}"
-name="tecidos"
-value="{{ tecido.id_tecido }}">
-
-{{ tecido.material }} - {{ tecido.cor }}
-
-</label>
-
-<div id="tecido{{ tecido.id_tecido }}" style="display:none">
-
-<input type="text"
-name="obs_tecido_{{ tecido.id_tecido }}"
-placeholder="Observação">
-
-</div>
-
-<br>
-
-{% endfor %}
-
-<hr>
-
-<!-- COSTURAS -->
-
-<h3>Costuras</h3>
-
-{% for costura in costuras %}
-
-<label>
-
-<input type="checkbox"
-class="item-checkbox"
-data-target="costura{{ costura.id_costura }}"
-name="costuras"
-value="{{ costura.id_costura }}">
-
-{{ costura.tipo }}
-
-</label>
-
-<div id="costura{{ costura.id_costura }}" style="display:none">
-
-<input type="text"
-name="obs_costura_{{ costura.id_costura }}"
-placeholder="Observação">
-
-</div>
-
-<br>
-
-{% endfor %}
-
-<hr>
-
-<!-- CORES -->
-
-<h3>Cores de Linha</h3>
-
-{% for cor in cores %}
-
-<label>
-
-<input type="checkbox"
-class="item-checkbox"
-data-target="cor{{ cor.id_cor }}"
-name="cores"
-value="{{ cor.id_cor }}">
-
-{{ cor.descricao }}
-
-</label>
-
-<div id="cor{{ cor.id_cor }}" style="display:none">
-
-<input type="text"
-name="obs_cor_{{ cor.id_cor }}"
-placeholder="Observação">
-
-</div>
-
-<br>
-
-{% endfor %}
-
-<hr>
-
-<!-- ESPUMA -->
-
-<div id="area_espuma" style="display:none">
-
-<h3>Tipos de Espuma</h3>
-
-{% for espuma in espumas %}
-
-<label>
-
-<input type="checkbox"
-class="item-checkbox"
-data-target="espuma{{ espuma.id_espuma }}"
-name="espumas"
-value="{{ espuma.id_espuma }}">
-
-{{ espuma.tipo }}
-
-</label>
-
-<div id="espuma{{ espuma.id_espuma }}" style="display:none">
-
-<input type="text"
-name="obs_espuma_{{ espuma.id_espuma }}"
-placeholder="Observação">
-
-</div>
-
-<br>
-
-{% endfor %}
-
-</div>
-
-<hr>
-
-<label>Valor do orçamento (R$)</label>
-
-<input type="number"
-step="0.01"
-name="valor"
-required>
-
-<hr>
-
-<label>Observações gerais</label>
-
-<br>
-
-<textarea
-name="obs"
-rows="4"
-cols="50"
-placeholder="Detalhes adicionais do serviço"></textarea>
-
-<br><br>
-
-<button type="submit">
-Salvar Orçamento
-</button>
-
-</form>
 
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Máscara de dinheiro
+    const moneyInput = document.querySelector('.money-mask');
+    if (moneyInput) {
+        moneyInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            value = (parseInt(value) / 100).toFixed(2);
+            if (isNaN(value)) value = '0,00';
+            value = value.replace('.', ',');
+            value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            e.target.value = value;
+        });
+    }
 
-document.addEventListener("DOMContentLoaded", function(){
+    // Mostrar/esconder espumas
+    const checkEspuma = document.getElementById('check_espuma');
+    const espumasCard = document.getElementById('espumas-card');
+    
+    if (checkEspuma) {
+        checkEspuma.addEventListener('change', function() {
+            if (this.checked) {
+                espumasCard.style.display = 'block';
+            } else {
+                espumasCard.style.display = 'none';
+            }
+        });
+    }
 
-const bancos = document.querySelectorAll(".banco")
-const campoQtd = document.getElementById("qtd_bancos")
-const checkboxEspuma = document.getElementById("bool_espuma")
-const areaEspuma = document.getElementById("area_espuma")
-
-function atualizarQtd(){
-
-let total = 0
-
-bancos.forEach(cb=>{
-if(cb.checked){
-total++
-}
-})
-
-campoQtd.value = total
-
-}
-
-bancos.forEach(cb=>{
-cb.addEventListener("change", atualizarQtd)
-})
-
-checkboxEspuma.addEventListener("change", function(){
-
-if(this.checked){
-areaEspuma.style.display = "block"
-}else{
-areaEspuma.style.display = "none"
-}
-
-})
-
-const itemCheckboxes = document.querySelectorAll(".item-checkbox")
-
-itemCheckboxes.forEach(cb=>{
-
-cb.addEventListener("change", function(){
-
-const target = document.getElementById(this.dataset.target)
-
-if(this.checked){
-target.style.display = "block"
-}else{
-target.style.display = "none"
-}
-
-})
-
-})
-
-})
-
+    // Observação por seção (Tecidos, Costuras, Cores) - sempre editável.
+    document.querySelectorAll('input.obs-group-input').forEach(inp => {
+        inp.addEventListener('input', () => {
+            if (inp.value.length > 30) inp.value = inp.value.slice(0, 30);
+        });
+    });
+});
 </script>
+
+<style>
+.full-width {
+    grid-column: span 2;
+}
+
+/* CORREÇÃO DOS CÍRCULOS DE CORES - AGORA REDONDOS! */
+.cores-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 1rem;
+    padding: 1.5rem;
+}
+
+.cor-item {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    align-items: center;
+    column-gap: 0.75rem;
+    row-gap: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cor-item:hover {
+    background: #f8fafc;
+}
+
+.cor-item input[type="radio"] {
+    display: none;
+}
+
+.obs-group {
+    padding: 0 1.5rem 1.5rem;
+}
+
+.obs-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 0.4rem;
+}
+
+.obs-group-input {
+    display: block;
+    width: 100%;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.75rem;
+    background: #ffffff;
+    font-size: 0.8rem;
+    color: #0f172a;
+}
+
+.obs-group-input:focus {
+    outline: none;
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.12);
+}
+
+.cor-badge {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    min-height: 28px !important;
+    border-radius: 50% !important;
+    display: inline-block;
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.cor-item input[type="radio"]:checked ~ .cor-badge {
+    box-shadow: 0 0 0 2px white, 0 0 0 4px #4f46e5;
+}
+
+.cor-item input[type="radio"]:checked ~ span:last-child {
+    font-weight: 700;
+    color: #4f46e5;
+}
+
+/* Garantir que os círculos fiquem perfeitamente redondos */
+.cores-grid .cor-badge {
+    border-radius: 50% !important;
+    aspect-ratio: 1 / 1 !important;
+}
+
+/* Estilo para as opções de espuma */
+.espumas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    padding: 1.5rem;
+}
+
+.material-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.material-option {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    padding: 1rem;
+}
+
+.material-observacao {
+    margin-top: 0.75rem;
+}
+
+.material-observacao textarea {
+    width: 100%;
+    min-height: 70px;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    resize: vertical;
+    background: white;
+}
+
+.checkbox-card-espuma {
+    cursor: pointer;
+}
+
+.checkbox-card-espuma input {
+    display: none;
+}
+
+.checkbox-card-espuma .checkbox-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.75rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.checkbox-card-espuma input:checked + .checkbox-content {
+    background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+    border-color: #4f46e5;
+    color: #4f46e5;
+}
+
+@media (max-width: 768px) {
+    .full-width {
+        grid-column: span 1;
+    }
+    .cores-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 0.75rem;
+        padding: 1rem;
+    }
+    .cor-item {
+        gap: 0.5rem;
+        padding: 0.35rem;
+    }
+    .cor-badge {
+        width: 24px !important;
+        height: 24px !important;
+        min-width: 24px !important;
+        min-height: 24px !important;
+    }
+}
+</style>
 
 {% endblock %}

@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preview - Modais do Sistema</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --brand-red: #e11d2e;
+            --brand-red-dark: #b91c1c;
+            --brand-blue: #1e3a8a;
+            --ink: #0f172a;
+            --muted: #475569;
+            --panel: #f8fafc;
+            --line: #e2e8f0;
+            --accent: #10b981;
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --primary-light: #818cf8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+        }
+
+        body {
+            background: #f1f5f9;
+            font-family: 'Manrope', system-ui, sans-serif;
+        }
+
+        /* Estilos dos modais */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            animation: fadeIn 0.2s ease-out;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-container {
+            background: white;
+            border-radius: 1.25rem;
+            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+            max-width: 500px;
+            width: 90%;
+            animation: slideUp 0.3s ease-out;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .modal-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .modal-icon.danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        .modal-icon.warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+        }
+
+        .modal-icon.success {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+        }
+
+        .modal-icon.info {
+            background: rgba(59, 130, 246, 0.15);
+            color: #3b82f6;
+        }
+
+        .modal-header-content h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0 0 0.25rem 0;
+        }
+
+        .modal-header-content p {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin: 0;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .modal-body p {
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .modal-body strong {
+            color: #0f172a;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-btn-cancel {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+        }
+
+        .modal-btn-cancel:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .modal-btn-confirm {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+        }
+
+        .modal-btn-confirm:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 16px rgba(239, 68, 68, 0.35);
+        }
+
+        .modal-btn-approve {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+        }
+
+        .modal-btn-approve:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 16px rgba(16, 185, 129, 0.35);
+        }
+
+        .modal-btn-reject {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+        }
+
+        .modal-btn-reject:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 16px rgba(245, 158, 11, 0.35);
+        }
+
+        .demo-btn {
+            background: linear-gradient(135deg, #e11d2e, #b91c1c);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(225, 29, 46, 0.3);
+        }
+
+        .demo-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .demo-card h3 {
+            margin: 0 0 1rem 0;
+            color: #0f172a;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .demo-btns {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1 style="color: #0f172a; margin-bottom: 2rem; font-size: 2rem;">
+            <i class="fas fa-window-maximize"></i> Preview - Modais do Sistema
+        </h1>
+
+        <div class="demo-card">
+            <h3><i class="fas fa-trash-alt"></i> Modal de Exclusão de Cliente</h3>
+            <p style="color: #64748b; margin-bottom: 1rem;">Tema vermelho com ícone de lixeira</p>
+            <div class="demo-btns">
+                <button class="demo-btn" onclick="openModal('modal-delete-cliente')">
+                    <i class="fas fa-trash-alt"></i> Abrir Modal
+                </button>
+            </div>
+        </div>
+
+        <div class="demo-card">
+            <h3><i class="fas fa-car-crash"></i> Modal de Exclusão de Veículo</h3>
+            <p style="color: #64748b; margin-bottom: 1rem;">Tema vermelho com ícone de carro acidentado</p>
+            <div class="demo-btns">
+                <button class="demo-btn" onclick="openModal('modal-delete-veiculo')">
+                    <i class="fas fa-car-crash"></i> Abrir Modal
+                </button>
+            </div>
+        </div>
+
+        <div class="demo-card">
+            <h3><i class="fas fa-check-circle"></i> Modal de Aprovação de Orçamento</h3>
+            <p style="color: #64748b; margin-bottom: 1rem;">Tema verde com opções de aprovar ou cancelar</p>
+            <div class="demo-btns">
+                <button class="demo-btn" onclick="openModal('modal-approve-budget')">
+                    <i class="fas fa-check-circle"></i> Abrir Modal
+                </button>
+            </div>
+        </div>
+
+        <div class="demo-card">
+            <h3><i class="fas fa-times-circle"></i> Modal de Recusa de Orçamento</h3>
+            <p style="color: #64748b; margin-bottom: 1rem;">Tema laranja com opções de recusar ou cancelar</p>
+            <div class="demo-btns">
+                <button class="demo-btn" onclick="openModal('modal-reject-budget')">
+                    <i class="fas fa-times-circle"></i> Abrir Modal
+                </button>
+            </div>
+        </div>
+
+        <div class="demo-card" style="background: #f0fdf4; border: 1px solid #86efac;">
+            <h3 style="color: #15803d;"><i class="fas fa-check-circle"></i> Instruções para Fechar</h3>
+            <ul style="color: #64748b; margin: 0; padding-left: 1.5rem;">
+                <li>Clique no botão "Cancelar"</li>
+                <li>Clique fora do modal (no overlay escuro)</li>
+                <li>Pressione a tecla ESC</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- MODAIS -->
+    <div id="modal-delete-cliente" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div class="modal-icon danger">
+                    <i class="fas fa-trash-alt"></i>
+                </div>
+                <div class="modal-header-content">
+                    <h2>Excluir Cliente</h2>
+                    <p>Ação irreversível</p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir o cliente <strong>João da Silva</strong>?</p>
+                <p style="margin-top: 1rem; color: #ef4444; font-size: 0.875rem;">
+                    <i class="fas fa-exclamation-circle"></i> Todos os seus veículos e orçamentos também serão removidos.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-cancel" onclick="closeModal('modal-delete-cliente')">Cancelar</button>
+                <button class="modal-btn modal-btn-confirm" onclick="closeModal('modal-delete-cliente')">
+                    <i class="fas fa-trash-alt"></i> Excluir Cliente
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-delete-veiculo" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div class="modal-icon danger">
+                    <i class="fas fa-car-crash"></i>
+                </div>
+                <div class="modal-header-content">
+                    <h2>Excluir Veículo</h2>
+                    <p>Ação irreversível</p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir o veículo <strong>ABC-1234 - Volkswagen Gol</strong>?</p>
+                <p style="margin-top: 1rem; color: #f59e0b; font-size: 0.875rem;">
+                    <i class="fas fa-exclamation-triangle"></i> Todos os orçamentos associados também serão removidos.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-cancel" onclick="closeModal('modal-delete-veiculo')">Cancelar</button>
+                <button class="modal-btn modal-btn-confirm" onclick="closeModal('modal-delete-veiculo')">
+                    <i class="fas fa-trash-alt"></i> Excluir Veículo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-approve-budget" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div class="modal-icon success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="modal-header-content">
+                    <h2>Aprovar Orçamento</h2>
+                    <p>Cliente: <strong>Maria Santos</strong></p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <p>Confirmar aprovação deste orçamento?</p>
+                <p style="margin-top: 1rem; font-size: 0.875rem; color: #10b981;">
+                    <i class="fas fa-info-circle"></i> O orçamento será enviado para a lista de pedidos.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-cancel" onclick="closeModal('modal-approve-budget')">Cancelar</button>
+                <button class="modal-btn modal-btn-approve" onclick="closeModal('modal-approve-budget')">
+                    <i class="fas fa-check-circle"></i> Aprovar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-reject-budget" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div class="modal-icon warning">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="modal-header-content">
+                    <h2>Recusar Orçamento</h2>
+                    <p>Cliente: <strong>Maria Santos</strong></p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <p>Confirmar recusa deste orçamento?</p>
+                <p style="margin-top: 1rem; font-size: 0.875rem; color: #f59e0b;">
+                    <i class="fas fa-exclamation-triangle"></i> O orçamento será excluído.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-cancel" onclick="closeModal('modal-reject-budget')">Cancelar</button>
+                <button class="modal-btn modal-btn-reject" onclick="closeModal('modal-reject-budget')">
+                    <i class="fas fa-times-circle"></i> Recusar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        // Fechar ao clicar no overlay
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay') && e.target.classList.contains('active')) {
+                e.target.classList.remove('active');
+            }
+        });
+
+        // Fechar com ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.active').forEach(m => {
+                    m.classList.remove('active');
+                });
+            }
+        });
+
+        // Fechar com botão cancelar
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-btn-cancel')) {
+                e.target.closest('.modal-overlay').classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

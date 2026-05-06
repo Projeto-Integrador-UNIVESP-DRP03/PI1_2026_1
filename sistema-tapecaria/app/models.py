@@ -115,6 +115,10 @@ class Orcamento(db.Model):
     bool_original = db.Column(db.Boolean, default=False)
     bool_logo_prensada = db.Column(db.Boolean, default=False)
 
+    banco_motorista = db.Column(db.Boolean, default=False)
+    banco_passageiro = db.Column(db.Boolean, default=False)
+    banco_traseiro = db.Column(db.Boolean, default=False)
+
     qtd_bancos = db.Column(db.Integer, default=0)
     qtd_apoio_cabeca = db.Column(db.Integer, default=0)
 

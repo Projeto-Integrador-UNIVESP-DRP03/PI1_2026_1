@@ -1,189 +1,617 @@
 {% extends "base.html" %}
 
 {% block title %}
-Dados do Cliente
+Dados do Cliente - {{ cliente.nome }}
 {% endblock %}
 
 {% block page_title %}
-Dados do Cliente
+{{ cliente.nome }}
 {% endblock %}
 
 {% block content %}
 
-<div class="card info">
-
-    <div class="card-header">
-
-    <h2>Informações do Cliente</h2>
-
-    <a href="{{ url_for('main.editar_cliente', id_cliente=cliente.id_cliente) }}">
-        <button class="btn-edit">Editar cliente</button>
-    </a>
-
-    </div>
-
-        <div class="info-item">
-            <span class="label">Nome</span>
-            <span class="value">{{ cliente.nome }}</span>
-        </div>
-
-        <div class="info-item">
-            <span class="label">CPF/CNPJ</span>
-            <span class="value">{{ cliente.cod_cliente }}</span>
-        </div>
-
-        <div class="info-item">
-            <span class="label">Telefone</span>
-            <span class="value">
-                {{cliente.telefones[0].telefone if cliente.telefones else "Não cadastrado"}}
-            </span>
-        </div>
-
+<div class="cliente-perfil-container">
     
-
-    <h3>Endereço</h3>
-
-    <div class="info-grid">
-
-        <div class="info-item">
-            <span class="label">Rua</span>
-            <span class="value">
-                {{ cliente.enderecos[0].rua if cliente.enderecos else "Não cadastrada" }}
-            </span>
+    <!-- Cabeçalho com ações -->
+    <div class="screen-header">
+        <div>
+            <p class="screen-subtitle">Visualize todas as informações do cliente e seus veículos</p>
         </div>
-
-        <div class="info-item">
-            <span class="label">Número</span>
-            <span class="value">
-                {{ cliente.enderecos[0].numero if cliente.enderecos else "Não cadastrado" }}
-            </span>
+        <div class="header-actions">
+            <a href="{{ url_for('main.listar_clientes') }}" class="btn-outline">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+            <a href="{{ url_for('main.editar_cliente', id_cliente=cliente.id_cliente) }}" class="btn-primary">
+                <i class="fas fa-edit"></i> Editar Cliente
+            </a>
+            <a href="{{ url_for('main.novo_veiculo', id_cliente=cliente.id_cliente) }}" class="btn-success">
+                <i class="fas fa-plus"></i> Novo Veículo
+            </a>
         </div>
+    </div>
 
-        <div class="info-item">
-            <span class="label">Complemento</span>
-            <span class="value">
-                {{ cliente.enderecos[0].complemento if cliente.enderecos else "Não cadastrado" }}
-            </span>
+    <!-- INFORMAÇÕES DO CLIENTE -->
+    <div class="info-card-principal">
+        <div class="card-header-custom">
+            <div class="header-icon">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <h3>Informações Pessoais</h3>
         </div>
-
-        <div class="info-item">
-            <span class="label">Bairro</span>
-            <span class="value">
-                {{ cliente.enderecos[0].bairro if cliente.enderecos else "Não cadastrado" }}
-            </span>
+        
+        <div class="info-content-grid">
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="fas fa-user"></i> Nome Completo
+                </div>
+                <div class="info-value">{{ cliente.nome }}</div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="fas fa-id-card"></i> CPF/CNPJ
+                </div>
+                <div class="info-value">{{ cliente.cod_cliente }}</div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="fas fa-phone"></i> Telefone
+                </div>
+                <div class="info-value">
+                    {{ cliente.telefones[0].telefone if cliente.telefones else "Não cadastrado" }}
+                </div>
+            </div>
         </div>
+    </div>
 
-        <div class="info-item">
-            <span class="label">Cidade</span>
-            <span class="value">
-                {{ cliente.enderecos[0].cidade if cliente.enderecos else "Não cadastrada" }}
-            </span>
+    <!-- ENDEREÇO -->
+    <div class="info-card-principal">
+        <div class="card-header-custom">
+            <div class="header-icon">
+                <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <h3>Endereço</h3>
         </div>
-
-        <div class="info-item">
-            <span class="label">Estado</span>
-            <span class="value">
-                {{ cliente.enderecos[0].estado if cliente.enderecos else "Não cadastrado" }}
-            </span>
+        
+        <div class="info-content-grid">
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="fas fa-road"></i> Rua
+                </div>
+                <div class="info-value">
+                    {{ cliente.enderecos[0].rua if cliente.enderecos else "Não cadastrado" }}
+                </div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="fas fa-hashtag"></i> Número
+                </div>
+                <div class="info-value">
+                    {{ cliente.enderecos[0].numero if cliente.enderecos else "Não cadastrado" }}
+                </div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="fas fa-building"></i> Complemento
+                </div>
+                <div class="info-value">
+                    {{ cliente.enderecos[0].complemento if cliente.enderecos else "Não cadastrado" }}
+                </div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="fas fa-location-dot"></i> Bairro
+                </div>
+                <div class="info-value">
+                    {{ cliente.enderecos[0].bairro if cliente.enderecos else "Não cadastrado" }}
+                </div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="fas fa-city"></i> Cidade
+                </div>
+                <div class="info-value">
+                    {{ cliente.enderecos[0].cidade if cliente.enderecos else "Não cadastrado" }}
+                </div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="fas fa-flag"></i> Estado
+                </div>
+                <div class="info-value">
+                    {{ cliente.enderecos[0].estado if cliente.enderecos else "Não cadastrado" }}
+                </div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="fas fa-mail-bulk"></i> CEP
+                </div>
+                <div class="info-value">
+                    {{ cliente.enderecos[0].cep if cliente.enderecos else "Não cadastrado" }}
+                </div>
+            </div>
         </div>
+    </div>
 
-        <div class="info-item">
-            <span class="label">CEP</span>
-            <span class="value">
-                {{ cliente.enderecos[0].cep if cliente.enderecos else "Não cadastrado" }}
-            </span>
+    <!-- VEÍCULOS CADASTRADOS -->
+    <div class="veiculos-card">
+        <div class="card-header-custom">
+            <div class="header-icon">
+                <i class="fas fa-car"></i>
+            </div>
+            <h3>Veículos Cadastrados</h3>
+            <div class="header-badge">
+                {% set veiculos_ativos = [] %}
+                {% for v in cliente.veiculos %}
+                    {% if 'descadastrado' not in v.placa.lower() %}
+                        {% set _ = veiculos_ativos.append(v) %}
+                    {% endif %}
+                {% endfor %}
+                <span class="badge-veiculos">{{ veiculos_ativos|length }}</span>
+            </div>
         </div>
-
+        
+        {% set veiculos_ativos = [] %}
+        {% for v in cliente.veiculos %}
+            {% if 'descadastrado' not in v.placa.lower() %}
+                {% set _ = veiculos_ativos.append(v) %}
+            {% endif %}
+        {% endfor %}
+        
+        {% if veiculos_ativos %}
+            <div class="table-wrapper">
+                <table class="table-veiculos">
+                    <thead>
+                        <tr>
+                            <th>Placa</th>
+                            <th>Modelo</th>
+                            <th>Marca</th>
+                            <th>Ano</th>
+                            <th>Cor</th>
+                            <th style="text-align: center;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for veiculo in veiculos_ativos %}
+                        <tr>
+                            <td data-label="Placa"><span class="placa-badge">{{ veiculo.placa.upper() }}</span></td>
+                            <td data-label="Modelo"><strong>{{ veiculo.modelo }}</strong></td>
+                            <td data-label="Marca">{{ veiculo.marca }}</td>
+                            <td data-label="Ano">{{ veiculo.ano }}</td>
+                            <td data-label="Cor">{{ veiculo.cor }}</td>
+                            <td data-label="Ações" class="acoes-veiculo">
+                                <a href="{{ url_for('main.form_orcamento', id_veiculo=veiculo.id_veiculo) }}" class="icon-btn-sm icon-btn-orcamento" data-tooltip="Novo orçamento">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </a>
+                                <a href="{{ url_for('main.editar_veiculo', id_veiculo=veiculo.id_veiculo) }}" class="icon-btn-sm" data-tooltip="Editar veículo">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form method="POST" 
+                                      action="{{ url_for('main.deletar_veiculo', id_veiculo=veiculo.id_veiculo) }}" 
+                                      style="display: inline;"
+                                      onsubmit="event.preventDefault(); customConfirm({ 
+                                          message: 'Tem certeza que deseja excluir este veículo?', 
+                                          title: 'Excluir Veículo', 
+                                          type: 'danger' 
+                                      }).then(confirmed => { if(confirmed) this.submit(); });">
+                                    <button type="submit" class="icon-btn-sm" data-tooltip="Excluir veículo">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                             </td>
+                         </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-car-side"></i>
+                <p>Nenhum veículo cadastrado para este cliente.</p>
+                <a href="{{ url_for('main.novo_veiculo', id_cliente=cliente.id_cliente) }}" class="btn-primary-sm">
+                    <i class="fas fa-plus"></i> Adicionar primeiro veículo
+                </a>
+            </div>
+        {% endif %}
     </div>
 
 </div>
 
+<style>
+/* ============================================
+   ESTILOS DA PÁGINA DE PERFIL DO CLIENTE
+   ============================================ */
+.cliente-perfil-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
 
-<div class="card">
+.screen-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
 
-    <div class="card-header">
+.screen-subtitle {
+    color: #64748b;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
 
-    <h2>Veículos cadastrados</h2>
+.header-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
 
-    <a href="{{ url_for('main.novo_veiculo', id_cliente=cliente.id_cliente) }}">
-        <button class="btn-primary">Adicionar veículo</button>
-    </a>
+.btn-primary, .btn-outline, .btn-success {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    text-decoration: none;
+}
 
-</div>
+.btn-primary {
+    background: linear-gradient(135deg, #4f46e5, #4338ca);
+    color: white;
+    border: none;
+}
 
-    {% if cliente.veiculos %}
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+}
 
-    <table class="table-veiculos">
-        <thead>
-            <tr>
-                <th>Placa</th>
-                <th>Modelo</th>
-                <th>Marca</th>
-                <th>Ano</th>
-                <th>Cor</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
+.btn-success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border: none;
+}
 
-        <tbody>
+.btn-success:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+}
 
-        {% for veiculo in cliente.veiculos if 'descadastrado' not in veiculo.placa.lower() %}
+.btn-outline {
+    background: white;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+}
 
-        <tr>
-            <td>{{ veiculo.placa }}</td>
-            <td>{{ veiculo.modelo }}</td>
-            <td>{{ veiculo.marca }}</td>
-            <td>{{ veiculo.ano }}</td>
-            <td>{{ veiculo.cor }}</td>
+.btn-outline:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
 
-            <td class="actions">
-                <a href="{{ url_for('main.form_orcamento', id_veiculo=veiculo.id_veiculo) }}">
-                    <button class="btn-primary">
-                    Criar Orçamento
-                    </button>
-                </a>
+.btn-primary-sm {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+    background: linear-gradient(135deg, #4f46e5, #4338ca);
+    color: white;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
 
-                <a href="{{ url_for('main.editar_veiculo', id_veiculo=veiculo.id_veiculo) }}">
-                    <button class="btn-edit">Editar</button>
-                </a>
+.btn-primary-sm:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px -2px rgba(79, 70, 229, 0.3);
+}
 
-                <form action="{{ url_for('main.deletar_veiculo', id_veiculo=veiculo.id_veiculo) }}"
-                      method="post"
-                      style="display:inline;">
-                    <button type="submit" class="btn-delete">Excluir</button>
-                </form>
+/* Cards de Informação */
+.info-card-principal {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
 
-            </td>
+.card-header-custom {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    border-bottom: 1px solid #e2e8f0;
+}
 
-        </tr>
+.card-header-custom .header-icon {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #e11d2e, #b91c1c);
+    border-radius: 0.5rem;
+    color: white;
+}
 
-        {% endfor %}
+.card-header-custom h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
 
-        </tbody>
-    </table>
+.header-badge {
+    margin-left: auto;
+}
 
-    {% else %}
+.badge-veiculos {
+    background: #e11d2e;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
 
-        <p class="empty">Nenhum veículo cadastrado.</p>
+/* Grid de informações */
+.info-content-grid {
+    padding: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+}
 
-    {% endif %}
+.info-row {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f1f5f9;
+}
 
-  
+.info-row:last-child {
+    border-bottom: none;
+}
 
-</div>
+.info-label {
+    width: 110px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
 
+.info-label i {
+    width: 20px;
+    margin-right: 0;
+    color: #94a3b8;
+}
 
-<div class="footer-buttons">
+.info-value {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding-left: 0.5rem;
+    font-size: 0.875rem;
+    color: #0f172a;
+    font-weight: 500;
+}
 
+/* Tabela de Veículos */
+.veiculos-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+}
 
-    <button type="submit"
-            class="btn-delete"
-            onclick="return confirm('Tem certeza que deseja excluir este cliente?');">
-        Excluir cliente
-    </button>
+.table-wrapper {
+    overflow-x: auto;
+}
 
-</form>
+.table-veiculos {
+    width: 100%;
+    border-collapse: collapse;
+}
 
-</div>
+.table-veiculos thead {
+    background: #f8fafc;
+}
+
+.table-veiculos thead th {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.table-veiculos tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.2s ease;
+}
+
+.table-veiculos tbody tr:hover {
+    background: #f8fafc;
+}
+
+.table-veiculos td {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: #334155;
+}
+
+.placa-badge {
+    display: inline-block;
+    background: #f1f5f9;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    font-family: monospace;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: #1e293b;
+}
+
+.acoes-veiculo {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.icon-btn-sm {
+    all: unset;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.icon-btn-sm i {
+    font-size: 0.875rem;
+}
+
+.icon-btn-sm:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+    transform: translateY(-1px);
+}
+
+/* Botão de Novo Orçamento - destaque verde */
+.icon-btn-orcamento {
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+    color: #16a34a;
+}
+
+.icon-btn-orcamento:hover {
+    background: linear-gradient(135deg, #bbf7d0, #86efac);
+    color: #15803d;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px -2px rgba(22, 163, 74, 0.25);
+}
+
+.icon-btn-sm[data-tooltip] {
+    position: relative;
+}
+
+.icon-btn-sm[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 0.4rem);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1e293b;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.65rem;
+    white-space: nowrap;
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: #94a3b8;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.empty-state p {
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .screen-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .header-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+    
+    .info-content-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    
+    .info-row {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .info-label {
+        width: 100%;
+    }
+    
+    .table-veiculos thead {
+        display: none;
+    }
+    
+    .table-veiculos tbody tr {
+        display: block;
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .table-veiculos tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border: none;
+    }
+    
+    .table-veiculos tbody td:before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #64748b;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+    }
+    
+    .acoes-veiculo {
+        justify-content: flex-end;
+    }
+}
+</style>
 
 {% endblock %}

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-Orçamentos
+Pedidos Concluídos
 {% endblock %}
 
 {% block page_title %}
@@ -13,12 +13,9 @@ Orçamentos
 
     <div class="screen-header" style="margin-bottom: 2rem;">
         <div>
-            <h2 class="screen-title title-font" style="margin-bottom: 0.5rem;">Orçamentos</h2>
-            <p class="screen-subtitle">Acompanhe aprovações e detalhes dos orçamentos.</p>
+            <h2 class="screen-title title-font" style="margin-bottom: 0.5rem;">Pedidos Concluídos</h2>
+            <p class="screen-subtitle">Histórico de entregas finalizadas.</p>
         </div>
-        <a href="{{ url_for('main.novo_pedido') }}" class="btn-primary" style="padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-            <i class="fas fa-plus"></i> Novo Orçamento
-        </a>
     </div>
 
     <!-- FILTROS -->
@@ -26,12 +23,7 @@ Orçamentos
         <div class="filter-row">
             <div class="filter-search-col"><div class="input-icon">
                 <i class="fas fa-search"></i>
-                <input 
-                    type="text" 
-                    id="filterCliente" 
-                    placeholder="Cliente, carro ou placa"
-                    class="w-full"
-                >
+                <input type="text" id="filterCliente" placeholder="Cliente, carro ou placa" class="w-full">
             </div></div>
             <div class="filter-sort-col"><div class="input-icon">
                 <i class="fas fa-sort"></i>
@@ -63,18 +55,14 @@ Orçamentos
     </div>
 
     <!-- ESTATÍSTICAS -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center mb-6">
         <div class="stat-card p-4">
-            <p class="text-slate-500 text-xs uppercase font-semibold">Total de Orçamentos</p>
-            <p id="totalOrcamentos" class="text-2xl font-bold text-slate-900 mt-2">0</p>
+            <p class="text-slate-500 text-xs uppercase font-semibold">Total Concluídos</p>
+            <p id="totalConcluidos" class="text-2xl font-bold text-slate-900 mt-2">0</p>
         </div>
         <div class="stat-card p-4">
-            <p class="text-slate-500 text-xs uppercase font-semibold">Orçamentos do Mês</p>
-            <p id="orcamentosMes" class="text-2xl font-bold text-slate-900 mt-2">0</p>
-        </div>
-        <div class="stat-card p-4">
-            <p class="text-slate-500 text-xs uppercase font-semibold">Ticket Médio</p>
-            <p id="ticketMedio" class="text-2xl font-bold text-slate-900 mt-2">R$ 0,00</p>
+            <p class="text-slate-500 text-xs uppercase font-semibold">Concluídos no Mês</p>
+            <p id="concluidosMes" class="text-2xl font-bold text-slate-900 mt-2">0</p>
         </div>
         <div class="stat-card p-4">
             <p class="text-slate-500 text-xs uppercase font-semibold">Valor Total</p>
@@ -91,12 +79,13 @@ Orçamentos
                     <th>Cliente</th>
                     <th>Veículo</th>
                     <th>Placa</th>
-                    <th>Data</th>
+                    <th>Data de Entrada</th>
+                    <th>Data de Conclusão</th>
                     <th>Valor (R$)</th>
                     <th>Ações</th>
                 </tr>
             </thead>
-            <tbody id="tabelaOrcamentosBody">
+            <tbody id="tabelaConcluidosBody">
                 {% for orcamento in orcamentos %}
                 <tr>
                     <td>{{ orcamento.id_orcamento }}</td>
@@ -106,35 +95,29 @@ Orçamentos
                     <td data-date="{{ orcamento.dat_orcamento.strftime('%Y-%m-%d') if orcamento.dat_orcamento else '' }}">
                         {{ orcamento.dat_orcamento.strftime('%d/%m/%Y') if orcamento.dat_orcamento else '-' }}
                     </td>
+                    <td data-date="{{ orcamento.pedidos[0].data_conclusao.strftime('%Y-%m-%d') if orcamento.pedidos and orcamento.pedidos[0].data_conclusao else '' }}">
+                        {% if orcamento.pedidos and orcamento.pedidos[0].data_conclusao %}
+                            {{ orcamento.pedidos[0].data_conclusao.strftime('%d/%m/%Y') }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
                     <td>{{ "%.2f"|format(orcamento.valor|float) }}</td>
                     <td>
                         <div class="cliente-icons">
                             <a href="{{ url_for('main.visualizar_orcamento', id_orcamento=orcamento.id_orcamento) }}" 
                                class="icon-btn" 
-                               data-tooltip="Visualizar orçamento">
+                               data-tooltip="Visualizar detalhes">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            <a href="{{ url_for('main.gerar_pdf_orcamento', id_orcamento=orcamento.id_orcamento) }}" 
-                               class="icon-btn" 
-                               data-tooltip="Exportar PDF">
-                                <i class="fas fa-file-pdf"></i>
-                            </a>
-                            <form id="form-approve-{{ orcamento.id_orcamento }}" method="POST" action="{{ url_for('main.aceitar_orcamento', id_orcamento=orcamento.id_orcamento) }}" style="display: none;"></form>
-                            <form id="form-reject-{{ orcamento.id_orcamento }}" method="POST" action="{{ url_for('main.recusar_orcamento', id_orcamento=orcamento.id_orcamento) }}" style="display: none;"></form>
-                            <button type="button" class="icon-btn" data-tooltip="Aprovar orçamento" onclick="openApproveBudgetModal('{{ orcamento.id_orcamento }}', '{{ orcamento.veiculo.cliente.nome }}'); return false;">
-                                <i class="fas fa-check"></i>
-                            </button>
-                            <button type="button" class="icon-btn" data-tooltip="Recusar orçamento" onclick="openRejectBudgetModal('{{ orcamento.id_orcamento }}', '{{ orcamento.veiculo.cliente.nome }}'); return false;">
-                                <i class="fas fa-times"></i>
-                            </button>
                         </div>
                     </td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="7" style="text-align: center; padding: 2rem; color: #94a3b8;">
+                    <td colspan="8" style="text-align: center; padding: 2rem; color: #94a3b8;">
                         <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
-                        Nenhum orçamento cadastrado
+                        Nenhum pedido concluído
                     </td>
                 </tr>
                 {% endfor %}
@@ -147,13 +130,13 @@ Orçamentos
         <div class="text-sm text-slate-500">
             {% set first_item = ((pagination.page - 1) * pagination.per_page) + 1 if pagination.total else 0 %}
             {% set last_item = (pagination.page * pagination.per_page) if (pagination.page * pagination.per_page) < pagination.total else pagination.total %}
-            Mostrando {{ first_item }}-{{ last_item }} de {{ pagination.total }} orçamentos
+            Mostrando {{ first_item }}-{{ last_item }} de {{ pagination.total }} concluídos
         </div>
 
         <div class="flex items-center gap-1 flex-wrap">
             {% if pagination.has_prev %}
                 <a class="px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                   href="{{ url_for('main.lista_orcamentos', page=pagination.prev_num, all=request.args.get('all')) }}">Anterior</a>
+                   href="{{ url_for('main.pedidos_concluidos', page=pagination.prev_num) }}">Anterior</a>
             {% else %}
                 <span class="px-3 py-2 rounded-lg border border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed">Anterior</span>
             {% endif %}
@@ -164,7 +147,7 @@ Orçamentos
                         <span class="px-3 py-2 rounded-lg bg-slate-900 text-white">{{ p }}</span>
                     {% else %}
                         <a class="px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                           href="{{ url_for('main.lista_orcamentos', page=p, all=request.args.get('all')) }}">{{ p }}</a>
+                           href="{{ url_for('main.pedidos_concluidos', page=p) }}">{{ p }}</a>
                     {% endif %}
                 {% else %}
                     <span class="px-2 text-slate-400">…</span>
@@ -173,7 +156,7 @@ Orçamentos
 
             {% if pagination.has_next %}
                 <a class="px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                   href="{{ url_for('main.lista_orcamentos', page=pagination.next_num, all=request.args.get('all')) }}">Próxima</a>
+                   href="{{ url_for('main.pedidos_concluidos', page=pagination.next_num) }}">Próxima</a>
             {% else %}
                 <span class="px-3 py-2 rounded-lg border border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed">Próxima</span>
             {% endif %}
@@ -319,11 +302,11 @@ Orçamentos
         updateStats();
         setupFilters();
         setupSort();
-        sortData(); // padrão: mais novo primeiro
+        sortData();
     });
 
     function sortData() {
-        const tbody = document.getElementById('tabelaOrcamentosBody');
+        const tbody = document.getElementById('tabelaConcluidosBody');
         const rows = Array.from(tbody.querySelectorAll('tr')).filter(r => !r.querySelector('td[colspan]'));
         const sortSelect = document.getElementById('sortSelect');
         const sortBy = sortSelect ? sortSelect.value : 'data_desc';
@@ -351,13 +334,13 @@ Orçamentos
 
     function updateStats() {
         const stats = {{ stats|tojson }};
-        const total = Number(stats.total_orcamentos || 0);
-        const orcamentosMes = Number(stats.orcamentos_mes || 0);
-        const ticketMedio = Number(stats.ticket_medio || 0);
+
+        const total = Number(stats.total_concluidos || 0);
+        const concluidosMes = Number(stats.concluidos_mes || 0);
         const valorTotal = Number(stats.valor_total || 0);
-        document.getElementById('totalOrcamentos').textContent = total;
-        document.getElementById('orcamentosMes').textContent = orcamentosMes;
-        document.getElementById('ticketMedio').textContent = 'R$ ' + ticketMedio.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+
+        document.getElementById('totalConcluidos').textContent = total;
+        document.getElementById('concluidosMes').textContent = concluidosMes;
         document.getElementById('valorTotal').textContent = 'R$ ' + valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2});
     }
 
@@ -365,32 +348,55 @@ Orçamentos
         const filterCliente = document.getElementById('filterCliente');
         const filterDataInicio = document.getElementById('filterDataInicio');
         const filterDataFim = document.getElementById('filterDataFim');
-        if (filterCliente) filterCliente.addEventListener('input', applyFilters);
-        if (filterDataInicio) filterDataInicio.addEventListener('change', applyFilters);
-        if (filterDataFim) filterDataFim.addEventListener('change', applyFilters);
+
+        if (filterCliente) {
+            filterCliente.addEventListener('input', applyFilters);
+        }
+        if (filterDataInicio) {
+            filterDataInicio.addEventListener('change', applyFilters);
+        }
+        if (filterDataFim) {
+            filterDataFim.addEventListener('change', applyFilters);
+        }
     }
 
     function applyFilters() {
+        const removeAccents = str => str.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
         const filterCliente = removeAccents(document.getElementById('filterCliente').value.toLowerCase());
         const filterDataInicio = document.getElementById('filterDataInicio').value;
         const filterDataFim = document.getElementById('filterDataFim').value;
-        const rows = document.querySelectorAll('#tabelaOrcamentosBody tr');
+        const rows = document.querySelectorAll('#tabelaConcluidosBody tr');
+
         rows.forEach(row => {
             if (row.querySelector('td[colspan]')) return;
+
             const clienteText = removeAccents(row.cells[1]?.textContent.toLowerCase() || '');
             const veiculoText = removeAccents(row.cells[2]?.textContent.toLowerCase() || '');
             const placaText = removeAccents(row.cells[3]?.textContent.toLowerCase() || '');
-            const dataAttr = row.cells[4]?.dataset?.date || '';
-            const matchCliente = !filterCliente || clienteText.includes(filterCliente) || veiculoText.includes(filterCliente) || placaText.includes(filterCliente);
+            const dataConclusaoAttr = row.cells[5]?.dataset?.date || '';
+
+            const matchCliente = !filterCliente ||
+                clienteText.includes(filterCliente) ||
+                veiculoText.includes(filterCliente) ||
+                placaText.includes(filterCliente);
+
             let matchData = true;
             if (filterDataInicio || filterDataFim) {
-                if (!dataAttr) { matchData = false; }
-                else {
-                    const data = new Date(dataAttr + 'T00:00:00');
-                    if (filterDataInicio && data < new Date(filterDataInicio + 'T00:00:00')) matchData = false;
-                    if (filterDataFim && data > new Date(filterDataFim + 'T23:59:59')) matchData = false;
+                if (!dataConclusaoAttr) {
+                    matchData = false;
+                } else {
+                    const data = new Date(dataConclusaoAttr + 'T00:00:00');
+                    if (filterDataInicio) {
+                        const inicio = new Date(filterDataInicio + 'T00:00:00');
+                        if (data < inicio) matchData = false;
+                    }
+                    if (filterDataFim) {
+                        const fim = new Date(filterDataFim + 'T23:59:59');
+                        if (data > fim) matchData = false;
+                    }
                 }
             }
+
             row.style.display = (matchCliente && matchData) ? '' : 'none';
         });
     }

@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}
+Selecionar Veículo - Novo Orçamento
+{% endblock %}
+
+{% block page_title %}
+Selecionar Veículo
+{% endblock %}
+
+{% block content %}
+
+<div class="table-container">
+
+    <div class="screen-header" style="margin-bottom: 2rem;">
+        <div>
+            <h2 class="screen-title title-font" style="margin-bottom: 0.5rem;">Novo Orçamento</h2>
+            <p class="screen-subtitle">Cliente: <strong>{{ cliente.nome }}</strong> - Selecione o veículo</p>
+        </div>
+        <a href="{{ url_for('main.novo_pedido') }}" class="btn-outline" style="padding: 0.5rem 1rem;">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+    </div>
+
+    <!-- PESQUISA -->
+    <div class="panel filter-panel" style="margin-bottom: 1.5rem; padding: 1.5rem;">
+        <div class="input-icon">
+            <i class="fas fa-search"></i>
+            <input
+                type="text"
+                id="filterVeiculo"
+                placeholder="Pesquisar por placa, marca, modelo ou cor..."
+                autofocus
+            >
+        </div>
+        <p id="searchCount" class="search-count-text" style="display: none;"></p>
+    </div>
+
+    <!-- VEÍCULOS DO CLIENTE -->
+    <div class="table-wrapper">
+        <table class="table-clientes">
+            <thead>
+                <tr>
+                    <th>Placa</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Ano</th>
+                    <th>Cor</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody id="tabelaVeiculosBody">
+                {% for veiculo in cliente.veiculos if 'descadastrado' not in veiculo.placa.lower() %}
+                <tr>
+                    <td><strong>{{ veiculo.placa.upper() }}</strong></td>
+                    <td>{{ veiculo.marca }}</td>
+                    <td>{{ veiculo.modelo }}</td>
+                    <td>{{ veiculo.ano if veiculo.ano else '-' }}</td>
+                    <td>{{ veiculo.cor if veiculo.cor else '-' }}</td>
+                    <td>
+                        <a href="{{ url_for('main.form_orcamento', id_veiculo=veiculo.id_veiculo) }}"
+                           class="btn-primary"
+                           style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                            Criar Orçamento
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 2rem; color: #94a3b8;">
+                        <i class="fas fa-car" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+                        Nenhum veículo cadastrado para este cliente
+                        <br>
+                        <a href="{{ url_for('main.novo_veiculo', id_cliente=cliente.id_cliente) }}"
+                           class="btn-primary"
+                           style="margin-top: 1rem; display: inline-block;">
+                            Cadastrar Veículo
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<style>
+    .filter-panel {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    }
+
+    .filter-panel .input-icon {
+        position: relative;
+    }
+
+    .filter-panel .input-icon i {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 0.9rem;
+    }
+
+    .filter-panel .input-icon input {
+        width: 100%;
+        padding: 0.7rem 0.75rem 0.7rem 2.2rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 0.5rem;
+        font-size: 0.95rem;
+        background: #ffffff;
+        transition: all 0.2s ease;
+    }
+
+    .filter-panel .input-icon input::placeholder {
+        color: #cbd5e1;
+    }
+
+    .filter-panel .input-icon input:focus {
+        border-color: #0ea5e9;
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        outline: none;
+    }
+
+    .search-count-text {
+        margin: 0.6rem 0 0;
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('filterVeiculo');
+    const tbody = document.getElementById('tabelaVeiculosBody');
+    const countEl = document.getElementById('searchCount');
+    if (!input || !tbody) return;
+
+    const removeAccents = str => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+    input.addEventListener('input', function() {
+        const term = removeAccents(this.value.toLowerCase().trim());
+        const rows = tbody.querySelectorAll('tr');
+        let visible = 0;
+
+        rows.forEach(row => {
+            if (row.querySelector('td[colspan]')) return;
+
+            const placa  = removeAccents((row.cells[0]?.textContent || '').toLowerCase());
+            const marca  = removeAccents((row.cells[1]?.textContent || '').toLowerCase());
+            const modelo = removeAccents((row.cells[2]?.textContent || '').toLowerCase());
+            const ano    = removeAccents((row.cells[3]?.textContent || '').toLowerCase());
+            const cor    = removeAccents((row.cells[4]?.textContent || '').toLowerCase());
+
+            const match = !term || placa.includes(term) || marca.includes(term) || modelo.includes(term) || ano.includes(term) || cor.includes(term);
+            row.style.display = match ? '' : 'none';
+            if (match) visible++;
+        });
+
+        if (term) {
+            countEl.style.display = 'block';
+            countEl.textContent = visible + ' veículo' + (visible !== 1 ? 's' : '') + ' encontrado' + (visible !== 1 ? 's' : '');
+        } else {
+            countEl.style.display = 'none';
+        }
+    });
+});
+</script>
+
+{% endblock %}

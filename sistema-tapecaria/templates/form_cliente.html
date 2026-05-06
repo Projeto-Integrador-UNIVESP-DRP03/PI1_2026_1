@@ -10,100 +10,575 @@
 
 {% block content %}
 
-<div class="card">
+<div class="cliente-form-container">
 
-    <form method="POST"
-          action="{{ url_for(acao, id_cliente=cliente.id_cliente if cliente else None) }}">
+    <!-- Cabeçalho -->
+    <div class="screen-header">
+        <div>
+            <p class="screen-subtitle">Preencha os dados do cliente abaixo</p>
+        </div>
+        <div class="header-actions">
+            <a href="{{ url_for('main.listar_clientes') }}" class="btn-outline">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+            <button type="submit" form="formCliente" class="btn-primary">
+                <i class="fas fa-save"></i> {{ botao }}
+            </button>
+        </div>
+    </div>
 
-        <label for="cod_cliente">CPF/CNPJ</label>
-        <input 
-            type="text"
-            id="cod_cliente"
-            name="cod_cliente"
-            value="{{ cliente.cod_cliente if cliente else cod_cliente }}"
-            {% if cliente %}readonly{% endif %}
-        >
+    <div class="form-card-principal">
+        <form id="formCliente" method="POST" action="
+            {%- if acao == 'main.salvar_cliente' -%}
+                {{ url_for('main.salvar_cliente') }}
+            {%- else -%}
+                {{ url_for('main.atualizar_cliente', id_cliente=cliente.id_cliente) }}
+            {%- endif -%}
+        ">
 
-        <label for="nome">Nome</label>
-        <input 
-            type="text"
-            id="nome"
-            name="nome"
-            value="{{ cliente.nome if cliente else '' }}"
-        >
+            <!-- Dados Pessoais -->
+            <div class="form-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <h3>Dados Pessoais</h3>
+                </div>
 
-        <label for="telefone">Telefone</label>
-        <input 
-            type="text"
-            id="telefone"
-            name="telefone"
-            value="{{cliente.telefones[0].telefone if cliente.telefones else ' '}}"
-        >
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label for="nome">Nome Completo <span class="required">*</span></label>
+                        <div class="input-icon">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="nome" name="nome" class="form-input"
+                                value="{{ cliente.nome if cliente else '' }}" required
+                                placeholder="Digite o nome completo">
+                        </div>
+                    </div>
 
-        <label for="rua">Rua</label>
-        <input 
-            type="text"
-            id="rua"
-            name="rua"
-            value="{{ cliente.enderecos[0].rua if cliente and cliente.enderecos else '' }}"
-        >
+                    <div class="input-group">
+                        <label for="cod_cliente">CPF/CNPJ <span class="required">*</span></label>
+                        <div class="input-icon">
+                            <i class="fas fa-id-card"></i>
+                            <input type="text" id="cod_cliente" name="cod_cliente" class="form-input"
+                                value="{{ cliente.cod_cliente if cliente else '' }}" required
+                                placeholder="000.000.000-00 ou 00.000.000/0000-00">
+                        </div>
+                    </div>
 
-        <label for="numero">Número</label>
-        <input 
-            type="text"
-            id="numero"
-            name="numero"
-            value="{{ cliente.enderecos[0].numero if cliente and cliente.enderecos else '' }}"
-        >
+                    <div class="input-group">
+                        <label for="telefone">Telefone</label>
+                        <div class="input-icon">
+                            <i class="fas fa-phone"></i>
+                            <input type="text" id="telefone" name="telefone" class="form-input"
+                                value="{{ cliente.telefones[0].telefone if cliente and cliente.telefones else '' }}"
+                                placeholder="(00) 00000-0000">
+                        </div>
+                    </div>
 
-        <label for="bairro">Bairro</label>
-        <input 
-            type="text"
-            id="bairro"
-            name="bairro"
-            value="{{ cliente.enderecos[0].bairro if cliente and cliente.enderecos else '' }}"
-        >
+                    <!--Formulário de e-mail (ainda não implementado)
+                    <div class="input-group">
+                        <label for="email">E-mail</label>
+                        <div class="input-icon">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="email" name="email" class="form-input"
+                                value="{{ cliente.email if cliente else '' }}" placeholder="cliente@email.com">
+                        </div>
+                    </div> -->
+                </div>
+            </div>
 
-        <label for="cidade">Cidade</label>
-        <input 
-            type="text"
-            id="cidade"
-            name="cidade"
-            value="{{ cliente.enderecos[0].cidade if cliente and cliente.enderecos else '' }}"
-        >
+            <!-- Endereço -->
+            <div class="form-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h3>Endereço</h3>
+                </div>
 
-        <label for="estado">Estado</label>
-        <input 
-            type="text"
-            id="estado"
-            name="estado"
-            value="{{ cliente.enderecos[0].estado if cliente and cliente.enderecos else '' }}"
-        >
+                <div class="form-grid">
+                    <div class="input-group full-width">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <label for="cep">CEP</label>
+                            <a href="https://buscacepinter.correios.com.br/app/endereco/index.php" target="_blank"
+                                class="cep-link">
+                                <i class="fas fa-search-location"></i> Não sei o CEP
+                            </a>
+                        </div>
+                        <div class="input-icon">
+                            <i class="fas fa-mail-bulk"></i>
+                            <input type="text" id="cep" name="cep" class="form-input"
+                                value="{{ cliente.enderecos[0].cep if cliente and cliente.enderecos else '' }}"
+                                placeholder="00000-000">
+                        </div>
+                    </div>
 
-        <label for="cep">CEP</label>
-        <input 
-            type="text"
-            id="cep"
-            name="cep"
-            value="{{ cliente.enderecos[0].cep if cliente and cliente.enderecos else '' }}"
-        >
+                    <div class="input-group full-width">
+                        <label for="rua">Rua</label>
+                        <div class="input-icon">
+                            <i class="fas fa-road"></i>
+                            <input type="text" id="rua" name="rua" class="form-input"
+                                value="{{ cliente.enderecos[0].rua if cliente and cliente.enderecos else '' }}"
+                                placeholder="Digite o logradouro">
+                        </div>
+                    </div>
 
-        <label for="complemento">Complemento</label>
-        <input 
-            type="text"
-            id="complemento"
-            name="complemento"
-            value="{{ cliente.enderecos[0].complemento if cliente and cliente.enderecos else '' }}"
-        >
+                    <div class="input-group">
+                        <label for="numero">Número</label>
+                        <div class="input-icon">
+                            <i class="fas fa-hashtag"></i>
+                            <input type="text" id="numero" name="numero" class="form-input"
+                                value="{{ cliente.enderecos[0].numero if cliente and cliente.enderecos else '' }}"
+                                placeholder="Nº">
+                        </div>
+                    </div>
 
-        <br><br>
+                    <div class="input-group">
+                        <label for="complemento">Complemento</label>
+                        <div class="input-icon">
+                            <i class="fas fa-building"></i>
+                            <input type="text" id="complemento" name="complemento" class="form-input"
+                                value="{{ cliente.enderecos[0].complemento if cliente and cliente.enderecos else '' }}"
+                                placeholder="Apto, Bloco, etc">
+                        </div>
+                    </div>
 
-        <button type="submit">
-            {{ botao }}
-        </button>
+                    <div class="input-group">
+                        <label for="bairro">Bairro</label>
+                        <div class="input-icon">
+                            <i class="fas fa-location-dot"></i>
+                            <input type="text" id="bairro" name="bairro" class="form-input"
+                                value="{{ cliente.enderecos[0].bairro if cliente and cliente.enderecos else '' }}"
+                                placeholder="Digite o bairro">
+                        </div>
+                    </div>
 
-    </form>
+                    <div class="input-group">
+                        <label for="cidade">Cidade</label>
+                        <div class="input-icon">
+                            <i class="fas fa-city"></i>
+                            <input type="text" id="cidade" name="cidade" class="form-input"
+                                value="{{ cliente.enderecos[0].cidade if cliente and cliente.enderecos else '' }}"
+                                placeholder="Digite a cidade">
+                        </div>
+                    </div>
 
+                    <div class="input-group">
+                        <label for="estado">Estado</label>
+                        <div class="input-icon">
+                            <i class="fas fa-flag"></i>
+                            <select id="estado" name="estado" class="form-select">
+                                <option value="">Selecione</option>
+                                <option value="AC" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='AC' %}selected{% endif %}>Acre</option>
+                                <option value="AL" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='AL' %}selected{% endif %}>Alagoas</option>
+                                <option value="AP" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='AP' %}selected{% endif %}>Amapá</option>
+                                <option value="AM" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='AM' %}selected{% endif %}>Amazonas</option>
+                                <option value="BA" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='BA' %}selected{% endif %}>Bahia</option>
+                                <option value="CE" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='CE' %}selected{% endif %}>Ceará</option>
+                                <option value="DF" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='DF' %}selected{% endif %}>Distrito Federal</option>
+                                <option value="ES" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='ES' %}selected{% endif %}>Espírito Santo</option>
+                                <option value="GO" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='GO' %}selected{% endif %}>Goiás</option>
+                                <option value="MA" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='MA' %}selected{% endif %}>Maranhão</option>
+                                <option value="MT" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='MT' %}selected{% endif %}>Mato Grosso</option>
+                                <option value="MS" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='MS' %}selected{% endif %}>Mato Grosso do Sul</option>
+                                <option value="MG" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='MG' %}selected{% endif %}>Minas Gerais</option>
+                                <option value="PA" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='PA' %}selected{% endif %}>Pará</option>
+                                <option value="PB" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='PB' %}selected{% endif %}>Paraíba</option>
+                                <option value="PR" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='PR' %}selected{% endif %}>Paraná</option>
+                                <option value="PE" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='PE' %}selected{% endif %}>Pernambuco</option>
+                                <option value="PI" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='PI' %}selected{% endif %}>Piauí</option>
+                                <option value="RJ" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='RJ' %}selected{% endif %}>Rio de Janeiro</option>
+                                <option value="RN" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='RN' %}selected{% endif %}>Rio Grande do Norte</option>
+                                <option value="RS" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='RS' %}selected{% endif %}>Rio Grande do Sul</option>
+                                <option value="RO" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='RO' %}selected{% endif %}>Rondônia</option>
+                                <option value="RR" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='RR' %}selected{% endif %}>Roraima</option>
+                                <option value="SC" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='SC' %}selected{% endif %}>Santa Catarina</option>
+                                <option value="SP" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='SP' %}selected{% endif %}>São Paulo</option>
+                                <option value="SE" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='SE' %}selected{% endif %}>Sergipe</option>
+                                <option value="TO" {% if cliente and cliente.enderecos and
+                                    cliente.enderecos[0].estado=='TO' %}selected{% endif %}>Tocantins</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
 </div>
+
+<script>
+    // Máscara para CPF/CNPJ
+    const codClienteInput = document.getElementById('cod_cliente');
+    if (codClienteInput) {
+        codClienteInput.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length <= 11) {
+                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            } else {
+                value = value.replace(/^(\d{2})(\d)/, '$1.$2');
+                value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+                value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
+                value = value.replace(/(\d{4})(\d)/, '$1-$2');
+            }
+            e.target.value = value;
+        });
+    }
+
+    // Máscara para telefone
+    const telefoneInput = document.getElementById('telefone');
+    if (telefoneInput) {
+        telefoneInput.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length <= 10) {
+                value = value.replace(/(\d{2})(\d)/, '($1) $2');
+                value = value.replace(/(\d{4})(\d)/, '$1-$2');
+            } else {
+                value = value.replace(/(\d{2})(\d)/, '($1) $2');
+                value = value.replace(/(\d{5})(\d)/, '$1-$2');
+            }
+            e.target.value = value;
+        });
+    }
+
+    // Máscara para CEP
+    const cepInput = document.getElementById('cep');
+    if (cepInput) {
+        cepInput.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+
+            // Aplica a máscara
+            if (value.length > 5) {
+                value = value.replace(/^(\d{5})(\d)/, '$1-$2');
+            }
+            e.target.value = value;
+
+            // Se tiver 8 dígitos (sem contar o traço), busca o CEP
+            const cleanCep = value.replace(/\D/g, '');
+            if (cleanCep.length === 8) {
+                buscarCep(cleanCep);
+            }
+        });
+    }
+
+    function buscarCep(cep) {
+        // Campos a serem preenchidos
+        const ruaInput = document.getElementById('rua');
+        const bairroInput = document.getElementById('bairro');
+        const cidadeInput = document.getElementById('cidade');
+        const estadoInput = document.getElementById('estado');
+
+        // Mostra um indicador visual de carregamento (opcional, mas bom para UX)
+        [ruaInput, bairroInput, cidadeInput, estadoInput].forEach(input => {
+            input.placeholder = "Buscando...";
+            input.classList.add('loading-field');
+        });
+
+        fetch(`https://viacep.com.br/ws/${cep}/json/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.erro) {
+                    alert("CEP não encontrado.");
+                    return;
+                }
+
+                // Preenche os campos
+                if (ruaInput) ruaInput.value = data.logradouro || '';
+                if (bairroInput) bairroInput.value = data.bairro || '';
+                if (cidadeInput) cidadeInput.value = data.localidade || '';
+                if (estadoInput) {
+                    // Tenta selecionar o estado no dropdown
+                    estadoInput.value = data.uf || '';
+                }
+
+                // Foca no número se a rua foi preenchida
+                if (data.logradouro) {
+                    document.getElementById('numero').focus();
+                }
+            })
+            .catch(error => {
+                console.error("Erro ao buscar CEP:", error);
+                alert("Erro ao consultar o CEP. Verifique sua conexão.");
+            })
+            .finally(() => {
+                // Limpa o placeholder e a classe de carregamento
+                [ruaInput, bairroInput, cidadeInput, estadoInput].forEach(input => {
+                    input.placeholder = "";
+                    input.classList.remove('loading-field');
+
+                    // Restaura placeholders originais se necessário
+                    if (input.id === 'rua') input.placeholder = "Digite o logradouro";
+                    if (input.id === 'bairro') input.placeholder = "Digite o bairro";
+                    if (input.id === 'cidade') input.placeholder = "Digite a cidade";
+                });
+            });
+    }
+</script>
+
+<style>
+    /* ============================================
+   ESTILOS DO FORMULÁRIO DE CLIENTE
+   ============================================ */
+    .cliente-form-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .screen-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .screen-subtitle {
+        color: #64748b;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .btn-primary,
+    .btn-outline {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #4f46e5, #4338ca);
+        color: white;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+    }
+
+    .btn-outline {
+        background: white;
+        color: #64748b;
+        border: 1px solid #e2e8f0;
+    }
+
+    .btn-outline:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+    }
+
+    /* Form Card Principal */
+    .form-card-principal {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+    }
+
+    /* Seções do Formulário */
+    .form-section {
+        padding: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .form-section:last-child {
+        border-bottom: none;
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .section-icon {
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #e11d2e, #b91c1c);
+        border-radius: 0.5rem;
+        color: white;
+    }
+
+    .section-header h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0;
+    }
+
+    /* Form Grid */
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+
+    .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .input-group.full-width {
+        grid-column: span 2;
+    }
+
+    .input-group label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #374151;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .required {
+        color: #ef4444;
+    }
+
+    .input-icon {
+        position: relative;
+    }
+
+    .input-icon i {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 1rem;
+        pointer-events: none;
+    }
+
+    .form-input,
+    .form-select {
+        width: 100%;
+        padding: 0.625rem 0.75rem 0.625rem 2.25rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
+        background: #f8fafc;
+        color: #0f172a;
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+        outline: none;
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        background: white;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .screen-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .header-actions {
+            width: 100%;
+            justify-content: flex-end;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .input-group.full-width {
+            grid-column: span 1;
+        }
+
+        .form-section {
+            padding: 1rem;
+        }
+    }
+
+    .cep-link {
+        font-size: 0.7rem;
+        color: #4f46e5;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .cep-link:hover {
+        color: #4338ca;
+        text-decoration: underline;
+    }
+
+    /* Animação de carregamento para busca de CEP */
+    .loading-field {
+        animation: pulse-bg 1.5s infinite;
+        background-color: #f1f5f9 !important;
+    }
+
+    @keyframes pulse-bg {
+        0% {
+            background-color: #f1f5f9;
+        }
+
+        50% {
+            background-color: #e2e8f0;
+        }
+
+        100% {
+            background-color: #f1f5f9;
+        }
+    }
+</style>
 
 {% endblock %}
