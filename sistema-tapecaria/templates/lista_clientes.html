@@ -223,6 +223,7 @@ Clientes Cadastrados
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const sortSelect = document.getElementById('sortSelect');
+        const tbody = document.getElementById('tabelaClientesBody');
         const removeAccents = str => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
         function sortTable() {
