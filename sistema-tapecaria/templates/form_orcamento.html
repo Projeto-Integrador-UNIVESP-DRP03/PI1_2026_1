@@ -165,64 +165,24 @@
             </div>
 
             <div class="tecidos-grid">
-                <label class="radio-card">
-                    {% set tecido_nome = 'Courvin - Preto' %}
-                    <input type="radio" name="tecidos" value="Courvin - Preto" {% if tecidos_selecionados and 'Courvin - Preto' in tecidos_selecionados %}checked{% endif %}>
-                    <span class="radio-content" style="background: #2d2d2d; color: white;">Courvin - Preto</span>
+                {% for tecido in tecidos %}
+                <label class="checkbox-card-tecido">
+                    <input type="checkbox" name="tecidos" value="{{ tecido.id_tecido }}" {% if tecidos_selecionados and tecido.id_tecido in tecidos_selecionados %}checked{% endif %}>
+                    <span class="checkbox-content">
+                        <i class="fas fa-tshirt"></i>
+                        <strong>{{ tecido.material }}{% if tecido.cor %} - {{ tecido.cor }}{% endif %}</strong>
+                    </span>
                 </label>
-
-                <label class="radio-card">
-                    {% set tecido_nome = 'Courvin - Cinza' %}
-                    <input type="radio" name="tecidos" value="Courvin - Cinza" {% if tecidos_selecionados and 'Courvin - Cinza' in tecidos_selecionados %}checked{% endif %}>
-                    <span class="radio-content" style="background: #6b7280; color: white;">Courvin - Cinza</span>
-                </label>
-
-                <label class="radio-card">
-                    {% set tecido_nome = 'Courvin - Bege' %}
-                    <input type="radio" name="tecidos" value="Courvin - Bege" {% if tecidos_selecionados and 'Courvin - Bege' in tecidos_selecionados %}checked{% endif %}>
-                    <span class="radio-content" style="background: #d4a373; color: #5c3a21;">Courvin - Bege</span>
-                </label>
-
-                <label class="radio-card">
-                    {% set tecido_nome = 'Couro Natural - Preto' %}
-                    <input type="radio" name="tecidos" value="Couro Natural - Preto" {% if tecidos_selecionados and 'Couro Natural - Preto' in tecidos_selecionados %}checked{% endif %}>
-                    <span class="radio-content" style="background: #1a1a1a; color: white;">Couro Natural - Preto</span>
-                </label>
-
-                <label class="radio-card">
-                    {% set tecido_nome = 'Couro Natural - Marrom' %}
-                    <input type="radio" name="tecidos" value="Couro Natural - Marrom" {% if tecidos_selecionados and 'Couro Natural - Marrom' in tecidos_selecionados %}checked{% endif %}>
-                    <span class="radio-content" style="background: #8b5a2b; color: white;">Couro Natural - Marrom</span>
-                </label>
-
-                <label class="radio-card">
-                    {% set tecido_nome = 'Suede - Preto' %}
-                    <input type="radio" name="tecidos" value="Suede - Preto" {% if tecidos_selecionados and 'Suede - Preto' in tecidos_selecionados %}checked{% endif %}>
-                    <span class="radio-content" style="background: #1e1e1e; color: white;">Suede - Preto</span>
-                </label>
-
-                <label class="radio-card">
-                    {% set tecido_nome = 'Suede - Vermelho' %}
-                    <input type="radio" name="tecidos" value="Suede - Vermelho" {% if tecidos_selecionados and 'Suede - Vermelho' in tecidos_selecionados %}checked{% endif %}>
-                    <span class="radio-content" style="background: #991b1b; color: white;">Suede - Vermelho</span>
-                </label>
-
-                <label class="radio-card">
-                    {% set tecido_nome = 'Tecido Automotivo - Cinza' %}
-                    <input type="radio" name="tecidos" value="Tecido Automotivo - Cinza" {% if tecidos_selecionados and 'Tecido Automotivo - Cinza' in tecidos_selecionados %}checked{% endif %}>
-                    <span class="radio-content" style="background: #9ca3af; color: #1f2937;">Tecido Automotivo - Cinza</span>
-                </label>
-
-                <label class="radio-card">
-                    {% set tecido_nome = 'Tecido Automotivo - Grafite' %}
-                    <input type="radio" name="tecidos" value="Tecido Automotivo - Grafite" {% if tecidos_selecionados and 'Tecido Automotivo - Grafite' in tecidos_selecionados %}checked{% endif %}>
-                    <span class="radio-content" style="background: #374151; color: white;">Tecido Automotivo - Grafite</span>
-                </label>
+                {% endfor %}
             </div>
 
-            <div class="obs-group">
-                <label for="obs_tecidos">Observação (máx. 30 caracteres)</label>
-                <input id="obs_tecidos" name="obs_tecidos" type="text" class="obs-group-input" maxlength="30" value="{{ obs_tecidos or '' }}">
+            <div id="tecidos-obs-container">
+                {% for tecido in tecidos %}
+                <div class="obs-tecido" id="obs-tecido-{{ tecido.id_tecido }}" {% if tecidos_selecionados and tecido.id_tecido in tecidos_selecionados %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                    <label for="obs_tecido_{{ tecido.id_tecido }}">Observação para {{ tecido.material }}{% if tecido.cor %} - {{ tecido.cor }}{% endif %} (máx. 50 caracteres)</label>
+                    <input id="obs_tecido_{{ tecido.id_tecido }}" name="obs_tecido_{{ tecido.id_tecido }}" type="text" class="obs-group-input" maxlength="50" value="{{ obs_tecidos.get(tecido.id_tecido, '') }}">
+                </div>
+                {% endfor %}
             </div>
 
         </div>
@@ -269,8 +229,8 @@
             </div>
 
             <div class="obs-group">
-                <label for="obs_costuras">Observação (máx. 30 caracteres)</label>
-                <input id="obs_costuras" name="obs_costuras" type="text" class="obs-group-input" maxlength="30" value="{{ obs_costuras or '' }}">
+                <label for="obs_costuras">Observação (máx. 50 caracteres)</label>
+                <input id="obs_costuras" name="obs_costuras" type="text" class="obs-group-input" maxlength="50" value="{{ obs_costuras or '' }}">
             </div>
 
         </div>
@@ -285,73 +245,24 @@
             </div>
 
             <div class="cores-grid">
-                <label class="cor-item">
-                    {% set cor_nome = 'Preto' %}
-                    <input type="radio" name="cores" value="Preto" {% if cores_selecionadas and 'Preto' in cores_selecionadas %}checked{% endif %}>
-                    <span class="cor-badge" style="background: #1f2937;"></span>
-                    <span>Preto</span>
+                {% for cor in cores %}
+                <label class="checkbox-card-cor">
+                    <input type="checkbox" name="cores" value="{{ cor.id_cor }}" {% if cores_selecionadas and cor.id_cor in cores_selecionadas %}checked{% endif %}>
+                    <span class="checkbox-content">
+                        <i class="fas fa-palette"></i>
+                        <strong>{{ cor.descricao }}</strong>
+                    </span>
                 </label>
-
-                <label class="cor-item">
-                    {% set cor_nome = 'Cinza' %}
-                    <input type="radio" name="cores" value="Cinza" {% if cores_selecionadas and 'Cinza' in cores_selecionadas %}checked{% endif %}>
-                    <span class="cor-badge" style="background: #6b7280;"></span>
-                    <span>Cinza</span>
-                </label>
-
-                <label class="cor-item">
-                    {% set cor_nome = 'Grafite' %}
-                    <input type="radio" name="cores" value="Grafite" {% if cores_selecionadas and 'Grafite' in cores_selecionadas %}checked{% endif %}>
-                    <span class="cor-badge" style="background: #374151;"></span>
-                    <span>Grafite</span>
-                </label>
-
-                <label class="cor-item">
-                    {% set cor_nome = 'Bege' %}
-                    <input type="radio" name="cores" value="Bege" {% if cores_selecionadas and 'Bege' in cores_selecionadas %}checked{% endif %}>
-                    <span class="cor-badge" style="background: #d4a373;"></span>
-                    <span>Bege</span>
-                </label>
-
-                <label class="cor-item">
-                    {% set cor_nome = 'Marrom' %}
-                    <input type="radio" name="cores" value="Marrom" {% if cores_selecionadas and 'Marrom' in cores_selecionadas %}checked{% endif %}>
-                    <span class="cor-badge" style="background: #8b5a2b;"></span>
-                    <span>Marrom</span>
-                </label>
-
-                <label class="cor-item">
-                    {% set cor_nome = 'Caramelo' %}
-                    <input type="radio" name="cores" value="Caramelo" {% if cores_selecionadas and 'Caramelo' in cores_selecionadas %}checked{% endif %}>
-                    <span class="cor-badge" style="background: #d97706;"></span>
-                    <span>Caramelo</span>
-                </label>
-
-                <label class="cor-item">
-                    {% set cor_nome = 'Vermelho' %}
-                    <input type="radio" name="cores" value="Vermelho" {% if cores_selecionadas and 'Vermelho' in cores_selecionadas %}checked{% endif %}>
-                    <span class="cor-badge" style="background: #dc2626;"></span>
-                    <span>Vermelho</span>
-                </label>
-
-                <label class="cor-item">
-                    {% set cor_nome = 'Azul' %}
-                    <input type="radio" name="cores" value="Azul" {% if cores_selecionadas and 'Azul' in cores_selecionadas %}checked{% endif %}>
-                    <span class="cor-badge" style="background: #2563eb;"></span>
-                    <span>Azul</span>
-                </label>
-
-                <label class="cor-item">
-                    {% set cor_nome = 'Branco' %}
-                    <input type="radio" name="cores" value="Branco" {% if cores_selecionadas and 'Branco' in cores_selecionadas %}checked{% endif %}>
-                    <span class="cor-badge" style="background: #f3f4f6; border: 1px solid #d1d5db;"></span>
-                    <span>Branco</span>
-                </label>
+                {% endfor %}
             </div>
 
-            <div class="obs-group">
-                <label for="obs_cores">Observação (máx. 30 caracteres)</label>
-                <input id="obs_cores" name="obs_cores" type="text" class="obs-group-input" maxlength="30" value="{{ obs_cores or '' }}">
+            <div id="cores-obs-container">
+                {% for cor in cores %}
+                <div class="obs-cor" id="obs-cor-{{ cor.id_cor }}" {% if cores_selecionadas and cor.id_cor in cores_selecionadas %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                    <label for="obs_cor_{{ cor.id_cor }}">Observação para {{ cor.descricao }} (máx. 50 caracteres)</label>
+                    <input id="obs_cor_{{ cor.id_cor }}" name="obs_cor_{{ cor.id_cor }}" type="text" class="obs-group-input" maxlength="50" value="{{ obs_cores.get(cor.id_cor, '') }}">
+                </div>
+                {% endfor %}
             </div>
 
         </div>
@@ -375,6 +286,15 @@
                             <strong>{{ espuma.tipo }}</strong>
                         </span>
                     </label>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div id="espumas-obs-container">
+                {% for espuma in espumas %}
+                <div class="obs-espuma" id="obs-espuma-{{ espuma.id_espuma }}" {% if espumas_selecionadas and espuma.id_espuma in espumas_selecionadas %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                    <label for="obs_espuma_{{ espuma.id_espuma }}">Observação para {{ espuma.tipo }} (máx. 50 caracteres)</label>
+                    <input id="obs_espuma_{{ espuma.id_espuma }}" name="obs_espuma_{{ espuma.id_espuma }}" type="text" class="obs-group-input" maxlength="50" value="{{ obs_espumas.get(espuma.id_espuma, '') }}">
                 </div>
                 {% endfor %}
             </div>
@@ -440,10 +360,46 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Observação por seção (Tecidos, Costuras, Cores) - sempre editável.
+    // Mostrar/esconder obs para tecidos
+    document.querySelectorAll('input[name="tecidos"]').forEach(cb => {
+        cb.addEventListener('change', function() {
+            const obsDiv = document.getElementById(`obs-tecido-${this.value}`);
+            if (this.checked) {
+                obsDiv.style.display = 'block';
+            } else {
+                obsDiv.style.display = 'none';
+            }
+        });
+    });
+
+    // Mostrar/esconder obs para cores
+    document.querySelectorAll('input[name="cores"]').forEach(cb => {
+        cb.addEventListener('change', function() {
+            const obsDiv = document.getElementById(`obs-cor-${this.value}`);
+            if (this.checked) {
+                obsDiv.style.display = 'block';
+            } else {
+                obsDiv.style.display = 'none';
+            }
+        });
+    });
+
+    // Mostrar/esconder obs para espumas
+    document.querySelectorAll('input[name="espumas"]').forEach(cb => {
+        cb.addEventListener('change', function() {
+            const obsDiv = document.getElementById(`obs-espuma-${this.value}`);
+            if (this.checked) {
+                obsDiv.style.display = 'block';
+            } else {
+                obsDiv.style.display = 'none';
+            }
+        });
+    });
+
+    // Observação por seção (Costuras, Cores) - sempre editável.
     document.querySelectorAll('input.obs-group-input').forEach(inp => {
         inp.addEventListener('input', () => {
-            if (inp.value.length > 30) inp.value = inp.value.slice(0, 30);
+            if (inp.value.length > 50) inp.value = inp.value.slice(0, 50);
         });
     });
 });
@@ -537,51 +493,17 @@ document.addEventListener('DOMContentLoaded', function() {
     aspect-ratio: 1 / 1 !important;
 }
 
-/* Estilo para as opções de espuma */
-.espumas-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 1rem;
-    padding: 1.5rem;
-}
-
-.material-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1rem;
-    padding: 1rem;
-}
-
-.material-option {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.75rem;
-    padding: 1rem;
-}
-
-.material-observacao {
-    margin-top: 0.75rem;
-}
-
-.material-observacao textarea {
-    width: 100%;
-    min-height: 70px;
-    border: 1px solid #cbd5e1;
-    border-radius: 0.5rem;
-    padding: 0.75rem;
-    resize: vertical;
-    background: white;
-}
-
-.checkbox-card-espuma {
+/* Estilo para tecidos */
+.checkbox-card-tecido {
     cursor: pointer;
+    display: block;
 }
 
-.checkbox-card-espuma input {
+.checkbox-card-tecido input {
     display: none;
 }
 
-.checkbox-card-espuma .checkbox-content {
+.checkbox-card-tecido .checkbox-content {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -592,12 +514,90 @@ document.addEventListener('DOMContentLoaded', function() {
     border-radius: 0.75rem;
     transition: all 0.2s ease;
     cursor: pointer;
+    text-align: center;
 }
 
-.checkbox-card-espuma input:checked + .checkbox-content {
+.checkbox-card-tecido input:checked + .checkbox-content {
     background: linear-gradient(135deg, #eef2ff, #e0e7ff);
     border-color: #4f46e5;
     color: #4f46e5;
+}
+
+.checkbox-card-tecido .checkbox-content strong {
+    font-size: 0.9rem;
+}
+
+/* Estilo para cores */
+.checkbox-card-cor {
+    cursor: pointer;
+    display: block;
+}
+
+.checkbox-card-cor input {
+    display: none;
+}
+
+.checkbox-card-cor .checkbox-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.75rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    text-align: center;
+}
+
+.checkbox-card-cor input:checked + .checkbox-content {
+    background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+    border-color: #4f46e5;
+    color: #4f46e5;
+}
+
+.checkbox-card-cor .checkbox-content strong {
+    font-size: 0.9rem;
+}
+
+/* Container para obs de tecidos */
+#tecidos-obs-container {
+    margin-top: 1rem;
+}
+
+.obs-tecido {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+}
+
+/* Container para obs de cores */
+#cores-obs-container {
+    margin-top: 1rem;
+}
+
+.obs-cor {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+}
+
+/* Container para obs de espumas */
+#espumas-obs-container {
+    margin-top: 1rem;
+}
+
+.obs-espuma {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
 }
 
 @media (max-width: 768px) {

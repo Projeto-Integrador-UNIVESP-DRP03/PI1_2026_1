@@ -397,9 +397,10 @@ def form_orcamento(id_veiculo):
         costuras_selecionadas=[],
         cores_selecionadas=[],
         espumas_selecionadas=[],
-        obs_tecidos="",
+        obs_tecidos={},
         obs_costuras="",
-        obs_cores=""
+        obs_cores={},
+        obs_espumas={}
     )
 
 
@@ -421,14 +422,15 @@ def editar_orcamento(id_orcamento):
     cores_itens = OrcamentoCor.query.filter_by(id_orcamento=id_orcamento).all()
     espumas_itens = OrcamentoEspuma.query.filter_by(id_orcamento=id_orcamento).all()
 
-    tecidos_selecionados = [f"{item.tecido.material} - {item.tecido.cor}" if item.tecido and item.tecido.cor else (item.tecido.material if item.tecido else "") for item in tecidos_itens if item.tecido]
+    tecidos_selecionados = [item.id_tecido for item in tecidos_itens]
     costuras_selecionadas = [item.costura.tipo for item in costuras_itens if item.costura]
-    cores_selecionadas = [item.cor.descricao for item in cores_itens if item.cor]
+    cores_selecionadas = [item.id_cor for item in cores_itens]
     espumas_selecionadas = [item.id_espuma for item in espumas_itens if item.id_espuma]
 
-    obs_tecidos = next((item.obs_item for item in tecidos_itens if (item.obs_item or "").strip()), "") or ""
+    obs_tecidos = {item.id_tecido: item.obs_item or "" for item in tecidos_itens}
     obs_costuras = next((item.obs_item for item in costuras_itens if (item.obs_item or "").strip()), "") or ""
-    obs_cores = next((item.obs_item for item in cores_itens if (item.obs_item or "").strip()), "") or ""
+    obs_cores = {item.id_cor: item.obs_item or "" for item in cores_itens}
+    obs_espumas = {item.id_espuma: item.obs_item or "" for item in espumas_itens}
 
     return render_template(
         "form_orcamento.html",
@@ -446,7 +448,8 @@ def editar_orcamento(id_orcamento):
         espumas_selecionadas=espumas_selecionadas,
         obs_tecidos=obs_tecidos,
         obs_costuras=obs_costuras,
-        obs_cores=obs_cores
+        obs_cores=obs_cores,
+        obs_espumas=obs_espumas
     )
 # =========================
 # SALVAR ORÇAMENTO
@@ -488,10 +491,8 @@ def salvar_orcamento():
 
     obs = request.form.get("obs")
 
-    # Observações por seção (30 chars)
-    obs_tecidos = (request.form.get("obs_tecidos") or "").strip()[:30]
-    obs_costuras = (request.form.get("obs_costuras") or "").strip()[:30]
-    obs_cores = (request.form.get("obs_cores") or "").strip()[:30]
+    # Observações por seção (50 chars)
+    obs_costuras = (request.form.get("obs_costuras") or "").strip()[:50]
 
     if id_orcamento:
         orcamento = Orcamento.query.get_or_404(id_orcamento)
@@ -542,9 +543,7 @@ def salvar_orcamento():
     # =========================
     # MAPEAMENTOS PARA MATERIAIS
     # =========================
-    tecido_map = {f"{t.material} - {t.cor}" if t.cor else t.material: t.id_tecido for t in Tecido.query.all()}
     costura_map = {c.tipo: c.id_costura for c in Costura.query.all()}
-    cor_map = {c.descricao: c.id_cor for c in Cor.query.all()}
 
     # =========================
     # TECIDOS
@@ -552,17 +551,13 @@ def salvar_orcamento():
 
     tecidos = request.form.getlist("tecidos")
 
-    for tecido_nome in tecidos:
-        tecido_id = tecido_map.get(tecido_nome)
-        if not tecido_id:
-            continue  # ou erro, mas por enquanto skip
-
+    for tecido_id in tecidos:
+        obs_tecido = request.form.get(f"obs_tecido_{tecido_id}", "").strip()[:50]
         item = OrcamentoTecido(
             id_orcamento=id_orcamento,
-            id_tecido=tecido_id,
-            obs_item=obs_tecidos
+            id_tecido=int(tecido_id),
+            obs_item=obs_tecido
         )
-
         db.session.add(item)
 
     # =========================
@@ -590,17 +585,13 @@ def salvar_orcamento():
 
     cores = request.form.getlist("cores")
 
-    for cor_nome in cores:
-        cor_id = cor_map.get(cor_nome)
-        if not cor_id:
-            continue
-
+    for cor_id in cores:
+        obs_cor = request.form.get(f"obs_cor_{cor_id}", "").strip()[:50]
         item = OrcamentoCor(
             id_orcamento=id_orcamento,
-            id_cor=cor_id,
-            obs_item=obs_cores
+            id_cor=int(cor_id),
+            obs_item=obs_cor
         )
-
         db.session.add(item)
 
     # =========================
@@ -608,17 +599,16 @@ def salvar_orcamento():
     # =========================
 
     if bool_espuma:
-        espumas_selecionadas = request.form.getlist("espumas")
-        for e_id in espumas_selecionadas:
-            try:
-                espuma_id = int(e_id)
-                item = OrcamentoEspuma(
-                    id_orcamento=id_orcamento,
-                    id_espuma=espuma_id
-                )
-                db.session.add(item)
-            except (ValueError, TypeError):
-                continue
+        espumas = request.form.getlist("espumas")
+
+        for espuma_id in espumas:
+            obs_espuma = request.form.get(f"obs_espuma_{espuma_id}", "").strip()[:50]
+            item = OrcamentoEspuma(
+                id_orcamento=id_orcamento,
+                id_espuma=int(espuma_id),
+                obs_item=obs_espuma
+            )
+            db.session.add(item)
 
     db.session.commit()
 
