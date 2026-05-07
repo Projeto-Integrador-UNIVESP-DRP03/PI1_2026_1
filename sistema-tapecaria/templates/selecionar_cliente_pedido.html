@@ -58,10 +58,11 @@ Selecionar Cliente
                         {{ cliente.telefones[0].telefone if cliente.telefones else "Não cadastrado" }}
                     </td>
                     <td>
-                        {% if cliente.veiculos %}
-                            {{ cliente.veiculos|length }} veículo{{ 's' if cliente.veiculos|length > 1 else '' }}
+                        {% set veiculos_ativos = cliente.veiculos|selectattr('veiculo_ativo', 'equalto', 1)|list %}
+                        {% if veiculos_ativos %}
+                            {{ veiculos_ativos|length }} veículo{{ 's' if veiculos_ativos|length > 1 else '' }}
                         {% else %}
-                            Nenhum veículo
+                            Nenhum veículo ativo
                         {% endif %}
                     </td>
                     <td>

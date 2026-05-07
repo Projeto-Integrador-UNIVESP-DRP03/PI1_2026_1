@@ -18,15 +18,33 @@ with app.app_context():
     # =========================
 
     tecidos = [
-        Tecido(material="Courvin", cor="Preto", descricao="Material sintético resistente muito utilizado em bancos automotivos."),
-        Tecido(material="Courvin", cor="Cinza", descricao="Material sintético resistente com acabamento automotivo."),
-        Tecido(material="Courvin", cor="Bege", descricao="Material sintético utilizado em interiores claros."),
-        Tecido(material="Couro Natural", cor="Preto", descricao="Material premium de alta durabilidade e acabamento sofisticado."),
-        Tecido(material="Couro Natural", cor="Marrom", descricao="Couro natural utilizado em bancos de veículos premium."),
-        Tecido(material="Suede", cor="Preto", descricao="Material sintético aveludado usado em personalizações automotivas."),
-        Tecido(material="Suede", cor="Vermelho", descricao="Material aveludado utilizado em customizações esportivas."),
-        Tecido(material="Tecido Automotivo", cor="Cinza", descricao="Tecido padrão utilizado em bancos originais de fábrica."),
-        Tecido(material="Tecido Automotivo", cor="Grafite", descricao="Tecido resistente utilizado em interiores escuros."),
+        Tecido(material="Courvim", cor="04", descricao="Couro sintético resistente para bancos automotivos."),
+        Tecido(material="Courvim", cor="09", descricao="Couro sintético resistente para bancos automotivos."),
+        Tecido(material="Courvim", cor="05", descricao="Couro sintético resistente para bancos automotivos."),
+        Tecido(material="Courvim", cor="17", descricao="Couro sintético resistente para bancos automotivos."),
+        Tecido(material="Courvim", cor="13", descricao="Couro sintético resistente para bancos automotivos."),
+        Tecido(material="Courvim", cor="24", descricao="Couro sintético resistente para bancos automotivos."),
+        Tecido(material="Courvim", cor="HB20", descricao="Couro sintético resistente para bancos automotivos."),
+        Tecido(material="Courvim", cor="32", descricao="Couro sintético resistente para bancos automotivos."),
+        Tecido(material="Courvim", cor="11", descricao="Couro sintético resistente para bancos automotivos."),
+        Tecido(material="Courvim", cor="02", descricao="Couro sintético resistente para bancos automotivos."),
+        Tecido(material="Courvim", cor="25", descricao="Couro sintético resistente para bancos automotivos."),
+        Tecido(material="Courvim", cor="21", descricao="Couro sintético resistente para bancos automotivos."),
+        Tecido(material="Courvim", cor="22", descricao="Couro sintético resistente para bancos automotivos."),
+        Tecido(material="Couro", cor="04", descricao="Couro Legítimo."),
+        Tecido(material="Couro", cor="09", descricao="Couro Legítimo."),
+        Tecido(material="Couro", cor="05", descricao="Couro Legítimo."),
+        Tecido(material="Couro", cor="17", descricao="Couro Legítimo."),
+        Tecido(material="Couro", cor="13", descricao="Couro Legítimo."),
+        Tecido(material="Couro", cor="24", descricao="Couro Legítimo."),
+        Tecido(material="Couro", cor="HB20", descricao="Couro Legítimo."),
+        Tecido(material="Couro", cor="32", descricao="Couro Legítimo."),
+        Tecido(material="Couro", cor="Terracota", descricao="Couro Legítimo."),
+        Tecido(material="Couro", cor="11", descricao="Couro Legítimo."),
+        Tecido(material="Couro", cor="21", descricao="Couro Legítimo."),
+        Tecido(material="Couro", cor="02", descricao="Couro Legítimo."),
+        Tecido(material="Couro", cor="25", descricao="Couro Legítimo."),
+        Tecido(material="Couro", cor="22", descricao="Couro Legítimo.")
     ]
 
     # =========================
@@ -67,6 +85,8 @@ with app.app_context():
         Cor(descricao="Vermelho"),
         Cor(descricao="Azul"),
         Cor(descricao="Branco"),
+        Cor(descricao="Verde"),
+        Cor(descricao="Rosa"),
     ]
 
     # =========================
