@@ -77,9 +77,6 @@ Orçamento #{{ orcamento.id_orcamento }}
                 <p><strong>Logo prensada:</strong> {{ "Sim" if orcamento.bool_logo_prensada else "Não" }}</p>
                 <p><strong>Troca de espuma:</strong> 
                     {{ "Sim" if orcamento.bool_espuma else "Não" }}
-                    {% if orcamento.bool_espuma and espumas %}
-                        ({% for item in espumas %}{{ item.espuma.tipo }}{% if not loop.last %}, {% endif %}{% endfor %})
-                    {% endif %}
                 </p>
             </div>
         </div>
@@ -127,16 +124,6 @@ Orçamento #{{ orcamento.id_orcamento }}
 	                        <td class="obs-cell"><span class="obs-text">{{ item.obs_item if item.obs_item else '-' }}</span></td>
 	                    </tr>
 	                    {% endfor %}
-                    
-                    {% if espumas %}
-                        {% for item in espumas %}
-                        <tr class="materiais-row">
-                            <td><span class="categoria-badge espuma">Espuma</span></td>
-                            <td><strong>{{ item.espuma.tipo if item.espuma else '-' }}</strong></td>
-                            <td class="obs-cell"><span class="obs-text">{{ item.obs_item if item.obs_item else '-' }}</span></td>
-                        </tr>
-                        {% endfor %}
-                    {% endif %}
                 </tbody>
             </table>
         </div>
@@ -399,11 +386,6 @@ Orçamento #{{ orcamento.id_orcamento }}
 .categoria-badge.cor {
     background: #e0e7ff;
     color: #3730a3;
-}
-
-.categoria-badge.espuma {
-    background: #d1fae5;
-    color: #065f46;
 }
 
 /* Observações */
