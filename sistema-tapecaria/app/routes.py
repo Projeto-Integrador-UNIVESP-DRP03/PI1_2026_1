@@ -376,7 +376,6 @@ def form_orcamento(id_veiculo):
     cliente = veiculo.cliente
 
     tecidos = Tecido.query.all()
-    espumas = Espuma.query.all()
     costuras = Costura.query.all()
     cores = Cor.query.all()
     
@@ -388,7 +387,6 @@ def form_orcamento(id_veiculo):
         cliente=cliente,
         veiculo=veiculo,
         tecidos=tecidos,
-        espumas=espumas,
         costuras=costuras,
         cores=cores,
         today=data_br,
@@ -397,11 +395,9 @@ def form_orcamento(id_veiculo):
         tecidos_selecionados=[],
         costuras_selecionadas=[],
         cores_selecionadas=[],
-        espumas_selecionadas=[],
         obs_tecidos={},
         obs_costuras="",
-        obs_cores={},
-        obs_espumas={}
+        obs_cores={}
     )
 
 
@@ -412,7 +408,7 @@ def editar_orcamento(id_orcamento):
     cliente = veiculo.cliente
 
     tecidos = Tecido.query.all()
-    espumas = Espuma.query.all()
+    tecidos = Tecido.query.all()
     costuras = Costura.query.all()
     cores = Cor.query.all()
 
@@ -421,24 +417,20 @@ def editar_orcamento(id_orcamento):
     tecidos_itens = OrcamentoTecido.query.filter_by(id_orcamento=id_orcamento).all()
     costuras_itens = OrcamentoCostura.query.filter_by(id_orcamento=id_orcamento).all()
     cores_itens = OrcamentoCor.query.filter_by(id_orcamento=id_orcamento).all()
-    espumas_itens = OrcamentoEspuma.query.filter_by(id_orcamento=id_orcamento).all()
 
     tecidos_selecionados = [item.id_tecido for item in tecidos_itens]
     costuras_selecionadas = [item.costura.tipo for item in costuras_itens if item.costura]
     cores_selecionadas = [item.id_cor for item in cores_itens]
-    espumas_selecionadas = [item.id_espuma for item in espumas_itens if item.id_espuma]
 
     obs_tecidos = {item.id_tecido: item.obs_item or "" for item in tecidos_itens}
     obs_costuras = next((item.obs_item for item in costuras_itens if (item.obs_item or "").strip()), "") or ""
     obs_cores = {item.id_cor: item.obs_item or "" for item in cores_itens}
-    obs_espumas = {item.id_espuma: item.obs_item or "" for item in espumas_itens}
 
     return render_template(
         "form_orcamento.html",
         cliente=cliente,
         veiculo=veiculo,
         tecidos=tecidos,
-        espumas=espumas,
         costuras=costuras,
         cores=cores,
         today=data_br,
@@ -446,11 +438,9 @@ def editar_orcamento(id_orcamento):
         tecidos_selecionados=tecidos_selecionados,
         costuras_selecionadas=costuras_selecionadas,
         cores_selecionadas=cores_selecionadas,
-        espumas_selecionadas=espumas_selecionadas,
         obs_tecidos=obs_tecidos,
         obs_costuras=obs_costuras,
-        obs_cores=obs_cores,
-        obs_espumas=obs_espumas
+        obs_cores=obs_cores
     )
 # =========================
 # SALVAR ORÇAMENTO
@@ -594,22 +584,6 @@ def salvar_orcamento():
             obs_item=obs_cor
         )
         db.session.add(item)
-
-    # =========================
-    # ESPUMAS
-    # =========================
-
-    if bool_espuma:
-        espumas = request.form.getlist("espumas")
-
-        for espuma_id in espumas:
-            obs_espuma = request.form.get(f"obs_espuma_{espuma_id}", "").strip()[:50]
-            item = OrcamentoEspuma(
-                id_orcamento=id_orcamento,
-                id_espuma=int(espuma_id),
-                obs_item=obs_espuma
-            )
-            db.session.add(item)
 
     db.session.commit()
 
@@ -887,7 +861,6 @@ def visualizar_orcamento(id_orcamento):
     tecidos = OrcamentoTecido.query.filter_by(id_orcamento=id_orcamento).all()
     costuras = OrcamentoCostura.query.filter_by(id_orcamento=id_orcamento).all()
     cores = OrcamentoCor.query.filter_by(id_orcamento=id_orcamento).all()
-    espumas = OrcamentoEspuma.query.filter_by(id_orcamento=id_orcamento).all()
 
     return render_template(
         "visualizar_orcamento.html",
@@ -896,8 +869,7 @@ def visualizar_orcamento(id_orcamento):
         cliente=cliente,
         tecidos=tecidos,
         costuras=costuras,
-        cores=cores,
-        espumas=espumas
+        cores=cores
     )
 #--------------------------
 # Rota para gerar PDF do orçamento
@@ -912,7 +884,6 @@ def gerar_pdf_orcamento(id_orcamento):
     tecidos = OrcamentoTecido.query.filter_by(id_orcamento=id_orcamento).all()
     costuras = OrcamentoCostura.query.filter_by(id_orcamento=id_orcamento).all()
     cores = OrcamentoCor.query.filter_by(id_orcamento=id_orcamento).all()
-    espumas = OrcamentoEspuma.query.filter_by(id_orcamento=id_orcamento).all()
 
     buffer = io.BytesIO()
 
@@ -1103,9 +1074,6 @@ def gerar_pdf_orcamento(id_orcamento):
     elementos.append(Paragraph("SERVIÇOS", secao_style))
     
     espuma_texto = "Sim" if orcamento.bool_espuma else "Não"
-    if orcamento.bool_espuma and espumas:
-        espuma_nomes = ", ".join([e.espuma.tipo for e in espumas if e.espuma])
-        espuma_texto += f" ({espuma_nomes})"
     
     bancos_selecionados = []
     if orcamento.banco_motorista: bancos_selecionados.append("Motorista")
@@ -1182,8 +1150,8 @@ def gerar_pdf_orcamento(id_orcamento):
                       for item in costuras] if costuras else []
     cores_dados = [[(item.cor.descricao if item.cor else "Não informado"), item.obs_item or "-"] 
                    for item in cores] if cores else []
-    espumas_dados = [[(item.espuma.tipo if item.espuma else "Não informado"), item.obs_item or "-"] 
-                     for item in espumas] if espumas else []
+    #espumas_dados = [[(item.espuma.tipo if item.espuma else "Não informado"), item.obs_item or "-"] 
+    #                 for item in espumas] if espumas else []
     
     # Adicionar materiais um embaixo do outro
     if tecidos_dados:
@@ -1195,8 +1163,8 @@ def gerar_pdf_orcamento(id_orcamento):
     if cores_dados:
         criar_tabela_material("CORES DE LINHA", ["Cor", "Observação"], cores_dados)
     
-    if espumas_dados:
-        criar_tabela_material("ESPUMAS", ["Tipo", "Observação"], espumas_dados)
+    #if espumas_dados:
+    #    criar_tabela_material("ESPUMAS", ["Tipo", "Observação"], espumas_dados)
     
     # Espaço antes do valor
     elementos.append(Spacer(1, 5))

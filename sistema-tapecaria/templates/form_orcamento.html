@@ -159,7 +159,6 @@
         <div class="form-card">
             <div class="card-header-custom">
                 <div class="header-icon">
-                    <i class="fas fa-tshirt"></i>
                 </div>
                 <h3>Tecidos</h3>
             </div>
@@ -169,7 +168,6 @@
                 <label class="checkbox-card-tecido">
                     <input type="checkbox" name="tecidos" value="{{ tecido.id_tecido }}" {% if tecidos_selecionados and tecido.id_tecido in tecidos_selecionados %}checked{% endif %}>
                     <span class="checkbox-content">
-                        <i class="fas fa-tshirt"></i>
                         <strong>{{ tecido.material }}{% if tecido.cor %} - {{ tecido.cor }}{% endif %}</strong>
                     </span>
                 </label>
@@ -267,40 +265,7 @@
 
         </div>
 
-        <!-- CARD 6: ESPUMAS (aparece só se marcar troca de espuma) -->
-        <div class="form-card" id="espumas-card" style="display: {{ 'block' if orcamento and orcamento.bool_espuma else 'none' }};">
-            <div class="card-header-custom">
-                <div class="header-icon">
-                    <i class="fas fa-bed"></i>
-                </div>
-                <h3>Espumas</h3>
-            </div>
-
-            <div class="espumas-grid">
-                {% for espuma in espumas %}
-                <div class="material-option">
-                    <label class="checkbox-card-espuma">
-                        <input type="checkbox" name="espumas" value="{{ espuma.id_espuma }}" {% if espumas_selecionadas and espuma.id_espuma in espumas_selecionadas %}checked{% endif %}>
-                        <span class="checkbox-content">
-                            <i class="fas fa-cube"></i>
-                            <strong>{{ espuma.tipo }}</strong>
-                        </span>
-                    </label>
-                </div>
-                {% endfor %}
-            </div>
-
-            <div id="espumas-obs-container">
-                {% for espuma in espumas %}
-                <div class="obs-espuma" id="obs-espuma-{{ espuma.id_espuma }}" {% if espumas_selecionadas and espuma.id_espuma in espumas_selecionadas %}style="display: block;"{% else %}style="display: none;"{% endif %}>
-                    <label for="obs_espuma_{{ espuma.id_espuma }}">Observação para {{ espuma.tipo }} (máx. 50 caracteres)</label>
-                    <input id="obs_espuma_{{ espuma.id_espuma }}" name="obs_espuma_{{ espuma.id_espuma }}" type="text" class="obs-group-input" maxlength="50" value="{{ obs_espumas.get(espuma.id_espuma, '') }}">
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-
-        <!-- CARD 7: VALOR E OBSERVAÇÕES -->
+        <!-- CARD 6: VALOR E OBSERVAÇÕES -->
         <div class="form-card">
             <div class="card-header-custom">
                 <div class="header-icon">
@@ -346,20 +311,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Mostrar/esconder espumas
-    const checkEspuma = document.getElementById('check_espuma');
-    const espumasCard = document.getElementById('espumas-card');
-    
-    if (checkEspuma) {
-        checkEspuma.addEventListener('change', function() {
-            if (this.checked) {
-                espumasCard.style.display = 'block';
-            } else {
-                espumasCard.style.display = 'none';
-            }
-        });
-    }
-
     // Mostrar/esconder obs para tecidos
     document.querySelectorAll('input[name="tecidos"]').forEach(cb => {
         cb.addEventListener('change', function() {
@@ -376,18 +327,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('input[name="cores"]').forEach(cb => {
         cb.addEventListener('change', function() {
             const obsDiv = document.getElementById(`obs-cor-${this.value}`);
-            if (this.checked) {
-                obsDiv.style.display = 'block';
-            } else {
-                obsDiv.style.display = 'none';
-            }
-        });
-    });
-
-    // Mostrar/esconder obs para espumas
-    document.querySelectorAll('input[name="espumas"]').forEach(cb => {
-        cb.addEventListener('change', function() {
-            const obsDiv = document.getElementById(`obs-espuma-${this.value}`);
             if (this.checked) {
                 obsDiv.style.display = 'block';
             } else {
@@ -580,19 +519,6 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .obs-cor {
-    margin-bottom: 1rem;
-    padding: 1rem;
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.5rem;
-}
-
-/* Container para obs de espumas */
-#espumas-obs-container {
-    margin-top: 1rem;
-}
-
-.obs-espuma {
     margin-bottom: 1rem;
     padding: 1rem;
     background: #f9fafb;
