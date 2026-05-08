@@ -68,28 +68,29 @@ def home():
 
 @main.route("/buscar", methods=["POST"])
 def buscar():
-
-    cod_cliente = request.form["cod_cliente"].upper()
-
-    cliente = Cliente.query.filter_by(
-        cod_cliente=cod_cliente
-    ).first()
     
+    cod_cliente = request.form.get("cod_cliente", "").strip().upper()
+
     if not cod_cliente:
         flash("Digite um CPF ou CNPJ para pesquisar.", "error")
         return redirect(url_for("main.home"))
 
+    cliente = Cliente.query.filter_by(cod_cliente=cod_cliente).first()
+
     if cliente:
+        
+        return render_template("cliente.html", cliente=cliente)
 
-        return render_template(
-            "cliente.html",
-            cliente=cliente
-        )
-
-    flash("Cliente não encontrado.", "error")
-
-    return redirect(url_for("main.home"))
-
+    flash(f"Cliente {cod_cliente} não encontrado. Inicie o cadastro abaixo.", "Aviso")
+    
+    return render_template(
+        "form_cliente.html",
+        titulo="Cadastrar Cliente",
+        acao="main.salvar_cliente",
+        botao="Cadastrar",
+        cliente=None,
+        cod_cliente=cod_cliente
+    )
 
 # =========================
 # LISTAR CLIENTES
@@ -176,8 +177,8 @@ def salvar_cliente():
         )
     db.session.commit()
 
-    return redirect(url_for("main.listar_clientes"))
-
+    flash("Cliente salvo! Agora cadastre o veículo.", "Sucesso")
+    return redirect(url_for("main.novo_veiculo", id_cliente=cliente.id_cliente))
 
 
 
