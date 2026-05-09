@@ -1,0 +1,10 @@
+Iniciar o ambiente virtual
+.\.venv\Scripts\Activate 
+ 
+Instalar pyinstaller
+.venv\Scripts\pip install pyinstaller waitress
+
+Criar executável
+pyinstaller --name "ZitOS" --icon=".\static\imagens\Identidade_visual\logo_icone.ico" --noconfirm --add-data "templates;templates" --add-data "static;static" --add-data "instance;instance" desktop.py
+
+Os arquivos e o executável ficarão na pasta dist

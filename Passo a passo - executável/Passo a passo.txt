@@ -1,0 +1,10 @@
+Instalar o pyinstaller
+pyhton -m pip install pyinstaller waitress
+
+Criar o executável
+pyinstaller --name "ZitOS" --icon=".\static\imagens\Identidade_visual\logo_icone.ico" --noconfirm --add-data "templates;templates" --add-data "static;static" --add-data "instance;instance" desktop.py
+
+Atualizar o banco de dados com a base do código (opcional)
+copy instance\database.db dist\SistemaTapecaria\instance\database.db
+
+Os arquivos e o executável ficarão na pasta dist
