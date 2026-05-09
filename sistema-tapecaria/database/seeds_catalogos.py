@@ -5,7 +5,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
 
 from app import create_app
-from app.models import db, Tecido, Espuma, Costura, Cor
+from app.models import db, Tecido, Costura, Cor
 
 app = create_app()
 
@@ -18,59 +18,63 @@ with app.app_context():
     # =========================
 
     tecidos = [
-        Tecido(material="Courvim", cor="04", descricao="Couro sintético resistente para bancos automotivos."),
-        Tecido(material="Courvim", cor="09", descricao="Couro sintético resistente para bancos automotivos."),
-        Tecido(material="Courvim", cor="05", descricao="Couro sintético resistente para bancos automotivos."),
-        Tecido(material="Courvim", cor="17", descricao="Couro sintético resistente para bancos automotivos."),
-        Tecido(material="Courvim", cor="13", descricao="Couro sintético resistente para bancos automotivos."),
-        Tecido(material="Courvim", cor="24", descricao="Couro sintético resistente para bancos automotivos."),
-        Tecido(material="Courvim", cor="HB20", descricao="Couro sintético resistente para bancos automotivos."),
-        Tecido(material="Courvim", cor="32", descricao="Couro sintético resistente para bancos automotivos."),
-        Tecido(material="Courvim", cor="11", descricao="Couro sintético resistente para bancos automotivos."),
-        Tecido(material="Courvim", cor="02", descricao="Couro sintético resistente para bancos automotivos."),
-        Tecido(material="Courvim", cor="25", descricao="Couro sintético resistente para bancos automotivos."),
-        Tecido(material="Courvim", cor="21", descricao="Couro sintético resistente para bancos automotivos."),
-        Tecido(material="Courvim", cor="22", descricao="Couro sintético resistente para bancos automotivos."),
-        Tecido(material="Couro", cor="04", descricao="Couro Legítimo."),
-        Tecido(material="Couro", cor="09", descricao="Couro Legítimo."),
-        Tecido(material="Couro", cor="05", descricao="Couro Legítimo."),
-        Tecido(material="Couro", cor="17", descricao="Couro Legítimo."),
-        Tecido(material="Couro", cor="13", descricao="Couro Legítimo."),
-        Tecido(material="Couro", cor="24", descricao="Couro Legítimo."),
-        Tecido(material="Couro", cor="HB20", descricao="Couro Legítimo."),
-        Tecido(material="Couro", cor="32", descricao="Couro Legítimo."),
-        Tecido(material="Couro", cor="Terracota", descricao="Couro Legítimo."),
-        Tecido(material="Couro", cor="11", descricao="Couro Legítimo."),
-        Tecido(material="Couro", cor="21", descricao="Couro Legítimo."),
-        Tecido(material="Couro", cor="02", descricao="Couro Legítimo."),
-        Tecido(material="Couro", cor="25", descricao="Couro Legítimo."),
-        Tecido(material="Couro", cor="22", descricao="Couro Legítimo.")
+        Tecido(material="Courvin", cor="Eco 04", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="Eco 09", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="Eco 05", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="Eco 17", descricao="Material sintético resistente com acabamento automotivo."),    
+        Tecido(material="Courvin", cor="Eco 13", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="Eco 24", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="Eco 02", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="Eco Caramelo", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="Marrom", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="Marrom Escuro", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="Bege", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="Azul Escuro", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="Azul", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="Azul Claro", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="Vinho", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="Vermelho Sangue", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="Orange", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="Pueblo", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="Branco", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="Camurça", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="Xadrez", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="CL 04", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="CL 09", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="CL 05", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="CL 17", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="CL 13", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="CL 24", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="CL HB20", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="CL Caramelo", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="CL 11", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="CL 21", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="CL 25", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="CL 02", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="CL 22", descricao="Material sintético resistente com acabamento automotivo."),  
+        Tecido(material="Courvin", cor="CL Terracota", descricao="Material sintético resistente com acabamento automotivo."),
+        Tecido(material="Courvin", cor="Fresh", descricao="Material sintético resistente com acabamento automotivo."),
     ]
-
-    # =========================
-    # ESPUMAS
-    # =========================
-
-    espumas = [
-        Espuma(tipo="Espuma D28", densidade="28", descricao="Espuma macia utilizada principalmente em encostos."),
-        Espuma(tipo="Espuma D33", densidade="33", descricao="Espuma de média densidade utilizada em assentos."),
-        Espuma(tipo="Espuma D45", densidade="45", descricao="Espuma de alta densidade para maior resistência e durabilidade."),
-        Espuma(tipo="Espuma Soft", densidade="26", descricao="Espuma confortável utilizada em acabamentos premium."),
-        Espuma(tipo="Espuma Alta Resiliência", densidade="40", descricao="Espuma de alta performance com maior recuperação."),
-    ]
-
+    print("Catálogo de tecidos criado com sucesso!")
     # =========================
     # COSTURAS
     # =========================
 
     costuras = [
-        Costura(tipo="Costura Simples", descricao="Costura padrão utilizada em bancos originais."),
-        Costura(tipo="Costura Dupla", descricao="Costura reforçada com duas linhas paralelas."),
-        Costura(tipo="Costura Diamante", descricao="Costura em padrão losango utilizada em bancos personalizados."),
-        Costura(tipo="Costura Francesa", descricao="Costura sofisticada utilizada em acabamento premium."),
-        Costura(tipo="Costura Esportiva", descricao="Costura destacada utilizada em personalizações automotivas."),
+        Costura(tipo="Diamante Duplo", descricao="Costura decorativa e estrutural com linha dupla."),
+        Costura(tipo="Colmeia", descricao="Costura de franzido que cria uma textura em relevo no tecido."),
+        Costura(tipo="Programada 1", descricao="Costura destacada utilizada em personalizações automotivas."),
+        Costura(tipo="Colmeia com Faixa", descricao="Costura de franzido que cria uma textura em relevo no tecido, com faixa no seu interior."),
+        Costura(tipo="Diamante Padrão", descricao="Costura decorativa e estrutural com linha simples."),
+        Costura(tipo="Sportline 1", descricao="Costura destacada com design elegante e esportivo."),
+        Costura(tipo="Programada 2", descricao="Costura destacada utilizada em personalizações automotivas."),
+        Costura(tipo="Sportline 2", descricao="Costura destacada com design elegante e esportivo."),
+        Costura(tipo="Programada 3", descricao="Costura destacada utilizada em personalizações automotivas."),
+        Costura(tipo="Sportline 3", descricao="Costura destacada com design elegante e esportivo."),
+        Costura(tipo="Diamante", descricao="Costura decorativa e estrutural com linha simples e losangos pequenos."),
+        Costura(tipo="Personalizada pelo cliente", descricao="Costura personalizada pelo cliente."),
     ]
-
+    print("Catálogo de costuras criado com sucesso!")
     # =========================
     # CORES
     # =========================
@@ -88,13 +92,12 @@ with app.app_context():
         Cor(descricao="Verde"),
         Cor(descricao="Rosa"),
     ]
-
+    print("Catálogo de cores criado com sucesso!")
     # =========================
     # INSERÇÃO NO BANCO
     # =========================
 
     db.session.add_all(tecidos)
-    db.session.add_all(espumas)
     db.session.add_all(costuras)
     db.session.add_all(cores)
 

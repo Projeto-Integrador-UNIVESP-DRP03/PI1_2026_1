@@ -11,7 +11,6 @@ if os.path.exists(db_path):
         "orcamento_tecido",
         "orcamento_costura",
         "orcamento_cor",
-        "orcamento_espuma",
         "orcamento"
     ]
     

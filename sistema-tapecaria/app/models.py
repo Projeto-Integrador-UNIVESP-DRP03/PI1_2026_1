@@ -90,16 +90,6 @@ class Tecido(db.Model):
     cor = db.Column(db.String(30))
     descricao = db.Column(db.Text)
 
-
-class Espuma(db.Model):
-    __tablename__ = "espuma"
-
-    id_espuma = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    tipo = db.Column(db.String(50), nullable=False)
-    densidade = db.Column(db.String(20))
-    descricao = db.Column(db.Text)
-
-
 class Costura(db.Model):
     __tablename__ = "costura"
 
@@ -146,33 +136,11 @@ class Orcamento(db.Model):
     tecidos = db.relationship("OrcamentoTecido")
     costuras = db.relationship("OrcamentoCostura")
     cores = db.relationship("OrcamentoCor")
-    espumas = db.relationship("OrcamentoEspuma")
 
 
 # =========================
 # ITENS DO ORÇAMENTO
 # =========================
-
-class OrcamentoEspuma(db.Model):
-
-    __tablename__ = "orcamento_espuma"
-
-    id_orcamento_espuma = db.Column(db.Integer, primary_key=True, autoincrement=True)
-
-    id_orcamento = db.Column(
-        db.Integer,
-        db.ForeignKey("orcamento.id_orcamento")
-    )
-
-    id_espuma = db.Column(
-        db.Integer,
-        db.ForeignKey("espuma.id_espuma")
-    )
-
-    obs_item = db.Column(db.String(200))
-
-    espuma = db.relationship("Espuma")
-
 
 class OrcamentoCostura(db.Model):
 
