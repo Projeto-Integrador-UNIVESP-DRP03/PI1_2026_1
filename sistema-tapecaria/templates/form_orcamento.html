@@ -159,6 +159,7 @@
         <div class="form-card">
             <div class="card-header-custom">
                 <div class="header-icon">
+                    <i class="fas fa-tshirt"></i>
                 </div>
                 <h3>Tecidos</h3>
             </div>
@@ -195,40 +196,23 @@
             </div>
 
             <div class="costuras-grid">
-                <label class="radio-card costura">
-                    {% set costura_nome = 'Costura Simples' %}
-                    <input type="radio" name="costuras" value="Costura Simples" {% if costuras_selecionadas and 'Costura Simples' in costuras_selecionadas %}checked{% endif %}>
-                    <span class="radio-content">Costura Simples</span>
+                {% for costura in costuras %}
+                <label class="checkbox-card-costura">
+                    <input type="checkbox" name="costuras" value="{{ costura.id_costura }}" {% if costuras_selecionadas and costura.id_costura in costuras_selecionadas %}checked{% endif %}>
+                    <span class="checkbox-content">
+                        <strong>{{ costura.tipo }}</strong>
+                    </span>
                 </label>
-
-                <label class="radio-card costura">
-                    {% set costura_nome = 'Costura Dupla' %}
-                    <input type="radio" name="costuras" value="Costura Dupla" {% if costuras_selecionadas and 'Costura Dupla' in costuras_selecionadas %}checked{% endif %}>
-                    <span class="radio-content">Costura Dupla</span>
-                </label>
-
-                <label class="radio-card costura">
-                    {% set costura_nome = 'Costura Diamante' %}
-                    <input type="radio" name="costuras" value="Costura Diamante" {% if costuras_selecionadas and 'Costura Diamante' in costuras_selecionadas %}checked{% endif %}>
-                    <span class="radio-content">Costura Diamante</span>
-                </label>
-
-                <label class="radio-card costura">
-                    {% set costura_nome = 'Costura Francesa' %}
-                    <input type="radio" name="costuras" value="Costura Francesa" {% if costuras_selecionadas and 'Costura Francesa' in costuras_selecionadas %}checked{% endif %}>
-                    <span class="radio-content">Costura Francesa</span>
-                </label>
-
-                <label class="radio-card costura">
-                    {% set costura_nome = 'Costura Esportiva' %}
-                    <input type="radio" name="costuras" value="Costura Esportiva" {% if costuras_selecionadas and 'Costura Esportiva' in costuras_selecionadas %}checked{% endif %}>
-                    <span class="radio-content">Costura Esportiva</span>
-                </label>
+                {% endfor %}
             </div>
 
-            <div class="obs-group">
-                <label for="obs_costuras">Observação (máx. 50 caracteres)</label>
-                <input id="obs_costuras" name="obs_costuras" type="text" class="obs-group-input" maxlength="50" value="{{ obs_costuras or '' }}">
+            <div id="costuras-obs-container">
+                {% for costura in costuras %}
+                <div class="obs-costura" id="obs-costura-{{ costura.id_costura }}" {% if costuras_selecionados and costura.id_costura in costuras_selecionados %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                    <label for="obs_costura_{{ costura.id_costura }}">Observação para {{ costura.tipo }}(máx. 50 caracteres)</label>
+                    <input id="obs_costura_{{ costura.id_costura }}" name="obs_costura_{{ costura.id_costura }}" type="text" class="obs-group-input" maxlength="50" value="{{ obs_costuras.get(costura.id_costura, '') }}">
+                </div>
+                {% endfor %}
             </div>
 
         </div>
@@ -323,6 +307,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Mostrar/esconder obs para costuras
+    document.querySelectorAll('input[name="costuras"]').forEach(cb => {
+        cb.addEventListener('change', function() {
+            const obsDiv = document.getElementById(`obs-costura-${this.value}`);
+            if (this.checked) {
+                obsDiv.style.display = 'block';
+            } else {
+                obsDiv.style.display = 'none';
+            }
+        });
+    });
+
     // Mostrar/esconder obs para cores
     document.querySelectorAll('input[name="cores"]').forEach(cb => {
         cb.addEventListener('change', function() {
@@ -352,8 +348,8 @@ document.addEventListener('DOMContentLoaded', function() {
 /* CORREÇÃO DOS CÍRCULOS DE CORES - AGORA REDONDOS! */
 .cores-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 1.1rem;
     padding: 1.5rem;
 }
 
@@ -361,7 +357,7 @@ document.addEventListener('DOMContentLoaded', function() {
     display: grid;
     grid-template-columns: 28px 1fr;
     align-items: center;
-    column-gap: 0.75rem;
+    column-gap: 0.825rem;
     row-gap: 0.5rem;
     padding: 0.5rem;
     border-radius: 0.5rem;
@@ -446,7 +442,7 @@ document.addEventListener('DOMContentLoaded', function() {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.75rem;
+    gap: 0.825rem;
     padding: 1rem;
     background: #f8fafc;
     border: 2px solid #e2e8f0;
@@ -466,6 +462,134 @@ document.addEventListener('DOMContentLoaded', function() {
     font-size: 0.9rem;
 }
 
+/* Grid para tecidos */
+.tecidos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.1rem;
+    padding: 1.5rem;
+}
+
+/* Estilo para costuras */
+.checkbox-card-costura {
+    cursor: pointer;
+    display: block;
+}
+
+.checkbox-card-costura input {
+    display: none;
+}
+
+.checkbox-card-costura .checkbox-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.825rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.75rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    text-align: center;
+}
+
+.checkbox-card-costura input:checked + .checkbox-content {
+    background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+    border-color: #4f46e5;
+    color: #4f46e5;
+}
+
+.checkbox-card-costura .checkbox-content strong {
+    font-size: 0.9rem;
+}
+
+/* Grid para costuras */
+.costuras-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1.1rem;
+    padding: 1.5rem;
+}
+
+/* Grid para bancos */
+.bancos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1.1rem;
+    padding: 1.5rem;
+}
+
+/* Estilo para checkbox-card genérico (bancos) */
+.checkbox-card {
+    cursor: pointer;
+    display: block;
+}
+
+.checkbox-card input {
+    display: none;
+}
+
+.checkbox-card .checkbox-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.825rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.75rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    text-align: center;
+}
+
+.checkbox-card input:checked + .checkbox-content {
+    background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+    border-color: #4f46e5;
+    color: #4f46e5;
+}
+
+.checkbox-card .checkbox-content strong {
+    font-size: 0.9rem;
+}
+
+/* Checkbox inline */
+.checkbox-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-bottom: 0.5rem;
+}
+
+.checkbox-inline input[type="checkbox"] {
+    margin: 0;
+}
+
+.checkbox-inline span {
+    font-weight: 500;
+    color: #374151;
+}
+
+/* Container para checkboxes em linha */
+.checkbox-row {
+    padding: 0 1.5rem 1.5rem;
+}
+
+/* Linha de formulário com duas colunas */
+.form-row {
+    display: flex;
+    gap: 5rem;
+    padding: 0 1.65rem;
+}
+
+.form-row .input-group.half-width {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
 /* Estilo para cores */
 .checkbox-card-cor {
     cursor: pointer;
@@ -480,7 +604,7 @@ document.addEventListener('DOMContentLoaded', function() {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.75rem;
+    gap: 0.825rem;
     padding: 1rem;
     background: #f8fafc;
     border: 2px solid #e2e8f0;
@@ -505,7 +629,21 @@ document.addEventListener('DOMContentLoaded', function() {
     margin-top: 1rem;
 }
 
+
 .obs-tecido {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+}
+
+/* Container para obs de costuras */
+#costuras-obs-container {
+    margin-top: 1rem;
+}
+
+.obs-costura {
     margin-bottom: 1rem;
     padding: 1rem;
     background: #f9fafb;

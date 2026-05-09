@@ -11,12 +11,10 @@ from .models import (
     EnderecoCliente,
     EmailCliente,
     Tecido,
-    Espuma,
     Costura,
     Cor,
     Orcamento,
     OrcamentoTecido,
-    OrcamentoEspuma,
     OrcamentoCostura,
     OrcamentoCor,
     Pedido
@@ -396,7 +394,7 @@ def form_orcamento(id_veiculo):
         costuras_selecionadas=[],
         cores_selecionadas=[],
         obs_tecidos={},
-        obs_costuras="",
+        obs_costuras={},
         obs_cores={}
     )
 
@@ -419,11 +417,11 @@ def editar_orcamento(id_orcamento):
     cores_itens = OrcamentoCor.query.filter_by(id_orcamento=id_orcamento).all()
 
     tecidos_selecionados = [item.id_tecido for item in tecidos_itens]
-    costuras_selecionadas = [item.costura.tipo for item in costuras_itens if item.costura]
+    costuras_selecionadas = [item.id_costura for item in costuras_itens]
     cores_selecionadas = [item.id_cor for item in cores_itens]
 
     obs_tecidos = {item.id_tecido: item.obs_item or "" for item in tecidos_itens}
-    obs_costuras = next((item.obs_item for item in costuras_itens if (item.obs_item or "").strip()), "") or ""
+    obs_costuras = {item.id_costura: item.obs_item or "" for item in costuras_itens}
     obs_cores = {item.id_cor: item.obs_item or "" for item in cores_itens}
 
     return render_template(
@@ -528,7 +526,6 @@ def salvar_orcamento():
     db.session.query(OrcamentoTecido).filter_by(id_orcamento=id_orcamento).delete()
     db.session.query(OrcamentoCostura).filter_by(id_orcamento=id_orcamento).delete()
     db.session.query(OrcamentoCor).filter_by(id_orcamento=id_orcamento).delete()
-    db.session.query(OrcamentoEspuma).filter_by(id_orcamento=id_orcamento).delete()
     db.session.commit()
 
     # =========================
