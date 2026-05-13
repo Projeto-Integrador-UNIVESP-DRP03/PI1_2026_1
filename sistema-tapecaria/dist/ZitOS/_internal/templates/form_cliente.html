@@ -61,7 +61,7 @@
                         <div class="input-icon">
                             <i class="fas fa-id-card"></i>
                             <input type="text" id="cod_cliente" name="cod_cliente" class="form-input"
-                                value="{{ cliente.cod_cliente if cliente else '' }}" required
+                                value="{{ cod_cliente or (cliente.cod_cliente if cliente else '') }}"
                                 placeholder="000.000.000-00 ou 00.000.000/0000-00">
                         </div>
                     </div>

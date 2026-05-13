@@ -3,16 +3,31 @@ import sys
 import threading
 import webbrowser
 import time
+import shutil
 from flask import Flask
 from waitress import serve
 
-# Em um executável do Pyinstaller, o caminho base pode mudar
+# Configuração de caminhos para PyInstaller
 if getattr(sys, 'frozen', False):
+    # BASE_DIR é onde os arquivos estáticos/templates estão (extraídos pelo PyInstaller)
     BASE_DIR = sys._MEIPASS
-    # O banco de dados vai ficar na mesma pasta do executável final
-    DB_DIR = os.path.join(os.path.dirname(sys.executable), "instance")
+    # EXE_DIR é onde o executável .exe reside fisicamente
+    EXE_DIR = os.path.dirname(sys.executable)
+    # DB_DIR deve ser fora do _MEIPASS para que os dados persistam
+    DB_DIR = os.path.join(EXE_DIR, "instance")
     
-    # IMPORTANTE: Quando o flask roda pelo pyinstaller, precisamos ajudar ele a encontrar os templates e estáticos
+    # Lógica de migração: Se o banco não existe na pasta do executável, copia o banco inicial que foi empacotado
+    bundled_db = os.path.join(BASE_DIR, "instance", "database.db")
+    local_db = os.path.join(DB_DIR, "database.db")
+    
+    if not os.path.exists(local_db):
+        os.makedirs(DB_DIR, exist_ok=True)
+        if os.path.exists(bundled_db):
+            try:
+                shutil.copy2(bundled_db, local_db)
+            except Exception as e:
+                print(f"Erro ao copiar banco inicial: {e}")
+    
     template_dir = os.path.join(BASE_DIR, 'templates')
     static_dir = os.path.join(BASE_DIR, 'static')
     app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
@@ -21,38 +36,37 @@ else:
     DB_DIR = os.path.join(BASE_DIR, "instance")
     app = Flask(__name__)
 
-# Importações dos módulos do sistema (devem vir depois para não dar erro de circular import caso haja)
+# Importações dos módulos do sistema
 from app.models import db
 from app.routes import main
 
+# Garante que o diretório do banco existe
 os.makedirs(DB_DIR, exist_ok=True)
-db_path = os.path.join(DB_DIR, "database.db")
+db_path = os.path.abspath(os.path.join(DB_DIR, "database.db")).replace("\\", "/")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.secret_key = "uma_chave_bem_secreta_e_unica"
 
-# inicializa o banco
+# Inicializa o banco
 db.init_app(app)
 
-# registra as rotas
+# Registra as rotas
 app.register_blueprint(main)
 
-# Garante que as tabelas sejam criadas se não existirem
+# Garante que as tabelas existam
 with app.app_context():
     db.create_all()
 
 def open_browser():
-    # Espera o servidor iniciar
     time.sleep(1.5)
-    # Abre no navegador padrão
     webbrowser.open("http://127.0.0.1:5000")
 
 if __name__ == "__main__":
-    print("Iniciando o Sistema de Tapeçaria...")
+    print(f"Iniciando o Sistema ZitOS...")
+    print(f"Banco de dados em: {db_path}")
     
-    # Inicia a thread para abrir o navegador
     threading.Thread(target=open_browser, daemon=True).start()
     
-    # Inicia o servidor usando waitress (próprio para produção/desktop no windows)
+    # Roda o servidor Waitress
     serve(app, host="127.0.0.1", port=5000)

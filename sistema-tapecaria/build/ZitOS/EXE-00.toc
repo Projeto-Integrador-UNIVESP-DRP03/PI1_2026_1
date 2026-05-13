@@ -85,7 +85,7 @@
  [],
  False,
  False,
- 1778204467,
+ 1778640541,
  [('run.exe',
    'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
    '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\PyInstaller\\bootloader\\Windows-64bit-intel\\run.exe',

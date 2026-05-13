@@ -11,7 +11,7 @@ Clientes Cadastrados
 {% block content %}
 
 <div class="table-container">
-    
+
     <div class="screen-header" style="margin-bottom: 2rem;">
         <div>
             <h2 class="screen-title title-font" style="margin-bottom: 0.5rem;">Clientes Cadastrados</h2>
@@ -25,21 +25,20 @@ Clientes Cadastrados
             <div class="filter-search-col">
                 <div class="input-icon">
                     <i class="fas fa-search"></i>
-                    <input 
-                        type="text" 
-                        id="filterCliente" 
-                        placeholder="Pesquisar por nome, CPF/CNPJ, telefone, carro ou placa..."
-                        class="form-input"
-                    >
+                    <input type="text" id="filterCliente"
+                        placeholder="Pesquisar por nome, CPF/CNPJ, telefone, carro ou placa..." class="form-input"
+                        value="{{ search or '' }}">
                 </div>
             </div>
-            <div class="filter-sort-col"><div class="input-icon">
-                <i class="fas fa-sort"></i>
-                <select id="sortSelect" class="w-full">
-                    <option value="nome_asc">Nome (A-Z)</option>
-                    <option value="nome_desc">Nome (Z-A)</option>
-                </select>
-            </div></div>
+            <div class="filter-sort-col">
+                <div class="input-icon">
+                    <!--<i class="fas fa-sort"></i>-->
+                    <select id="sortSelect" class="w-full">
+                        <option value="nome_asc">Nome (A-Z)</option>
+                        <option value="nome_desc">Nome (Z-A)</option>
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -57,82 +56,92 @@ Clientes Cadastrados
 
         <tbody id="tabelaClientesBody">
 
-        {% for cliente in clientes %}
+            {% for cliente in clientes %}
 
-        <tr>
+            <tr>
 
-            <td>
-                <div class="cliente-header">
-                    <div class="cliente-nome">{{ cliente.nome }}</div>
-                    <div class="cliente-icons">
-                        <a href="{{ url_for('main.perfil_cliente', id_cliente=cliente.id_cliente) }}" class="icon-btn" data-tooltip="Ver perfil">
-                            <i class="fas fa-eye"></i>
-                        </a>
-                        <a href="{{ url_for('main.editar_cliente', id_cliente=cliente.id_cliente) }}" class="icon-btn" data-tooltip="Editar perfil">
-                            <i class="fas fa-user-edit"></i>
-                        </a>
-                        <form id="form-delete-cliente-{{ cliente.id_cliente }}" action="{{ url_for('main.deletar_cliente', id_cliente=cliente.id_cliente) }}" method="post" style="display: none;"></form>
-                        <button type="button" class="icon-btn" data-tooltip="Excluir perfil" onclick="openDeleteModal('cliente', '{{ cliente.nome }}', 'form-delete-cliente-{{ cliente.id_cliente }}');">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                        <a href="{{ url_for('main.novo_veiculo', id_cliente=cliente.id_cliente) }}" class="icon-btn" data-tooltip="Adicionar veículo">
-                            <i class="fas fa-car-side"></i>
-                        </a>
-                    </div>
-                </div>
-            </td>
-
-            <td>{{ cliente.cod_cliente }}</td>
-
-            <td>
-                {{ cliente.telefones[0].telefone if cliente.telefones else "Não cadastrado" }}
-            </td>
-
-            <td>
-                {{ cliente.enderecos[0].rua if cliente.enderecos else "Não cadastrada" }}
-            </td>
-
-            <td>
-
-                {% if cliente.veiculos %}
-
-                <ul class="lista-veiculos">
-
-                    {% for veiculo in cliente.veiculos if veiculo.veiculo_ativo == 1 %}
-
-                    <li class="veiculo-item">
-
-                        <span class="veiculo-info">
-                            {{ veiculo.placa.upper() }} - {{ veiculo.modelo }}
-                        </span>
-
-                        <div class="veiculo-acoes">
-                            <a href="{{ url_for('main.editar_veiculo', id_veiculo=veiculo.id_veiculo) }}" class="icon-btn" data-tooltip="Editar veículo">
-                                <i class="fas fa-edit"></i>
+                <td>
+                    <div class="cliente-header">
+                        <div class="cliente-nome">{{ cliente.nome }}</div>
+                        <div class="cliente-icons">
+                            <a href="{{ url_for('main.perfil_cliente', id_cliente=cliente.id_cliente) }}"
+                                class="icon-btn" data-tooltip="Ver perfil">
+                                <i class="fas fa-eye"></i>
                             </a>
-                            <form id="form-delete-veiculo-{{ veiculo.id_veiculo }}" action="{{ url_for('main.deletar_veiculo', id_veiculo=veiculo.id_veiculo) }}" method="post" style="display: none;"></form>
-                            <button type="button" class="icon-btn" data-tooltip="Excluir veículo" onclick="openDeleteModal('veiculo', '{{ veiculo.placa.upper() }} - {{ veiculo.modelo }}', 'form-delete-veiculo-{{ veiculo.id_veiculo }}');">
+                            <a href="{{ url_for('main.editar_cliente', id_cliente=cliente.id_cliente) }}"
+                                class="icon-btn" data-tooltip="Editar perfil">
+                                <i class="fas fa-user-edit"></i>
+                            </a>
+                            <form id="form-delete-cliente-{{ cliente.id_cliente }}"
+                                action="{{ url_for('main.deletar_cliente', id_cliente=cliente.id_cliente) }}"
+                                method="post" style="display: none;"></form>
+                            <button type="button" class="icon-btn" data-tooltip="Excluir perfil"
+                                onclick="openDeleteModal('cliente', '{{ cliente.nome }}', 'form-delete-cliente-{{ cliente.id_cliente }}');">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
+                            <a href="{{ url_for('main.novo_veiculo', id_cliente=cliente.id_cliente) }}" class="icon-btn"
+                                data-tooltip="Adicionar veículo">
+                                <i class="fas fa-car-side"></i>
+                            </a>
                         </div>
+                    </div>
+                </td>
 
-                    </li>
+                <td>{{ cliente.cod_cliente }}</td>
 
-                    {% endfor %}
+                <td>
+                    {{ cliente.telefones[0].telefone if cliente.telefones else "Não cadastrado" }}
+                </td>
 
-                </ul>
+                <td>
+                    {{ cliente.enderecos[0].rua if cliente.enderecos else "Não cadastrada" }}
+                </td>
 
-                {% else %}
+                <td>
 
-                Nenhum veículo
+                    {% if cliente.veiculos %}
 
-                {% endif %}
+                    <ul class="lista-veiculos">
 
-            </td>
+                        {% for veiculo in cliente.veiculos if veiculo.veiculo_ativo == 1 %}
 
-        </tr>
+                        <li class="veiculo-item">
 
-        {% endfor %}
+                            <span class="veiculo-info">
+                                {{ veiculo.placa.upper() }} - {{ veiculo.modelo }}
+                            </span>
+
+                            <div class="veiculo-acoes">
+                                <a href="{{ url_for('main.editar_veiculo', id_veiculo=veiculo.id_veiculo) }}"
+                                    class="icon-btn" data-tooltip="Editar veículo">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form id="form-delete-veiculo-{{ veiculo.id_veiculo }}"
+                                    action="{{ url_for('main.deletar_veiculo', id_veiculo=veiculo.id_veiculo) }}"
+                                    method="post" style="display: none;"></form>
+                                <button type="button" class="icon-btn" data-tooltip="Excluir veículo"
+                                    onclick="openDeleteModal('veiculo', '{{ veiculo.placa.upper() }} - {{ veiculo.modelo }}', 'form-delete-veiculo-{{ veiculo.id_veiculo }}');">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+
+                        </li>
+
+                        {% endfor %}
+
+                    </ul>
+
+                    {% else %}
+
+                    Nenhum veículo
+
+                    {% endif %}
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
 
         </tbody>
 
@@ -144,38 +153,40 @@ Clientes Cadastrados
 <nav class="mt-6 flex items-center justify-between gap-3 flex-wrap" aria-label="Paginação">
     <div class="text-sm text-slate-500">
         {% set first_item = ((pagination.page - 1) * pagination.per_page) + 1 if pagination.total else 0 %}
-        {% set last_item = (pagination.page * pagination.per_page) if (pagination.page * pagination.per_page) < pagination.total else pagination.total %}
-        Mostrando {{ first_item }}-{{ last_item }} de {{ pagination.total }} clientes
-    </div>
+        {% set last_item = (pagination.page * pagination.per_page) if (pagination.page * pagination.per_page) <
+            pagination.total else pagination.total %} Mostrando {{ first_item }}-{{ last_item }} de {{ pagination.total
+            }} clientes </div>
 
-    <div class="flex items-center gap-1 flex-wrap">
-        {% if pagination.has_prev %}
-            <a class="px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-               href="{{ url_for('main.listar_clientes', page=pagination.prev_num) }}">Anterior</a>
-        {% else %}
-            <span class="px-3 py-2 rounded-lg border border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed">Anterior</span>
-        {% endif %}
-
-        {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
-            {% if p %}
-                {% if p == pagination.page %}
-                    <span class="px-3 py-2 rounded-lg bg-slate-900 text-white">{{ p }}</span>
+            <div class="flex items-center gap-1 flex-wrap">
+                {% if pagination.has_prev %}
+                <a class="px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                    href="{{ url_for('main.listar_clientes', page=pagination.prev_num, search=search) }}">Anterior</a>
                 {% else %}
-                    <a class="px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                       href="{{ url_for('main.listar_clientes', page=p) }}">{{ p }}</a>
+                <span
+                    class="px-3 py-2 rounded-lg border border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed">Anterior</span>
                 {% endif %}
-            {% else %}
-                <span class="px-2 text-slate-400">…</span>
-            {% endif %}
-        {% endfor %}
 
-        {% if pagination.has_next %}
-            <a class="px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-               href="{{ url_for('main.listar_clientes', page=pagination.next_num) }}">Próxima</a>
-        {% else %}
-            <span class="px-3 py-2 rounded-lg border border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed">Próxima</span>
-        {% endif %}
-    </div>
+                {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                {% if p %}
+                {% if p == pagination.page %}
+                <span class="px-3 py-2 rounded-lg bg-slate-900 text-white">{{ p }}</span>
+                {% else %}
+                <a class="px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                    href="{{ url_for('main.listar_clientes', page=p, search=search) }}">{{ p }}</a>
+                {% endif %}
+                {% else %}
+                <span class="px-2 text-slate-400">…</span>
+                {% endif %}
+                {% endfor %}
+
+                {% if pagination.has_next %}
+                <a class="px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                    href="{{ url_for('main.listar_clientes', page=pagination.next_num, search=search) }}">Próxima</a>
+                {% else %}
+                <span
+                    class="px-3 py-2 rounded-lg border border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed">Próxima</span>
+                {% endif %}
+            </div>
 </nav>
 {% endif %}
 
@@ -186,7 +197,7 @@ Clientes Cadastrados
         border-radius: 1rem;
         box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
     }
-    
+
     .screen-header {
         display: flex;
         justify-content: space-between;
@@ -211,17 +222,36 @@ Clientes Cadastrados
         gap: 0.75rem;
         align-items: center;
     }
-    .filter-search-col { flex: 1; }
-    .filter-sort-col { flex-shrink: 0; min-width: 150px; }
+
+    .filter-search-col {
+        flex: 1;
+    }
+
+    .filter-sort-col {
+        flex-shrink: 0;
+        min-width: 180px;
+    }
+
     @media (max-width: 768px) {
-        .filter-row { flex-wrap: wrap; }
-        .filter-sort-col { width: 100%; display: flex; gap: 0.5rem; }
-        .sort-btn { flex: 1; justify-content: center; }
+        .filter-row {
+            flex-wrap: wrap;
+        }
+
+        .filter-sort-col {
+            width: 100%;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .sort-btn {
+            flex: 1;
+            justify-content: center;
+        }
     }
 </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const sortSelect = document.getElementById('sortSelect');
         const tbody = document.getElementById('tabelaClientesBody');
         const removeAccents = str => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -245,21 +275,68 @@ Clientes Cadastrados
         sortTable();
 
         const filterInput = document.getElementById('filterCliente');
+        let debounceTimer;
+
+        function updateResults(url) {
+            fetch(url, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+
+                    // Atualizar o corpo da tabela
+                    const newTbody = doc.getElementById('tabelaClientesBody');
+                    const currentTbody = document.getElementById('tabelaClientesBody');
+                    if (newTbody && currentTbody) {
+                        currentTbody.innerHTML = newTbody.innerHTML;
+                    }
+
+                    // Atualizar a paginação
+                    const newNav = doc.querySelector('nav[aria-label="Paginação"]');
+                    let currentNav = document.querySelector('nav[aria-label="Paginação"]');
+
+                    if (newNav) {
+                        if (currentNav) {
+                            currentNav.outerHTML = newNav.outerHTML;
+                        } else {
+                            document.querySelector('.table-container').insertAdjacentHTML('afterend', newNav.outerHTML);
+                        }
+                    } else if (currentNav) {
+                        currentNav.remove();
+                    }
+
+                    // Re-ordenar se necessário
+                    sortTable();
+
+                    // Atualizar URL sem recarregar
+                    window.history.pushState({}, '', url);
+                })
+                .catch(err => console.error('Erro na busca:', err));
+        }
+
         if (filterInput) {
-            filterInput.addEventListener('input', function() {
-                const filterValue = removeAccents(this.value.toLowerCase());
-                const rows = document.querySelectorAll('#tabelaClientesBody tr');
-                rows.forEach(row => {
-                    if (row.querySelector('td[colspan]')) return;
-                    const nome = removeAccents(row.cells[0]?.querySelector('.cliente-nome')?.textContent.toLowerCase() || '');
-                    const cpfCnpj = removeAccents(row.cells[1]?.textContent.toLowerCase() || '');
-                    const telefone = removeAccents(row.cells[2]?.textContent.toLowerCase() || '');
-                    const veiculos = removeAccents(row.cells[4]?.textContent.toLowerCase() || '');
-                    const match = nome.includes(filterValue) || cpfCnpj.includes(filterValue) || telefone.includes(filterValue) || veiculos.includes(filterValue);
-                    row.style.display = match ? '' : 'none';
-                });
+            filterInput.addEventListener('input', function () {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    const search = this.value;
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('search', search);
+                    url.searchParams.set('page', '1');
+                    updateResults(url.toString());
+                }, 300);
             });
         }
+
+        // Interceptar cliques na paginação para usar AJAX
+        document.addEventListener('click', function (e) {
+            const link = e.target.closest('nav[aria-label="Paginação"] a');
+            if (link) {
+                e.preventDefault();
+                updateResults(link.href);
+            }
+        });
     });
 </script>
 
