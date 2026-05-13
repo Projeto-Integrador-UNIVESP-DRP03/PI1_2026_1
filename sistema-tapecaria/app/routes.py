@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, send_file, current_app, jsonify
 from datetime import datetime
-from sqlalchemy import func
+from sqlalchemy import func, or_
 
 # tabelas
 from .models import (
@@ -99,19 +99,31 @@ def listar_clientes():
     page = request.args.get("page", 1, type=int)
     per_page = request.args.get("per_page", 10, type=int)
     per_page = max(1, min(per_page, 10000))
+    search = request.args.get("search", "")
 
     # apenas clientes com nome preenchido, para evitar mostrar registros "deletados" (soft delete)
-    query = (
-        Cliente.query
-        .filter(Cliente.cliente_ativo == 1)
-        .order_by(Cliente.nome.asc())
-    )
+    query = Cliente.query.filter(Cliente.cliente_ativo == 1)
+
+    if search:
+        search_filter = f"%{search}%"
+        query = query.join(Veiculo, isouter=True).join(TelefoneCliente, isouter=True).filter(
+            or_(
+                Cliente.nome.ilike(search_filter),
+                Cliente.cod_cliente.ilike(search_filter),
+                Veiculo.placa.ilike(search_filter),
+                Veiculo.modelo.ilike(search_filter),
+                TelefoneCliente.telefone.ilike(search_filter)
+            )
+        ).distinct()
+
+    query = query.order_by(Cliente.nome.asc())
     pagination = query.paginate(page=page, per_page=per_page, error_out=False)
 
     return render_template(
         "lista_clientes.html",
         clientes=pagination.items,
-        pagination=pagination
+        pagination=pagination,
+        search=search
     )
 
 
@@ -593,16 +605,26 @@ def lista_orcamentos():
     page = request.args.get("page", 1, type=int)
     per_page = request.args.get("per_page", 10, type=int)
     per_page = max(1, min(per_page, 10000))
+    search = request.args.get("search", "")
+
+    query = Orcamento.query.join(Veiculo).join(Cliente)
 
     if request.args.get("all") == "1":
-        query = Orcamento.query.order_by(Orcamento.dat_orcamento.desc())
+        pass
     else:
-        query = (
-            Orcamento.query
-            .outerjoin(Pedido, Pedido.id_orcamento == Orcamento.id_orcamento)
-            .filter(Pedido.id_pedido == None)
-            .order_by(Orcamento.dat_orcamento.desc())
+        query = query.outerjoin(Pedido, Pedido.id_orcamento == Orcamento.id_orcamento).filter(Pedido.id_pedido == None)
+
+    if search:
+        search_filter = f"%{search}%"
+        query = query.filter(
+            or_(
+                Cliente.nome.ilike(search_filter),
+                Veiculo.placa.ilike(search_filter),
+                Veiculo.modelo.ilike(search_filter)
+            )
         )
+
+    query = query.order_by(Orcamento.dat_orcamento.desc())
 
     pagination = query.paginate(page=page, per_page=per_page, error_out=False)
 
@@ -631,6 +653,7 @@ def lista_orcamentos():
         "lista_orcamentos.html",
         orcamentos=pagination.items,
         pagination=pagination,
+        search=search,
         stats={
             "total_orcamentos": total_orcamentos,
             "orcamentos_mes": int(orcamentos_mes or 0),
@@ -686,14 +709,28 @@ def lista_pedidos():
     page = request.args.get("page", 1, type=int)
     per_page = request.args.get("per_page", 10, type=int)
     per_page = max(1, min(per_page, 10000))
+    search = request.args.get("search", "")
 
     query = (
         Orcamento.query
         .join(Pedido, Pedido.id_orcamento == Orcamento.id_orcamento)
+        .join(Veiculo, Orcamento.id_veiculo == Veiculo.id_veiculo)
+        .join(Cliente, Veiculo.id_cliente == Cliente.id_cliente)
         .filter(Pedido.boolean_aceite_cliente == True)
         .filter(Pedido.status != "Concluído")
-        .order_by(Orcamento.dat_orcamento.desc())
     )
+
+    if search:
+        search_filter = f"%{search}%"
+        query = query.filter(
+            or_(
+                Cliente.nome.ilike(search_filter),
+                Veiculo.placa.ilike(search_filter),
+                Veiculo.modelo.ilike(search_filter)
+            )
+        )
+
+    query = query.order_by(Orcamento.dat_orcamento.desc())
 
     pagination = query.paginate(page=page, per_page=per_page, error_out=False)
 
@@ -717,6 +754,7 @@ def lista_pedidos():
         "pedidos.html",
         orcamentos=pagination.items,
         pagination=pagination,
+        search=search,
         stats={
             "total_pedidos": total_pedidos,
             "pedidos_andamento": int(pedidos_andamento or 0),
@@ -730,14 +768,28 @@ def pedidos_concluidos():
     page = request.args.get("page", 1, type=int)
     per_page = request.args.get("per_page", 10, type=int)
     per_page = max(1, min(per_page, 10000))
+    search = request.args.get("search", "")
 
     query = (
         Orcamento.query
         .join(Pedido, Pedido.id_orcamento == Orcamento.id_orcamento)
+        .join(Veiculo, Orcamento.id_veiculo == Veiculo.id_veiculo)
+        .join(Cliente, Veiculo.id_cliente == Cliente.id_cliente)
         .filter(Pedido.boolean_aceite_cliente == True)
         .filter(Pedido.status == "Concluído")
-        .order_by(Orcamento.dat_orcamento.desc())
     )
+
+    if search:
+        search_filter = f"%{search}%"
+        query = query.filter(
+            or_(
+                Cliente.nome.ilike(search_filter),
+                Veiculo.placa.ilike(search_filter),
+                Veiculo.modelo.ilike(search_filter)
+            )
+        )
+
+    query = query.order_by(Orcamento.dat_orcamento.desc())
 
     pagination = query.paginate(page=page, per_page=per_page, error_out=False)
 
@@ -764,6 +816,7 @@ def pedidos_concluidos():
         "pedidos_concluidos.html",
         orcamentos=pagination.items,
         pagination=pagination,
+        search=search,
         stats={
             "total_concluidos": total_concluidos,
             "concluidos_mes": int(concluidos_mes or 0),

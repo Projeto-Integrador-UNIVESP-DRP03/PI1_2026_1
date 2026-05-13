@@ -749,7 +749,7 @@ h1, h2, h3, .title-font {
 
 .form-input, .form-select, .form-textarea {
     width: 100%;
-    padding: 0.625rem 0.75rem 0.625rem 2.25rem;
+    padding: 0.625rem 0.75rem 0.625rem 3rem !important;
     border: 1px solid #cbd5e1;
     border-radius: 0.85rem;
     font-size: 0.875rem;

@@ -1,0 +1,436 @@
+([('SistemaTapecaria.exe',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\build\\SistemaTapecaria\\SistemaTapecaria.exe',
+   'EXECUTABLE'),
+  ('python314.dll',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\python314.dll',
+   'BINARY'),
+  ('_zstd.pyd',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_zstd.pyd',
+   'EXTENSION'),
+  ('_lzma.pyd',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_lzma.pyd',
+   'EXTENSION'),
+  ('_bz2.pyd',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_bz2.pyd',
+   'EXTENSION'),
+  ('_decimal.pyd',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_decimal.pyd',
+   'EXTENSION'),
+  ('_hashlib.pyd',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_hashlib.pyd',
+   'EXTENSION'),
+  ('select.pyd',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\select.pyd',
+   'EXTENSION'),
+  ('_socket.pyd',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_socket.pyd',
+   'EXTENSION'),
+  ('unicodedata.pyd',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\unicodedata.pyd',
+   'EXTENSION'),
+  ('_ssl.pyd',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_ssl.pyd',
+   'EXTENSION'),
+  ('_overlapped.pyd',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_overlapped.pyd',
+   'EXTENSION'),
+  ('_asyncio.pyd',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_asyncio.pyd',
+   'EXTENSION'),
+  ('_queue.pyd',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_queue.pyd',
+   'EXTENSION'),
+  ('_ctypes.pyd',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_ctypes.pyd',
+   'EXTENSION'),
+  ('_multiprocessing.pyd',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_multiprocessing.pyd',
+   'EXTENSION'),
+  ('pyexpat.pyd',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\pyexpat.pyd',
+   'EXTENSION'),
+  ('_wmi.pyd',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_wmi.pyd',
+   'EXTENSION'),
+  ('81d243bd2c585b0f4821__mypyc.cp314-win_amd64.pyd',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\81d243bd2c585b0f4821__mypyc.cp314-win_amd64.pyd',
+   'EXTENSION'),
+  ('charset_normalizer\\cd.cp314-win_amd64.pyd',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\charset_normalizer\\cd.cp314-win_amd64.pyd',
+   'EXTENSION'),
+  ('charset_normalizer\\md.cp314-win_amd64.pyd',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\charset_normalizer\\md.cp314-win_amd64.pyd',
+   'EXTENSION'),
+  ('PIL\\_webp.cp314-win_amd64.pyd',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\PIL\\_webp.cp314-win_amd64.pyd',
+   'EXTENSION'),
+  ('PIL\\_imagingtk.cp314-win_amd64.pyd',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\PIL\\_imagingtk.cp314-win_amd64.pyd',
+   'EXTENSION'),
+  ('PIL\\_avif.cp314-win_amd64.pyd',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\PIL\\_avif.cp314-win_amd64.pyd',
+   'EXTENSION'),
+  ('PIL\\_imagingcms.cp314-win_amd64.pyd',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\PIL\\_imagingcms.cp314-win_amd64.pyd',
+   'EXTENSION'),
+  ('PIL\\_imagingmath.cp314-win_amd64.pyd',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\PIL\\_imagingmath.cp314-win_amd64.pyd',
+   'EXTENSION'),
+  ('_elementtree.pyd',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_elementtree.pyd',
+   'EXTENSION'),
+  ('PIL\\_imaging.cp314-win_amd64.pyd',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\PIL\\_imaging.cp314-win_amd64.pyd',
+   'EXTENSION'),
+  ('sqlalchemy\\cyextension\\collections.cp314-win_amd64.pyd',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\sqlalchemy\\cyextension\\collections.cp314-win_amd64.pyd',
+   'EXTENSION'),
+  ('sqlalchemy\\cyextension\\util.cp314-win_amd64.pyd',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\sqlalchemy\\cyextension\\util.cp314-win_amd64.pyd',
+   'EXTENSION'),
+  ('sqlalchemy\\cyextension\\resultproxy.cp314-win_amd64.pyd',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\sqlalchemy\\cyextension\\resultproxy.cp314-win_amd64.pyd',
+   'EXTENSION'),
+  ('sqlalchemy\\cyextension\\processors.cp314-win_amd64.pyd',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\sqlalchemy\\cyextension\\processors.cp314-win_amd64.pyd',
+   'EXTENSION'),
+  ('sqlalchemy\\cyextension\\immutabledict.cp314-win_amd64.pyd',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\sqlalchemy\\cyextension\\immutabledict.cp314-win_amd64.pyd',
+   'EXTENSION'),
+  ('greenlet\\_greenlet.cp314-win_amd64.pyd',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\greenlet\\_greenlet.cp314-win_amd64.pyd',
+   'EXTENSION'),
+  ('_uuid.pyd',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_uuid.pyd',
+   'EXTENSION'),
+  ('_sqlite3.pyd',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_sqlite3.pyd',
+   'EXTENSION'),
+  ('markupsafe\\_speedups.cp314-win_amd64.pyd',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\markupsafe\\_speedups.cp314-win_amd64.pyd',
+   'EXTENSION'),
+  ('VCRUNTIME140.dll',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\VCRUNTIME140.dll',
+   'BINARY'),
+  ('libcrypto-3.dll',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\libcrypto-3.dll',
+   'BINARY'),
+  ('libssl-3.dll',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\libssl-3.dll',
+   'BINARY'),
+  ('libffi-8.dll',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\libffi-8.dll',
+   'BINARY'),
+  ('VCRUNTIME140_1.dll',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\VCRUNTIME140_1.dll',
+   'BINARY'),
+  ('MSVCP140.dll', 'C:\\WINDOWS\\system32\\MSVCP140.dll', 'BINARY'),
+  ('sqlite3.dll',
+   'C:\\Users\\ander\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\sqlite3.dll',
+   'BINARY'),
+  ('instance\\database.db',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\instance\\database.db',
+   'DATA'),
+  ('static\\css\\estilo.css',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\static\\css\\estilo.css',
+   'DATA'),
+  ('static\\imagens\\Catalogos\\Tecido\\couro_legitimo.jpeg',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\static\\imagens\\Catalogos\\Tecido\\couro_legitimo.jpeg',
+   'DATA'),
+  ('static\\imagens\\Catalogos\\Tecido\\courvim_sintetico.jpeg',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\static\\imagens\\Catalogos\\Tecido\\courvim_sintetico.jpeg',
+   'DATA'),
+  ('static\\imagens\\Identidade_visual\\logo_aplicacao.png',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\static\\imagens\\Identidade_visual\\logo_aplicacao.png',
+   'DATA'),
+  ('static\\imagens\\Identidade_visual\\logo_icone.ico',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\static\\imagens\\Identidade_visual\\logo_icone.ico',
+   'DATA'),
+  ('static\\imagens\\Identidade_visual\\logo_zito.png',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\static\\imagens\\Identidade_visual\\logo_zito.png',
+   'DATA'),
+  ('static\\js\\modal.js',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\static\\js\\modal.js',
+   'DATA'),
+  ('templates\\base.html',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\templates\\base.html',
+   'DATA'),
+  ('templates\\cliente.html',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\templates\\cliente.html',
+   'DATA'),
+  ('templates\\consulta.html',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\templates\\consulta.html',
+   'DATA'),
+  ('templates\\dashboard.html',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\templates\\dashboard.html',
+   'DATA'),
+  ('templates\\form_cliente.html',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\templates\\form_cliente.html',
+   'DATA'),
+  ('templates\\form_orcamento.html',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\templates\\form_orcamento.html',
+   'DATA'),
+  ('templates\\form_veiculo.html',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\templates\\form_veiculo.html',
+   'DATA'),
+  ('templates\\lista_clientes.html',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\templates\\lista_clientes.html',
+   'DATA'),
+  ('templates\\lista_orcamentos.html',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\templates\\lista_orcamentos.html',
+   'DATA'),
+  ('templates\\login.html',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\templates\\login.html',
+   'DATA'),
+  ('templates\\modais_preview.html',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\templates\\modais_preview.html',
+   'DATA'),
+  ('templates\\pedido_editar.html',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\templates\\pedido_editar.html',
+   'DATA'),
+  ('templates\\pedidos.html',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\templates\\pedidos.html',
+   'DATA'),
+  ('templates\\pedidos_concluidos.html',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\templates\\pedidos_concluidos.html',
+   'DATA'),
+  ('templates\\selecionar_cliente_pedido.html',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\templates\\selecionar_cliente_pedido.html',
+   'DATA'),
+  ('templates\\selecionar_veiculo_pedido.html',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\templates\\selecionar_veiculo_pedido.html',
+   'DATA'),
+  ('templates\\visualizar_orcamento.html',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\templates\\visualizar_orcamento.html',
+   'DATA'),
+  ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\licenses\\LICENSE',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\licenses\\LICENSE',
+   'DATA'),
+  ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\INSTALLER',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\INSTALLER',
+   'DATA'),
+  ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\top_level.txt',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\top_level.txt',
+   'DATA'),
+  ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\REQUESTED',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\REQUESTED',
+   'DATA'),
+  ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\RECORD',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\RECORD',
+   'DATA'),
+  ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\WHEEL',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\WHEEL',
+   'DATA'),
+  ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\METADATA',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\METADATA',
+   'DATA'),
+  ('setuptools\\_vendor\\jaraco\\text\\Lorem ipsum.txt',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\jaraco\\text\\Lorem '
+   'ipsum.txt',
+   'DATA'),
+  ('flask-3.1.3.dist-info\\entry_points.txt',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\flask-3.1.3.dist-info\\entry_points.txt',
+   'DATA'),
+  ('flask-3.1.3.dist-info\\REQUESTED',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\flask-3.1.3.dist-info\\REQUESTED',
+   'DATA'),
+  ('flask-3.1.3.dist-info\\licenses\\LICENSE.txt',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\flask-3.1.3.dist-info\\licenses\\LICENSE.txt',
+   'DATA'),
+  ('flask_sqlalchemy-3.1.1.dist-info\\INSTALLER',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\flask_sqlalchemy-3.1.1.dist-info\\INSTALLER',
+   'DATA'),
+  ('flask_sqlalchemy-3.1.1.dist-info\\METADATA',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\flask_sqlalchemy-3.1.1.dist-info\\METADATA',
+   'DATA'),
+  ('werkzeug-3.1.6.dist-info\\INSTALLER',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\werkzeug-3.1.6.dist-info\\INSTALLER',
+   'DATA'),
+  ('flask-3.1.3.dist-info\\METADATA',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\flask-3.1.3.dist-info\\METADATA',
+   'DATA'),
+  ('markupsafe-3.0.3.dist-info\\WHEEL',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\WHEEL',
+   'DATA'),
+  ('markupsafe-3.0.3.dist-info\\top_level.txt',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\top_level.txt',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\WHEEL',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\WHEEL',
+   'DATA'),
+  ('werkzeug-3.1.6.dist-info\\METADATA',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\werkzeug-3.1.6.dist-info\\METADATA',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\RECORD',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\RECORD',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\LICENSE.txt',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\LICENSE.txt',
+   'DATA'),
+  ('flask_sqlalchemy-3.1.1.dist-info\\LICENSE.rst',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\flask_sqlalchemy-3.1.1.dist-info\\LICENSE.rst',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\REQUESTED',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\REQUESTED',
+   'DATA'),
+  ('flask_sqlalchemy-3.1.1.dist-info\\WHEEL',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\flask_sqlalchemy-3.1.1.dist-info\\WHEEL',
+   'DATA'),
+  ('markupsafe-3.0.3.dist-info\\RECORD',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\RECORD',
+   'DATA'),
+  ('click-8.3.1.dist-info\\INSTALLER',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\click-8.3.1.dist-info\\INSTALLER',
+   'DATA'),
+  ('werkzeug-3.1.6.dist-info\\REQUESTED',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\werkzeug-3.1.6.dist-info\\REQUESTED',
+   'DATA'),
+  ('werkzeug-3.1.6.dist-info\\licenses\\LICENSE.txt',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\werkzeug-3.1.6.dist-info\\licenses\\LICENSE.txt',
+   'DATA'),
+  ('click-8.3.1.dist-info\\METADATA',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\click-8.3.1.dist-info\\METADATA',
+   'DATA'),
+  ('flask-3.1.3.dist-info\\RECORD',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\flask-3.1.3.dist-info\\RECORD',
+   'DATA'),
+  ('click-8.3.1.dist-info\\RECORD',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\click-8.3.1.dist-info\\RECORD',
+   'DATA'),
+  ('markupsafe-3.0.3.dist-info\\REQUESTED',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\REQUESTED',
+   'DATA'),
+  ('werkzeug-3.1.6.dist-info\\RECORD',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\werkzeug-3.1.6.dist-info\\RECORD',
+   'DATA'),
+  ('click-8.3.1.dist-info\\REQUESTED',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\click-8.3.1.dist-info\\REQUESTED',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\INSTALLER',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\INSTALLER',
+   'DATA'),
+  ('flask_sqlalchemy-3.1.1.dist-info\\REQUESTED',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\flask_sqlalchemy-3.1.1.dist-info\\REQUESTED',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\METADATA',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\METADATA',
+   'DATA'),
+  ('markupsafe-3.0.3.dist-info\\INSTALLER',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\INSTALLER',
+   'DATA'),
+  ('flask-3.1.3.dist-info\\INSTALLER',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\flask-3.1.3.dist-info\\INSTALLER',
+   'DATA'),
+  ('click-8.3.1.dist-info\\licenses\\LICENSE.txt',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\click-8.3.1.dist-info\\licenses\\LICENSE.txt',
+   'DATA'),
+  ('werkzeug-3.1.6.dist-info\\WHEEL',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\werkzeug-3.1.6.dist-info\\WHEEL',
+   'DATA'),
+  ('markupsafe-3.0.3.dist-info\\METADATA',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\METADATA',
+   'DATA'),
+  ('markupsafe-3.0.3.dist-info\\licenses\\LICENSE.txt',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\licenses\\LICENSE.txt',
+   'DATA'),
+  ('flask_sqlalchemy-3.1.1.dist-info\\RECORD',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\flask_sqlalchemy-3.1.1.dist-info\\RECORD',
+   'DATA'),
+  ('click-8.3.1.dist-info\\WHEEL',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\click-8.3.1.dist-info\\WHEEL',
+   'DATA'),
+  ('flask-3.1.3.dist-info\\WHEEL',
+   'c:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\.venv\\Lib\\site-packages\\flask-3.1.3.dist-info\\WHEEL',
+   'DATA'),
+  ('base_library.zip',
+   'C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI '
+   '2026\\PI1_2026_1\\sistema-tapecaria\\build\\SistemaTapecaria\\base_library.zip',
+   'DATA')],)

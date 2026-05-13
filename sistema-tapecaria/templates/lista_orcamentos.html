@@ -31,6 +31,7 @@ Orçamentos
                     id="filterCliente" 
                     placeholder="Cliente, carro ou placa"
                     class="w-full"
+                    value="{{ search or '' }}"
                 >
             </div></div>
             <div class="filter-sort-col"><div class="input-icon">
@@ -153,7 +154,7 @@ Orçamentos
         <div class="flex items-center gap-1 flex-wrap">
             {% if pagination.has_prev %}
                 <a class="px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                   href="{{ url_for('main.lista_orcamentos', page=pagination.prev_num, all=request.args.get('all')) }}">Anterior</a>
+                   href="{{ url_for('main.lista_orcamentos', page=pagination.prev_num, all=request.args.get('all'), search=search) }}">Anterior</a>
             {% else %}
                 <span class="px-3 py-2 rounded-lg border border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed">Anterior</span>
             {% endif %}
@@ -164,7 +165,7 @@ Orçamentos
                         <span class="px-3 py-2 rounded-lg bg-slate-900 text-white">{{ p }}</span>
                     {% else %}
                         <a class="px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                           href="{{ url_for('main.lista_orcamentos', page=p, all=request.args.get('all')) }}">{{ p }}</a>
+                           href="{{ url_for('main.lista_orcamentos', page=p, all=request.args.get('all'), search=search) }}">{{ p }}</a>
                     {% endif %}
                 {% else %}
                     <span class="px-2 text-slate-400">…</span>
@@ -173,7 +174,7 @@ Orçamentos
 
             {% if pagination.has_next %}
                 <a class="px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                   href="{{ url_for('main.lista_orcamentos', page=pagination.next_num, all=request.args.get('all')) }}">Próxima</a>
+                   href="{{ url_for('main.lista_orcamentos', page=pagination.next_num, all=request.args.get('all'), search=search) }}">Próxima</a>
             {% else %}
                 <span class="px-3 py-2 rounded-lg border border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed">Próxima</span>
             {% endif %}
@@ -226,7 +227,7 @@ Orçamentos
     .input-icon input,
     .input-icon select {
         width: 100%;
-        padding-left: 2.2rem;
+        padding-left: 3rem !important;
         padding-top: 0.6rem;
         padding-bottom: 0.6rem;
         padding-right: 0.75rem;
@@ -293,7 +294,7 @@ Orçamentos
 
     .filter-row { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
     .filter-search-col { flex: 1; min-width: 200px; }
-    .filter-sort-col { flex-shrink: 0; min-width: 160px; }
+    .filter-sort-col { flex-shrink: 0; min-width: 180px; }
     #sortSelect optgroup {
         font-weight: 700;
         color: #1e293b;
@@ -365,9 +366,72 @@ Orçamentos
         const filterCliente = document.getElementById('filterCliente');
         const filterDataInicio = document.getElementById('filterDataInicio');
         const filterDataFim = document.getElementById('filterDataFim');
-        if (filterCliente) filterCliente.addEventListener('input', applyFilters);
+        let debounceTimer;
+
+        function updateResults(url) {
+            fetch(url, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // Atualizar o corpo da tabela
+                const newTbody = doc.getElementById('tabelaOrcamentosBody');
+                const currentTbody = document.getElementById('tabelaOrcamentosBody');
+                if (newTbody && currentTbody) {
+                    currentTbody.innerHTML = newTbody.innerHTML;
+                }
+                
+                // Atualizar a paginação
+                const newNav = doc.querySelector('nav[aria-label="Paginação"]');
+                let currentNav = document.querySelector('nav[aria-label="Paginação"]');
+                
+                if (newNav) {
+                    if (currentNav) {
+                        currentNav.outerHTML = newNav.outerHTML;
+                    } else {
+                        document.querySelector('.table-container').insertAdjacentHTML('afterend', newNav.outerHTML);
+                    }
+                } else if (currentNav) {
+                    currentNav.remove();
+                }
+                
+                // Re-ordenar e aplicar filtros de data se necessário
+                sortData();
+                applyFilters();
+                
+                // Atualizar URL sem recarregar
+                window.history.pushState({}, '', url);
+            })
+            .catch(err => console.error('Erro na busca:', err));
+        }
+
+        if (filterCliente) {
+            filterCliente.addEventListener('input', function() {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    const search = this.value;
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('search', search);
+                    url.searchParams.set('page', '1');
+                    updateResults(url.toString());
+                }, 300);
+            });
+        }
+        
         if (filterDataInicio) filterDataInicio.addEventListener('change', applyFilters);
         if (filterDataFim) filterDataFim.addEventListener('change', applyFilters);
+
+        // Interceptar cliques na paginação para usar AJAX
+        document.addEventListener('click', function(e) {
+            const link = e.target.closest('nav[aria-label="Paginação"] a');
+            if (link) {
+                e.preventDefault();
+                updateResults(link.href);
+            }
+        });
     }
 
     function applyFilters() {

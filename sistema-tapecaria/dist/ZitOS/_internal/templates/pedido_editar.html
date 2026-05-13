@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}
+Editar Pedido
+{% endblock %}
+
+{% block page_title %}
+Editar Pedido
+{% endblock %}
+
+{% block content %}
+
+<div class="table-container">
+    <div class="screen-header" style="margin-bottom: 2rem;">
+        <div>
+            <h2 class="screen-title title-font" style="margin-bottom: 0.5rem;">Editar Status</h2>
+            <p class="screen-subtitle">Atualize o andamento do pedido aprovado.</p>
+        </div>
+        <a href="{{ url_for('main.lista_pedidos') }}" class="btn-outline" style="padding: 0.5rem 1rem;">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+    </div>
+
+    <div class="panel" style="padding: 1.5rem;">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" style="margin-bottom: 1.5rem;">
+            <div>
+                <p class="text-slate-500 text-xs uppercase font-semibold">Cliente</p>
+                <p class="text-slate-900 font-semibold">{{ pedido.orcamento.veiculo.cliente.nome }}</p>
+            </div>
+            <div>
+                <p class="text-slate-500 text-xs uppercase font-semibold">Veículo</p>
+                <p class="text-slate-900 font-semibold">{{ pedido.orcamento.veiculo.modelo }} - {{ pedido.orcamento.veiculo.placa }}</p>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ url_for('main.editar_pedido', id_pedido=pedido.id_pedido) }}">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="status" class="text-slate-600 text-sm font-semibold">Status do Pedido</label>
+                    {% set pedido_status = (pedido.status or 'Pendente') %}
+                    {% set status_key = 'pendente' %}
+                    {% if pedido_status == 'Em Andamento' %}
+                        {% set status_key = 'em-andamento' %}
+                    {% elif pedido_status == 'Concluído' %}
+                        {% set status_key = 'concluido' %}
+                    {% endif %}
+                    <select id="status" name="status" class="status-select w-full" data-status="{{ status_key }}" style="margin-top: 0.5rem;">
+                        <option value="Pendente" {% if pedido.status == 'Pendente' or not pedido.status %}selected{% endif %}>Pendente</option>
+                        <option value="Em Andamento" {% if pedido.status == 'Em Andamento' %}selected{% endif %}>Em Andamento</option>
+                        <option value="Concluído" {% if pedido.status == 'Concluído' %}selected{% endif %}>Concluído</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem;">
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save"></i> Salvar Status
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .status-select {
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.75rem;
+        border: 1px solid #e2e8f0;
+        background: #f8fafc;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+    }
+
+    .status-select[data-status="pendente"] {
+        background: #fef3c7;
+        border-color: #f59e0b;
+        color: #b45309;
+    }
+
+    .status-select[data-status="em-andamento"] {
+        background: #cffafe;
+        border-color: #06b6d4;
+        color: #0e7490;
+    }
+
+    .status-select[data-status="concluido"] {
+        background: #dcfce7;
+        border-color: #22c55e;
+        color: #166534;
+    }
+</style>
+
+<script>
+    function normalizeStatusText(value) {
+        return (value || '')
+            .toString()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase()
+            .trim();
+    }
+
+    function statusKeyFromValue(value) {
+        const n = normalizeStatusText(value);
+        if (n.startsWith('em andamento')) return 'em-andamento';
+        if (n.startsWith('conclu')) return 'concluido';
+        return 'pendente';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const select = document.getElementById('status');
+        if (!select) return;
+
+        select.dataset.status = select.dataset.status || statusKeyFromValue(select.value);
+        select.addEventListener('change', function() {
+            select.dataset.status = statusKeyFromValue(select.value);
+        });
+
+        const form = select.closest('form');
+        if (!form) return;
+
+        form.addEventListener('submit', function(e) {
+            const key = statusKeyFromValue(select.value);
+            if (key !== 'concluido') return;
+
+            e.preventDefault();
+
+            const cliente = '{{ pedido.orcamento.veiculo.cliente.nome|e }}';
+            const veiculo = '{{ pedido.orcamento.veiculo.modelo|e }}';
+            const placa = '{{ pedido.orcamento.veiculo.placa|e }}';
+
+            if (typeof openApproveStyleConfirmModal !== 'function') {
+                // Fallback: se o modal global não estiver disponível
+                if (window.confirm('Confirmar conclusão do serviço?\n\nAo concluir, o pedido vai para \"Concluídos\".')) {
+                    form.submit();
+                }
+                return;
+            }
+
+            openApproveStyleConfirmModal({
+                title: 'Concluir Serviço',
+                subtitleHtml: `Cliente: <strong>${cliente}</strong>`,
+                bodyHtml: `
+                    <p>Confirmar conclusão do serviço deste pedido?</p>
+                    <p style="margin-top: 1rem; font-size: 0.875rem; color: #10b981;">
+                        <i class="fas fa-info-circle"></i> Veículo: <strong>${veiculo}</strong> (${placa})
+                    </p>
+                `,
+                confirmHtml: '<i class="fas fa-check-circle"></i> Concluir',
+                onConfirm: () => form.submit()
+            });
+        });
+    });
+</script>
+
+{% endblock %}
