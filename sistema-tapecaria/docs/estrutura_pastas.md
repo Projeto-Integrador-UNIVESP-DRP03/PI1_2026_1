@@ -8,7 +8,7 @@ sistema-tapecaria
 │   └── routes.py       [rota das páginas da aplicação]
 │
 ├── database
-│   ├── schema.sql                  Criação das tabelas
+│   ├── init.db.py                  Inicialização do banco
 |   ├── init.db.py                  Inicialização do banco
 │   └── database.db                 Banco de dados
 |
@@ -24,7 +24,7 @@ sistema-tapecaria
 ├── scripts
 |   └──
 |
-├── statics
+├── static
 |   ├── css
 |   |   └── estilo.css
 |   └── imagens [Repositório de imagens]
@@ -40,7 +40,7 @@ sistema-tapecaria
 │       ├── form_cliente.html
 │       ├── form_veiculo.html
 │       ├── lista_clientes.html
-│       ├── ordem_servico.html
+│       ├── pedidos.html
 │       ├── 
 │       ├──
 |

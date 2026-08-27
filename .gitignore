@@ -4,6 +4,12 @@
 # Virtual environment
 venv/
 
+# Local databases and generated distributions
+sistema-tapecaria/instance/*.db
+sistema-tapecaria/build/
+sistema-tapecaria/dist/
+sistema-tapecaria/*.zip
+
 # OS files
 .DS_Store
 Thumbs.db

@@ -6,6 +6,7 @@
 class ModalManager {
     constructor() {
         this.currentModal = null;
+        this.previousFocusedElement = null;
         this.setupEventListeners();
     }
 
@@ -43,9 +44,13 @@ class ModalManager {
     openModal(modalId) {
         const overlay = document.getElementById(modalId);
         if (overlay) {
+            this.previousFocusedElement = document.activeElement;
+            overlay.hidden = false;
             overlay.classList.add('active');
             this.currentModal = overlay;
             document.body.style.overflow = 'hidden';
+            const firstButton = overlay.querySelector('button:not([disabled])');
+            if (firstButton) firstButton.focus();
         }
     }
 
@@ -69,8 +74,13 @@ class ModalManager {
             }
 
             overlay.classList.remove('active');
+            overlay.hidden = true;
             this.currentModal = null;
             document.body.style.overflow = '';
+            if (this.previousFocusedElement && typeof this.previousFocusedElement.focus === 'function') {
+                this.previousFocusedElement.focus();
+            }
+            this.previousFocusedElement = null;
         }
     }
 
@@ -110,7 +120,7 @@ class ModalManager {
      * @param {function} onReject - Função para recusar
      */
     confirmBudget(orcamentoId, cliente, onApprove, onReject) {
-        const modalId = 'modal-budget-decision';
+        const modalId = 'modal-approve-budget';
         const modal = document.getElementById(modalId);
         
         if (!modal) {
@@ -154,8 +164,10 @@ class ModalManager {
         const body = modal.querySelector('.modal-body');
         const icon = modal.querySelector('.modal-icon');
 
-        headerContent.innerHTML = `<h2>${titulo}</h2>`;
-        body.innerHTML = `<p>${mensagem}</p>`;
+        const title = headerContent.querySelector('h2');
+        const message = body.querySelector('p');
+        if (title) title.textContent = titulo || '';
+        if (message) message.textContent = mensagem || '';
 
         // Atualiza ícone
         icon.className = `modal-icon ${tipo}`;

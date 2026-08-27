@@ -122,10 +122,10 @@ Orçamentos
                             </a>
                             <form id="form-approve-{{ orcamento.id_orcamento }}" method="POST" action="{{ url_for('main.aceitar_orcamento', id_orcamento=orcamento.id_orcamento) }}" style="display: none;"></form>
                             <form id="form-reject-{{ orcamento.id_orcamento }}" method="POST" action="{{ url_for('main.recusar_orcamento', id_orcamento=orcamento.id_orcamento) }}" style="display: none;"></form>
-                            <button type="button" class="icon-btn" data-tooltip="Aprovar orçamento" onclick="openApproveBudgetModal('{{ orcamento.id_orcamento }}', '{{ orcamento.veiculo.cliente.nome }}'); return false;">
+                            <button type="button" class="icon-btn" data-tooltip="Aprovar orçamento" onclick="openApproveBudgetModal('{{ orcamento.id_orcamento }}', {{ orcamento.veiculo.cliente.nome|tojson }}); return false;">
                                 <i class="fas fa-check"></i>
                             </button>
-                            <button type="button" class="icon-btn" data-tooltip="Recusar orçamento" onclick="openRejectBudgetModal('{{ orcamento.id_orcamento }}', '{{ orcamento.veiculo.cliente.nome }}'); return false;">
+                            <button type="button" class="icon-btn" data-tooltip="Recusar orçamento" onclick="openRejectBudgetModal('{{ orcamento.id_orcamento }}', {{ orcamento.veiculo.cliente.nome|tojson }}); return false;">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>

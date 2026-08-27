@@ -32,7 +32,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['C:\\Users\\ander\\OneDrive\\Área de Trabalho\\PI 2026\\PI1_2026_1\\sistema-tapecaria\\static\\imagens\\Identidade_visual\\logo_icone.ico'],
+    icon='static\\imagens\\Identidade_visual\\logo_icone.ico',
 )
 coll = COLLECT(
     exe,

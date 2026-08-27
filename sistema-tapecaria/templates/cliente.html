@@ -193,18 +193,13 @@ Dados do Cliente - {{ cliente.nome }}
                                 <a href="{{ url_for('main.editar_veiculo', id_veiculo=veiculo.id_veiculo) }}" class="icon-btn-sm" data-tooltip="Editar veículo">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <form method="POST" 
-                                      action="{{ url_for('main.deletar_veiculo', id_veiculo=veiculo.id_veiculo) }}" 
-                                      style="display: inline;"
-                                      onsubmit="event.preventDefault(); customConfirm({ 
-                                          message: 'Tem certeza que deseja excluir este veículo?', 
-                                          title: 'Excluir Veículo', 
-                                          type: 'danger' 
-                                      }).then(confirmed => { if(confirmed) this.submit(); });">
-                                    <button type="submit" class="icon-btn-sm" data-tooltip="Excluir veículo">
+                                <form id="form-delete-veiculo-{{ veiculo.id_veiculo }}" method="POST"
+                                      action="{{ url_for('main.deletar_veiculo', id_veiculo=veiculo.id_veiculo) }}"
+                                      style="display: none;"></form>
+                                <button type="button" class="icon-btn-sm" data-tooltip="Excluir veículo"
+                                        onclick="openDeleteModal('veiculo', {{ (veiculo.placa.upper() ~ ' - ' ~ veiculo.modelo)|tojson }}, 'form-delete-veiculo-{{ veiculo.id_veiculo }}');">
                                         <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </form>
+                                </button>
                              </td>
                          </tr>
                         {% endfor %}

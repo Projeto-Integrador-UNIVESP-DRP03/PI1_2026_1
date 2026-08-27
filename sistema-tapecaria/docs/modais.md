@@ -21,13 +21,11 @@ O sistema de modais foi implementado para substituir os alertas nativos do naveg
 - **Função**: `openDeleteModal('veiculo', nome, formId)`
 
 ### 3. **Modal de Aprovação/Recusa de Orçamento**
-- **ID**: `modal-budget-decision`
-- **Ícone**: Documento com cifrão (azul)
-- **Cores**: Azul para informação, verde para aprovação, laranja para recusa
+- **IDs**: `modal-approve-budget` e `modal-reject-budget`
 - **Ações**: Aprovar ou recusar um orçamento
-- **Funções**: 
-  - `openBudgetModal(orcamentoId, cliente)`
-  - `openRejectBudgetModal(orcamentoId, cliente)`
+- **Funções**:
+   - `openApproveBudgetModal(orcamentoId, cliente)`
+   - `openRejectBudgetModal(orcamentoId, cliente)`
 
 ## Como Usar
 
@@ -37,7 +35,6 @@ O sistema de modais foi implementado para substituir os alertas nativos do naveg
 <!-- Criar um formulário oculto com ID único -->
 <form id="form-delete-cliente-{{ id }}" action="/deletar" method="post" style="display: none;"></form>
 
-<!-- Criar botão que chama a função -->
 <button type="button" class="icon-btn" 
         onclick="openDeleteModal('cliente', '{{ nome }}', 'form-delete-cliente-{{ id }}')">
     <i class="fas fa-trash-alt"></i>
@@ -49,11 +46,9 @@ O sistema de modais foi implementado para substituir os alertas nativos do naveg
 ```html
 <!-- Criar formulários ocultos para aprovação e recusa -->
 <form id="form-approve-{{ id }}" method="POST" action="/aprovar" style="display: none;"></form>
-<form id="form-reject-{{ id }}" method="POST" action="/recusar" style="display: none;"></form>
-
 <!-- Criar botões que chamam as funções -->
 <button type="button" class="icon-btn" 
-        onclick="openBudgetModal('{{ id }}', '{{ cliente }}')">
+   onclick="openApproveBudgetModal('{{ id }}', '{{ cliente }}')">
     <i class="fas fa-check"></i>
 </button>
 
@@ -81,7 +76,7 @@ O sistema de modais foi implementado para substituir os alertas nativos do naveg
 3. **`static/js/modal.js`** (novo arquivo)
    - Classe `ModalManager` para gerenciar modais
    - Função `openDeleteModal()` para exclusões
-   - Função `openBudgetModal()` para aprovação
+   - Função `openApproveBudgetModal()` para aprovação
    - Função `openRejectBudgetModal()` para recusa
 
 4. **`templates/lista_clientes.html`**
@@ -89,7 +84,7 @@ O sistema de modais foi implementado para substituir os alertas nativos do naveg
    - Substituído `confirm()` por `openDeleteModal()` para veículos
 
 5. **`templates/lista_orcamentos.html`**
-   - Substituído `confirm()` por `openBudgetModal()` e `openRejectBudgetModal()`
+   - Substituído `confirm()` por `openApproveBudgetModal()` e `openRejectBudgetModal()`
 
 ## Funcionalidades
 

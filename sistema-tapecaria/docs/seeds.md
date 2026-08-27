@@ -64,7 +64,7 @@ Antes de inserir os dados, o banco precisa estar criado. Portanto, a ordem corre
 1. **Recriar o banco de dados**
 
 ```
-python database/init_db.py
+python database/init.db.py
 ```
 
 2. **Executar o script de seeds**
