@@ -1,10 +1,10 @@
 ## Proteção da aplicação
 
-Esta proteção é necessária para gerar alertas na tela. Como o alerta na pesquisa de CPF/CNPJ.
+A aplicação usa sessões Flask para autenticação e mensagens temporárias. Todas as rotas administrativas exigem login.
 
 Flask precisa de uma chave secreta (secret_key) para gerenciar sessões e cookies de forma segura. Sem ela, qualquer tentativa de usar session gera:
 
-```bach
+```text
 RuntimeError: The session is unavailable because no secret key was set.
 ```
 
@@ -15,7 +15,6 @@ Gere uma chave aleatória e segura. Você pode usar o módulo secrets do Python:
 
 ```python
 import secrets
-a linha de código
   app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", secrets.token_hex(32))
 ```
 
@@ -33,6 +32,24 @@ E irá aparecer:
 ```bash
 ÊXITO: o valor especificado foi salvo.
 ```
-### Atenção, essa senha não precisa ser usada em mais nenhum outro lugar.
+### Configuração do acesso administrativo
+
+O usuário e o hash da senha são fornecidos por variáveis de ambiente. Nunca grave a senha em arquivos do projeto.
+
+Gere um hash uma única vez no ambiente virtual:
+
+```powershell
+python -c "from werkzeug.security import generate_password_hash; print(generate_password_hash('SUA_SENHA'))"
+```
+
+Configure os valores no Windows:
+
+```powershell
+setx ADMIN_USERNAME "admin"
+setx ADMIN_PASSWORD_HASH "HASH_GERADO"
+setx SECRET_KEY "UMA_CHAVE_LONGA_E_ALEATORIA"
+```
+
+Depois de configurar as variáveis, abra um novo terminal e execute a aplicação. O logout é feito por uma requisição POST protegida por CSRF.
 
 

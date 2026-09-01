@@ -82,6 +82,11 @@
                         <div id="pageTitle" class="topbar-title title-font">{% block page_title %}Sistema{% endblock %}</div>
                     </div>
                 </div>
+                <form method="POST" action="{{ url_for('main.logout') }}">
+                    <button type="submit" class="btn-outline" aria-label="Sair do sistema">
+                        <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Sair
+                    </button>
+                </form>
             </div>
 
             <div class="screen">
@@ -108,19 +113,31 @@
 
 <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
 
+<script>
+    document.querySelectorAll('form[method="POST"], form[method="post"]').forEach((form) => {
+        if (!form.querySelector('input[name="csrf_token"]')) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'csrf_token';
+            input.value = {{ csrf_token|tojson }};
+            form.appendChild(input);
+        }
+    });
+</script>
+
 <!-- =============================================
      MODAIS POST
      ============================================ -->
 
 <!-- MODAL - EXCLUSÃO DE CLIENTE -->
-<div id="modal-delete-cliente" class="modal-overlay">
+<div id="modal-delete-cliente" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-delete-cliente-title" hidden>
     <div class="modal-container">
         <div class="modal-header">
             <div class="modal-icon danger">
                 <i class="fas fa-trash-alt"></i>
             </div>
             <div class="modal-header-content">
-                <h2>Excluir Cliente</h2>
+                <h2 id="modal-delete-cliente-title">Excluir Cliente</h2>
                 <p>Ação irreversível</p>
             </div>
         </div>
@@ -140,14 +157,14 @@
 </div>
 
 <!-- MODAL - EXCLUSÃO DE VEÍCULO -->
-<div id="modal-delete-veiculo" class="modal-overlay">
+<div id="modal-delete-veiculo" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-delete-veiculo-title" hidden>
     <div class="modal-container">
         <div class="modal-header">
             <div class="modal-icon danger">
                 <i class="fas fa-car-crash"></i>
             </div>
             <div class="modal-header-content">
-                <h2>Excluir Veículo</h2>
+                <h2 id="modal-delete-veiculo-title">Excluir Veículo</h2>
                 <p>Ação irreversível</p>
             </div>
         </div>
@@ -167,14 +184,14 @@
 </div>
 
 <!-- MODAL - APROVAR ORÇAMENTO -->
-<div id="modal-approve-budget" class="modal-overlay">
+<div id="modal-approve-budget" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-approve-budget-title" hidden>
     <div class="modal-container">
         <div class="modal-header">
             <div class="modal-icon success">
                 <i class="fas fa-check-circle"></i>
             </div>
             <div class="modal-header-content">
-                <h2>Aprovar Orçamento</h2>
+                <h2 id="modal-approve-budget-title">Aprovar Orçamento</h2>
                 <p>Cliente: <strong class="modal-budget-client">-</strong></p>
             </div>
         </div>
@@ -194,14 +211,14 @@
 </div>
 
 <!-- MODAL - RECUSAR ORÇAMENTO -->
-<div id="modal-reject-budget" class="modal-overlay">
+<div id="modal-reject-budget" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-reject-budget-title" hidden>
     <div class="modal-container">
         <div class="modal-header">
             <div class="modal-icon warning">
                 <i class="fas fa-times-circle"></i>
             </div>
             <div class="modal-header-content">
-                <h2>Recusar Orçamento</h2>
+                <h2 id="modal-reject-budget-title">Recusar Orçamento</h2>
                 <p>Cliente: <strong class="modal-budget-client">-</strong></p>
             </div>
         </div>

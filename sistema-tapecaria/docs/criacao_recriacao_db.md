@@ -23,7 +23,7 @@ sistema-tapecaria
 │   ├── routes.py
 │
 ├── database
-│   └── init_db.py
+│   └── init.db.py
 │
 ├── instance
 │   └── database.db
@@ -37,6 +37,14 @@ O banco SQLite será criado em:
 ```
 instance/database.db
 ```
+
+Para aplicar as constraints de integridade em um banco existente, execute a migração com a aplicação parada:
+
+```powershell
+python database/migrate_integrity.py
+```
+
+O script valida dados nulos e duplicados, cria um backup automático e só então altera as tabelas de itens e o índice único de pedidos.
 
 ---
 
@@ -69,7 +77,7 @@ Quando o banco é criado, o SQLAlchemy gera automaticamente as tabelas com base 
 O projeto possui um script responsável por criar o banco:
 
 ```
-database/init_db.py
+database/init.db.py
 ```
 
 Conteúdo do arquivo:
@@ -107,7 +115,7 @@ sistema-tapecaria
 execute:
 
 ```
-python database/init_db.py
+python database/init.db.py
 ```
 
 Se tudo estiver correto, aparecerá:
@@ -137,7 +145,7 @@ O banco precisa ser recriado sempre que houver mudanças estruturais nos models,
 Após modificar `models.py`, execute novamente:
 
 ```
-python database/init_db.py
+python database/init.db.py
 ```
 
 ---
@@ -182,7 +190,7 @@ Sempre que alterar o modelo de dados:
 2. recriar o banco:
 
 ```
-python database/init_db.py
+python database/init.db.py
 ```
 
 3. iniciar a aplicação:

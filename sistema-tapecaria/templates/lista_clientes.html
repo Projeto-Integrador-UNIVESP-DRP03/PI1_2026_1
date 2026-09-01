@@ -76,7 +76,7 @@ Clientes Cadastrados
                                 action="{{ url_for('main.deletar_cliente', id_cliente=cliente.id_cliente) }}"
                                 method="post" style="display: none;"></form>
                             <button type="button" class="icon-btn" data-tooltip="Excluir perfil"
-                                onclick="openDeleteModal('cliente', '{{ cliente.nome }}', 'form-delete-cliente-{{ cliente.id_cliente }}');">
+                                onclick="openDeleteModal('cliente', {{ cliente.nome|tojson }}, 'form-delete-cliente-{{ cliente.id_cliente }}');">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
                             <a href="{{ url_for('main.novo_veiculo', id_cliente=cliente.id_cliente) }}" class="icon-btn"
@@ -120,7 +120,7 @@ Clientes Cadastrados
                                     action="{{ url_for('main.deletar_veiculo', id_veiculo=veiculo.id_veiculo) }}"
                                     method="post" style="display: none;"></form>
                                 <button type="button" class="icon-btn" data-tooltip="Excluir veículo"
-                                    onclick="openDeleteModal('veiculo', '{{ veiculo.placa.upper() }} - {{ veiculo.modelo }}', 'form-delete-veiculo-{{ veiculo.id_veiculo }}');">
+                                    onclick="openDeleteModal('veiculo', {{ (veiculo.placa.upper() ~ ' - ' ~ veiculo.modelo)|tojson }}, 'form-delete-veiculo-{{ veiculo.id_veiculo }}');">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </div>

@@ -150,12 +150,14 @@ class OrcamentoCostura(db.Model):
 
     id_orcamento = db.Column(
         db.Integer,
-        db.ForeignKey("orcamento.id_orcamento")
+        db.ForeignKey("orcamento.id_orcamento"),
+        nullable=False
     )
 
     id_costura = db.Column(
         db.Integer,
-        db.ForeignKey("costura.id_costura")
+        db.ForeignKey("costura.id_costura"),
+        nullable=False
     )
 
     obs_item = db.Column(db.String(200))
@@ -171,12 +173,14 @@ class OrcamentoCor(db.Model):
 
     id_orcamento = db.Column(
         db.Integer,
-        db.ForeignKey("orcamento.id_orcamento")
+        db.ForeignKey("orcamento.id_orcamento"),
+        nullable=False
     )
 
     id_cor = db.Column(
         db.Integer,
-        db.ForeignKey("cor.id_cor")
+        db.ForeignKey("cor.id_cor"),
+        nullable=False
     )
 
     obs_item = db.Column(db.String(200))
@@ -192,12 +196,14 @@ class OrcamentoTecido(db.Model):
 
     id_orcamento = db.Column(
         db.Integer,
-        db.ForeignKey("orcamento.id_orcamento")
+        db.ForeignKey("orcamento.id_orcamento"),
+        nullable=False
     )
 
     id_tecido = db.Column(
         db.Integer,
-        db.ForeignKey("tecido.id_tecido")
+        db.ForeignKey("tecido.id_tecido"),
+        nullable=False
     )
 
     obs_item = db.Column(db.String(200))
@@ -208,6 +214,10 @@ class OrcamentoTecido(db.Model):
 # =========================
 class Pedido(db.Model):
     __tablename__ = "pedidos"
+
+    __table_args__ = (
+        db.UniqueConstraint("id_orcamento", name="uq_pedido_orcamento"),
+    )
 
     id_pedido = db.Column(db.Integer, primary_key=True, autoincrement=True)
 

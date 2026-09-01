@@ -1,5 +1,8 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, send_file, current_app, jsonify
-from datetime import datetime
+from flask import Blueprint, render_template, request, redirect, url_for, flash, send_file, current_app, jsonify, session
+from werkzeug.security import check_password_hash
+from datetime import date, datetime
+from decimal import Decimal, InvalidOperation
+import math
 from sqlalchemy import func, or_
 
 # tabelas
@@ -29,6 +32,7 @@ from reportlab.lib.units import cm
 from reportlab.lib import colors
 import io
 import os
+import secrets
 
 
 
@@ -51,9 +55,61 @@ def slugify(texto):
 main = Blueprint("main", __name__)
 
 
+def parse_positive_int(value, field_name, maximum=None):
+    try:
+        parsed = int(value)
+    except (TypeError, ValueError):
+        raise ValueError(f"{field_name} deve ser um número inteiro.")
+
+    if parsed < 0 or (maximum is not None and parsed > maximum):
+        raise ValueError(f"{field_name} está fora do limite permitido.")
+    return parsed
+
+
+def parse_money(value):
+    raw_value = (value or "0").strip()
+    try:
+        if "," in raw_value:
+            raw_value = raw_value.replace(".", "").replace(",", ".")
+        parsed = Decimal(raw_value)
+    except (InvalidOperation, ValueError):
+        raise ValueError("O valor informado é inválido.")
+
+    if not parsed.is_finite() or parsed < 0 or parsed > Decimal("99999999.99"):
+        raise ValueError("O valor informado está fora do limite permitido.")
+    return parsed
+
+
 # =========================
 # HOME
 # =========================
+
+@main.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = (request.form.get("username") or "").strip()
+        password = request.form.get("password") or ""
+        configured_hash = current_app.config.get("ADMIN_PASSWORD_HASH", "")
+
+        if (
+            username == current_app.config.get("ADMIN_USERNAME")
+            and configured_hash
+            and check_password_hash(configured_hash, password)
+        ):
+            session.clear()
+            session["authenticated"] = True
+            session["csrf_token"] = secrets.token_urlsafe(32)
+            return redirect(url_for("main.home"))
+
+        flash("Usuário ou senha inválidos.", "error")
+
+    return render_template("login.html")
+
+
+@main.route("/logout", methods=["POST"])
+def logout():
+    session.clear()
+    return redirect(url_for("main.login"))
 
 @main.route("/")
 def home():
@@ -98,7 +154,7 @@ def buscar():
 def listar_clientes():
     page = request.args.get("page", 1, type=int)
     per_page = request.args.get("per_page", 10, type=int)
-    per_page = max(1, min(per_page, 10000))
+    per_page = max(1, min(per_page, 100))
     search = request.args.get("search", "")
 
     # apenas clientes com nome preenchido, para evitar mostrar registros "deletados" (soft delete)
@@ -197,7 +253,7 @@ def salvar_cliente():
 @main.route("/cliente/<int:id_cliente>")
 def perfil_cliente(id_cliente):
 
-    cliente = Cliente.query.get_or_404(id_cliente)
+    cliente = db.get_or_404(Cliente, id_cliente)
 
     return render_template(
         "cliente.html",
@@ -210,7 +266,7 @@ def perfil_cliente(id_cliente):
 @main.route("/editar/<int:id_cliente>")
 def editar_cliente(id_cliente):
 
-    cliente = Cliente.query.get_or_404(id_cliente)
+    cliente = db.get_or_404(Cliente, id_cliente)
 
     return render_template(
         "form_cliente.html",
@@ -228,7 +284,7 @@ def editar_cliente(id_cliente):
 @main.route("/atualizar_cliente/<int:id_cliente>", methods=["POST"])
 def atualizar_cliente(id_cliente):
 
-    cliente = Cliente.query.get_or_404(id_cliente)
+    cliente = db.get_or_404(Cliente, id_cliente)
 
     cliente.nome = request.form["nome"]
 
@@ -274,7 +330,7 @@ def atualizar_cliente(id_cliente):
 # soft delete - para preservar o histórico de pedidos e veículos associados ao cliente, vamos apenas ocultar os clientes da lista.
 @main.route("/deletar_cliente/<int:id_cliente>", methods=["POST"])
 def deletar_cliente(id_cliente):
-    cliente = Cliente.query.get_or_404(id_cliente)
+    cliente = db.get_or_404(Cliente, id_cliente)
 
     # Ocultando dados sensíveis
     cliente.cliente_ativo = 0
@@ -305,7 +361,7 @@ def deletar_cliente(id_cliente):
 @main.route("/deletar_veiculo/<int:id_veiculo>", methods=["POST"])
 def deletar_veiculo(id_veiculo):
 
-    veiculo = Veiculo.query.get_or_404(id_veiculo)
+    veiculo = db.get_or_404(Veiculo, id_veiculo)
 
     id_cliente = veiculo.id_cliente
 
@@ -322,6 +378,7 @@ def deletar_veiculo(id_veiculo):
 
 @main.route("/novo_veiculo/<int:id_cliente>")
 def novo_veiculo(id_cliente):
+    Cliente.query.filter_by(id_cliente=id_cliente, cliente_ativo=1).first_or_404()
 
     return render_template(
         "form_veiculo.html",
@@ -334,31 +391,66 @@ def salvar_veiculo():
     id_veiculo = request.form.get("id_veiculo")
     id_cliente = request.form.get("id_cliente")
     placa_nova = request.form.get("placa")
-    placa_normalizada = placa_nova.upper() if placa_nova else placa_nova
+    placa_normalizada = re.sub(r"[^A-Za-z0-9]", "", placa_nova or "").upper()
 
     if not id_cliente:
         flash("Selecione o cliente antes de cadastrar o veículo.", "error")
+        return redirect(url_for("main.listar_clientes"))
+
+    try:
+        id_cliente = parse_positive_int(id_cliente, "Cliente")
+    except ValueError as error:
+        flash(str(error), "error")
+        return redirect(url_for("main.listar_clientes"))
+
+    cliente = Cliente.query.filter_by(id_cliente=id_cliente, cliente_ativo=1).first()
+    if not cliente:
+        flash("O cliente informado não existe ou está inativo.", "error")
         return redirect(url_for("main.listar_clientes"))
 
     if not placa_normalizada:
         flash("Informe a placa do veículo.", "error")
         return redirect(url_for("main.novo_veiculo", id_cliente=id_cliente))
 
+    if len(placa_normalizada) != 7:
+        flash("A placa deve conter 7 caracteres alfanuméricos.", "error")
+        return redirect(url_for("main.novo_veiculo", id_cliente=id_cliente))
+
     if id_veiculo:
-        veiculo = Veiculo.query.get_or_404(id_veiculo)
+        try:
+            id_veiculo = parse_positive_int(id_veiculo, "Veículo")
+        except ValueError as error:
+            flash(str(error), "error")
+            return redirect(url_for("main.listar_clientes"))
+        veiculo = db.get_or_404(Veiculo, id_veiculo)
+        if veiculo.id_cliente != id_cliente:
+            flash("O veículo não pertence ao cliente informado.", "error")
+            return redirect(url_for("main.listar_clientes"))
     else:
         veiculo = Veiculo()
 
     existe = Veiculo.query.filter_by(placa=placa_normalizada).first()
-    if existe and (not id_veiculo or existe.id_veiculo != int(id_veiculo)):
+    if existe and (not id_veiculo or existe.id_veiculo != id_veiculo):
         flash("Já existe um veículo cadastrado com esta placa.", "error")
         return redirect(url_for("main.editar_veiculo", id_veiculo=existe.id_veiculo))
 
     veiculo.id_cliente = id_cliente
     veiculo.placa = placa_normalizada
-    veiculo.marca = request.form.get("marca")
-    veiculo.modelo = request.form.get("modelo")
-    veiculo.ano = request.form.get("ano")
+    veiculo.marca = (request.form.get("marca") or "").strip()
+    veiculo.modelo = (request.form.get("modelo") or "").strip()
+    if not veiculo.marca or not veiculo.modelo:
+        flash("Informe a marca e o modelo do veículo.", "error")
+        return redirect(url_for("main.editar_veiculo", id_veiculo=veiculo.id_veiculo) if id_veiculo else url_for("main.novo_veiculo", id_cliente=id_cliente))
+
+    ano = (request.form.get("ano") or "").strip()
+    if ano:
+        try:
+            veiculo.ano = parse_positive_int(ano, "Ano", date.today().year + 1)
+        except ValueError as error:
+            flash(str(error), "error")
+            return redirect(url_for("main.editar_veiculo", id_veiculo=veiculo.id_veiculo) if id_veiculo else url_for("main.novo_veiculo", id_cliente=id_cliente))
+    else:
+        veiculo.ano = None
     veiculo.cor = request.form.get("cor")
 
     if not id_veiculo:
@@ -370,7 +462,9 @@ def salvar_veiculo():
 @main.route("/editar_veiculo/<int:id_veiculo>", methods=["GET"])
 def editar_veiculo(id_veiculo):
 
-    veiculo = Veiculo.query.get_or_404(id_veiculo)
+    veiculo = db.get_or_404(Veiculo, id_veiculo)
+    if not veiculo.veiculo_ativo or not veiculo.cliente.cliente_ativo:
+        return redirect(url_for("main.listar_clientes"))
 
     return render_template(
         "form_veiculo.html",
@@ -382,7 +476,9 @@ def editar_veiculo(id_veiculo):
 @main.route("/orcamento/<int:id_veiculo>")
 def form_orcamento(id_veiculo):
 
-    veiculo = Veiculo.query.get_or_404(id_veiculo)
+    veiculo = db.get_or_404(Veiculo, id_veiculo)
+    if not veiculo.veiculo_ativo or not veiculo.cliente.cliente_ativo:
+        return redirect(url_for("main.listar_clientes"))
     cliente = veiculo.cliente
 
     tecidos = Tecido.query.all()
@@ -413,11 +509,10 @@ def form_orcamento(id_veiculo):
 
 @main.route("/orcamento/<int:id_orcamento>/editar")
 def editar_orcamento(id_orcamento):
-    orcamento = Orcamento.query.get_or_404(id_orcamento)
+    orcamento = db.get_or_404(Orcamento, id_orcamento)
     veiculo = orcamento.veiculo
     cliente = veiculo.cliente
 
-    tecidos = Tecido.query.all()
     tecidos = Tecido.query.all()
     costuras = Costura.query.all()
     cores = Cor.query.all()
@@ -464,22 +559,48 @@ def salvar_orcamento():
     id_veiculo = request.form.get("id_veiculo")
     id_orcamento = request.form.get("id_orcamento")
 
+    try:
+        id_veiculo = parse_positive_int(id_veiculo, "Veículo")
+    except ValueError as error:
+        flash(str(error), "error")
+        return redirect(url_for("main.lista_orcamentos"))
+
+    veiculo = Veiculo.query.filter_by(id_veiculo=id_veiculo, veiculo_ativo=1).first()
+    if not veiculo or not veiculo.cliente or not veiculo.cliente.cliente_ativo:
+        flash("O veículo informado não existe ou está inativo.", "error")
+        return redirect(url_for("main.lista_orcamentos"))
+
     # data
-    data_str = request.form.get("dat_orcamento")
+    data_str = (request.form.get("dat_orcamento") or "").strip()
     try:
         dat_orcamento = datetime.strptime(data_str, "%Y-%m-%d").date()
     except ValueError:
-        dat_orcamento = datetime.strptime(data_str, "%d/%m/%Y").date()
+        try:
+            dat_orcamento = datetime.strptime(data_str, "%d/%m/%Y").date()
+        except ValueError:
+            flash("A data do orçamento é inválida.", "error")
+            return redirect(url_for("main.form_orcamento", id_veiculo=id_veiculo))
 
     # números
-    qtd_bancos = int(request.form.get("qtd_bancos") or 0)
-    qtd_apoio_cabeca = int(request.form.get("qtd_apoio_cabeca") or 0)
-
-    valor_raw = request.form.get("valor") or "0"
     try:
-        valor = float(valor_raw)
-    except ValueError:
-        valor = float(valor_raw.replace(".", "").replace(",", "."))
+        qtd_bancos = parse_positive_int(request.form.get("qtd_bancos") or 0, "Quantidade de bancos", 100)
+        qtd_apoio_cabeca = parse_positive_int(request.form.get("qtd_apoio_cabeca") or 0, "Quantidade de apoios de cabeça", 100)
+        valor = parse_money(request.form.get("valor"))
+    except ValueError as error:
+        flash(str(error), "error")
+        return redirect(url_for("main.form_orcamento", id_veiculo=id_veiculo))
+
+    if id_orcamento:
+        try:
+            id_orcamento = parse_positive_int(id_orcamento, "Orçamento")
+        except ValueError as error:
+            flash(str(error), "error")
+            return redirect(url_for("main.lista_orcamentos"))
+
+        orcamento = db.get_or_404(Orcamento, id_orcamento)
+        if orcamento.id_veiculo != id_veiculo:
+            flash("O orçamento não pertence ao veículo informado.", "error")
+            return redirect(url_for("main.lista_orcamentos"))
 
     # booleanos
     bool_original = True if request.form.get("bool_original") else False
@@ -492,11 +613,7 @@ def salvar_orcamento():
 
     obs = request.form.get("obs")
 
-    # Observações por seção (50 chars)
-    obs_costuras = (request.form.get("obs_costuras") or "").strip()[:50]
-
     if id_orcamento:
-        orcamento = Orcamento.query.get_or_404(id_orcamento)
         orcamento.id_veiculo = id_veiculo
         orcamento.dat_orcamento = dat_orcamento
         orcamento.qtd_bancos = qtd_bancos
@@ -509,7 +626,6 @@ def salvar_orcamento():
         orcamento.banco_traseiro = banco_traseiro
         orcamento.valor = valor
         orcamento.obs = obs
-        db.session.commit()
     else:
         # =========================
         # CRIAR ORÇAMENTO
@@ -531,19 +647,13 @@ def salvar_orcamento():
         )
 
         db.session.add(novo_orcamento)
-        db.session.commit()
+        db.session.flush()
 
         id_orcamento = novo_orcamento.id_orcamento
 
     db.session.query(OrcamentoTecido).filter_by(id_orcamento=id_orcamento).delete()
     db.session.query(OrcamentoCostura).filter_by(id_orcamento=id_orcamento).delete()
     db.session.query(OrcamentoCor).filter_by(id_orcamento=id_orcamento).delete()
-    db.session.commit()
-
-    # =========================
-    # MAPEAMENTOS PARA MATERIAIS
-    # =========================
-    costura_map = {c.tipo: c.id_costura for c in Costura.query.all()}
 
     # =========================
     # TECIDOS
@@ -552,6 +662,12 @@ def salvar_orcamento():
     tecidos = request.form.getlist("tecidos")
 
     for tecido_id in tecidos:
+        try:
+            tecido_id = parse_positive_int(tecido_id, "Tecido")
+        except ValueError:
+            continue
+        if not db.session.get(Tecido, tecido_id):
+            continue
         obs_tecido = request.form.get(f"obs_tecido_{tecido_id}", "").strip()[:50]
         item = OrcamentoTecido(
             id_orcamento=id_orcamento,
@@ -566,15 +682,21 @@ def salvar_orcamento():
 
     costuras = request.form.getlist("costuras")
 
-    for costura_nome in costuras:
-        costura_id = costura_map.get(costura_nome)
-        if not costura_id:
+    for costura_id in costuras:
+        try:
+            costura_id = int(costura_id)
+        except (TypeError, ValueError):
             continue
+
+        if not db.session.get(Costura, costura_id):
+            continue
+
+        obs_costura = request.form.get(f"obs_costura_{costura_id}", "").strip()[:50]
 
         item = OrcamentoCostura(
             id_orcamento=id_orcamento,
             id_costura=costura_id,
-            obs_item=obs_costuras
+            obs_item=obs_costura
         )
 
         db.session.add(item)
@@ -586,6 +708,12 @@ def salvar_orcamento():
     cores = request.form.getlist("cores")
 
     for cor_id in cores:
+        try:
+            cor_id = parse_positive_int(cor_id, "Cor")
+        except ValueError:
+            continue
+        if not db.session.get(Cor, cor_id):
+            continue
         obs_cor = request.form.get(f"obs_cor_{cor_id}", "").strip()[:50]
         item = OrcamentoCor(
             id_orcamento=id_orcamento,
@@ -604,7 +732,7 @@ def lista_orcamentos():
 
     page = request.args.get("page", 1, type=int)
     per_page = request.args.get("per_page", 10, type=int)
-    per_page = max(1, min(per_page, 10000))
+    per_page = max(1, min(per_page, 100))
     search = request.args.get("search", "")
 
     query = Orcamento.query.join(Veiculo).join(Cliente)
@@ -664,7 +792,7 @@ def lista_orcamentos():
 
 @main.route("/orcamento/<int:id_orcamento>/aceitar", methods=["POST"])
 def aceitar_orcamento(id_orcamento):
-    orcamento = Orcamento.query.get_or_404(id_orcamento)
+    orcamento = db.get_or_404(Orcamento, id_orcamento)
 
     pedido = Pedido.query.filter_by(id_orcamento=orcamento.id_orcamento).first()
     if not pedido:
@@ -685,7 +813,7 @@ def aceitar_orcamento(id_orcamento):
 
 @main.route("/orcamento/<int:id_orcamento>/recusar", methods=["POST"])
 def recusar_orcamento(id_orcamento):
-    orcamento = Orcamento.query.get_or_404(id_orcamento)
+    orcamento = db.get_or_404(Orcamento, id_orcamento)
 
     pedido = Pedido.query.filter_by(id_orcamento=orcamento.id_orcamento).first()
     if not pedido:
@@ -708,7 +836,7 @@ def lista_pedidos():
 
     page = request.args.get("page", 1, type=int)
     per_page = request.args.get("per_page", 10, type=int)
-    per_page = max(1, min(per_page, 10000))
+    per_page = max(1, min(per_page, 100))
     search = request.args.get("search", "")
 
     query = (
@@ -767,7 +895,7 @@ def lista_pedidos():
 def pedidos_concluidos():
     page = request.args.get("page", 1, type=int)
     per_page = request.args.get("per_page", 10, type=int)
-    per_page = max(1, min(per_page, 10000))
+    per_page = max(1, min(per_page, 100))
     search = request.args.get("search", "")
 
     query = (
@@ -827,7 +955,7 @@ def pedidos_concluidos():
 
 @main.route("/pedido/<int:id_pedido>/editar", methods=["GET", "POST"])
 def editar_pedido(id_pedido):
-    pedido = Pedido.query.get_or_404(id_pedido)
+    pedido = db.get_or_404(Pedido, id_pedido)
 
     if request.method == "POST":
         status = request.form.get("status")
@@ -859,7 +987,7 @@ def editar_pedido(id_pedido):
 
 @main.route("/pedido/<int:id_pedido>/status", methods=["POST"])
 def atualizar_status_pedido(id_pedido):
-    pedido = Pedido.query.get_or_404(id_pedido)
+    pedido = db.get_or_404(Pedido, id_pedido)
 
     status = (request.form.get("status") or "").strip()
     if status not in ["Pendente", "Em Andamento", "Concluído"]:
@@ -893,7 +1021,7 @@ def novo_pedido():
 
 @main.route("/selecionar_veiculo/<int:id_cliente>")
 def selecionar_veiculo_pedido(id_cliente):
-    cliente = Cliente.query.get_or_404(id_cliente)
+    cliente = Cliente.query.filter_by(id_cliente=id_cliente, cliente_ativo=1).first_or_404()
     return render_template(
         "selecionar_veiculo_pedido.html",
         cliente=cliente
@@ -903,7 +1031,7 @@ def selecionar_veiculo_pedido(id_cliente):
 @main.route("/orcamento/<int:id_orcamento>/visualizar")
 def visualizar_orcamento(id_orcamento):
 
-    orcamento = Orcamento.query.get_or_404(id_orcamento)
+    orcamento = db.get_or_404(Orcamento, id_orcamento)
 
     veiculo = orcamento.veiculo
     cliente = veiculo.cliente
@@ -927,9 +1055,9 @@ def visualizar_orcamento(id_orcamento):
 @main.route("/orcamento/<int:id_orcamento>/pdf")
 def gerar_pdf_orcamento(id_orcamento):
 
-    orcamento = Orcamento.query.get_or_404(id_orcamento)
-    veiculo = Veiculo.query.get(orcamento.id_veiculo)
-    cliente = Cliente.query.get(veiculo.id_cliente)
+    orcamento = db.get_or_404(Orcamento, id_orcamento)
+    veiculo = db.session.get(Veiculo, orcamento.id_veiculo)
+    cliente = db.session.get(Cliente, veiculo.id_cliente)
 
     tecidos = OrcamentoTecido.query.filter_by(id_orcamento=id_orcamento).all()
     costuras = OrcamentoCostura.query.filter_by(id_orcamento=id_orcamento).all()
@@ -1306,6 +1434,13 @@ def dashboard_stats():
     hoje = datetime.today().date()
     mes_inicio = datetime(hoje.year, hoje.month, 1).date()
     orcamentos_mes = Orcamento.query.filter(Orcamento.dat_orcamento >= mes_inicio).count()
+
+    meses_atras = hoje.month - 12
+    inicio_grafico = date(
+        hoje.year + meses_atras // 12,
+        meses_atras % 12 + 1,
+        1
+    )
     
     # KPI 5: Valor de Pedidos Concluídos no Mês
     query_concluidos = db.session.query(
@@ -1325,6 +1460,8 @@ def dashboard_stats():
     orcamentos_mensais_raw = db.session.query(
         func.strftime('%Y-%m', Orcamento.dat_orcamento).label('mes_ano'),
         func.count(Orcamento.id_orcamento)
+    ).filter(
+        Orcamento.dat_orcamento >= inicio_grafico
     ).group_by('mes_ano').order_by('mes_ano').all()
     
     # Dados para Gráfico de Conversão (Pedidos por Mês)
@@ -1332,6 +1469,7 @@ def dashboard_stats():
         func.strftime('%Y-%m', Orcamento.dat_orcamento).label('mes_ano'),
         func.count(Pedido.id_pedido)
     ).join(Orcamento).filter(Pedido.boolean_aceite_cliente == True)\
+        .filter(Orcamento.dat_orcamento >= inicio_grafico)\
      .group_by('mes_ano').order_by('mes_ano').all()
     
     # Formatação para o Chart.js

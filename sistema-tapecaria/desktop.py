@@ -4,6 +4,7 @@ import threading
 import webbrowser
 import time
 import shutil
+import secrets
 from flask import Flask
 from waitress import serve
 
@@ -46,7 +47,7 @@ db_path = os.path.abspath(os.path.join(DB_DIR, "database.db")).replace("\\", "/"
 
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.secret_key = "uma_chave_bem_secreta_e_unica"
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY") or secrets.token_hex(32)
 
 # Inicializa o banco
 db.init_app(app)

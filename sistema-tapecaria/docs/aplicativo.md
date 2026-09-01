@@ -12,14 +12,14 @@ Estrutura recomendada:
 sistema-tapecaria
 │
 (...)
-├── statics
+├── static
 |   ├── css
 |   |   └── estilo.css
 |   └── imagens [Repositório de imagens]
 |          ├── Catalogos
 |          └── Identidade_visual [Aqui está o arquivo .ico]
 |
-├── app.py
+├── desktop.py
 |
 ├── venv 
 |
@@ -27,16 +27,7 @@ sistema-tapecaria
 ```
 
 
-No final do `app.py`, adicione:
-```python
-import webbrowser
-
-if __name__ == "__main__":
-    webbrowser.open("http://127.0.0.1:5000")
-    app.run(debug=False)
-```
-
-Isso garante que o navegador abra automaticamente quando o programa iniciar.
+O ponto de entrada do executável é `desktop.py`. Ele inicia o Waitress e abre o navegador automaticamente.
 
 ## 2. Instalar dependências
 
@@ -44,7 +35,6 @@ No ambiente virtual, na pasta `sistema-tapeçaria`:
 
 ```bash
 pip install -r requirements.txt
-pip install pyinstaller
 ```
 | Dica: Use Python 3.10 ou 3.11 para evitar problemas de compatibilidade com PyInstaller.
 
@@ -53,19 +43,12 @@ pip install pyinstaller
 Ainda na pasta `sistema-tapeçaria`, execute:
 
 ```bash
-pyinstaller --onefile --noconsole --icon=static\imagens\Identidade_visual\logo_icone.ico --name=ZitOS app.py
+pyinstaller --noconfirm ZitOS.spec
 ```
 
 #### Explicação dos parâmetros:
-- `--onefile` → gera um único arquivo `.exe`.
-
-- `--noconsole` → oculta a janela preta do terminal.
-
-- `icon=caminho/nome_logo.ico` → define o ícone da aplicação.
-
-- `name=ZitOS` → nome do executável final.
-
-- `app.py` → arquivo principal da aplicação.
+- `ZitOS.spec` → usa a configuração versionada do executável.
+- O arquivo gerado utiliza `desktop.py`, templates, arquivos estáticos e banco inicial.
 
 ## 4. Resultado
 
@@ -73,13 +56,13 @@ Após rodar o comando:
 
 O PyInstaller cria as pastas `build/` e `dist/`.
 
-Dentro de `dist/` estará o arquivo `ZitOS.exe`.
+Dentro de `dist/ZitOS/` estará o arquivo `ZitOS.exe`.
 
 Esse é o arquivo que você pode enviar para qualquer pessoa. Basta dar dois cliques e a aplicação abrirá no navegador.
 
 ## 5. Distribuição
 
-Envie apenas o arquivo ``.exe`` (ou compacte a pasta ``dist/``).
+Envie a pasta ``dist/ZitOS/`` completa ou compacte essa pasta.
 
 O usuário final não precisa instalar Python.
 
@@ -100,18 +83,8 @@ Ela abre uma interface para configurar tudo sem precisar lembrar dos parâmetros
 Se precisar recriar o aplicativo (.exe), recomenda-se deletar as pastas `build/` e `dist/` e o arquivo `<nome_app>.spec`.
 
 ## 7. Requirements.txt
-Exemplo mínimo para Flask + SQLAlchemy:
 
-````
-Flask==3.1.3
-Flask-SQLAlchemy==3.1.1
-SQLAlchemy==2.0.48
-````
+Consulte o `requirements.txt` do projeto; ele já inclui Waitress, ReportLab, Pillow e PyInstaller.
 
-Para gerar o .exe, inclua também:
-
-````
-pyinstaller==6.3.0
-auto-py-to-exe==2.42.0
-````
+Antes de distribuir, configure `SECRET_KEY`, `ADMIN_USERNAME` e `ADMIN_PASSWORD_HASH` no ambiente da máquina.
 
