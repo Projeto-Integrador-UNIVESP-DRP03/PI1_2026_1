@@ -1,12 +1,10 @@
-# 📚 Projeto Integrador I — 1º Semestre de 2026
+# 📚 Projeto Integrador — Eixo Computação
 
 O **Projeto Integrador (PI)** é uma atividade curricular obrigatória que consiste na **resolução de um problema real**, contextualizado na área profissional do curso.
 
-Este projeto é desenvolvido pelos alunos do **Eixo Computação** durante o **1º semestre de 2026**.
-
 ---
 
-## 👥 Equipe — Eixo Computação
+## 👥 Equipe 
 
 | Aluno | GitHub | LinkedIn |
 |------|--------|----------|
@@ -30,9 +28,10 @@ Desenvolvimento de um Sistema Web para Gestão de Ordens de Serviço e Controle 
 
 ---
 
-## 👨‍🏫 Orientação
-
-**Prof. Thiago Vinícius Ribeiro Soeiras**
+| Edição | Semestre/Ano | Orientador                            | Tema Norteador                                                                                                                                                                                                 |
+|--------|--------------|---------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| PI 1   | 1/2026       | Prof. Thiago Vinícius Ribeiro Soeiras | Desenvolvimento de um software com framework web que utilize noções de banco de dados, praticando controle de versão.                                                                                          |
+| PI 2   | 2/2026       | Prof. Claudio Amorim Dos Santos       | Desenvolver um software com framework web que utilize banco de dados, inclua script web (Javascript), nuvem, uso de API, acessibilidade, controle de versão e testes. Opcionalmente, incluir análise de dados. |
 
 ---
 
@@ -42,8 +41,4 @@ Desenvolvimento de um Sistema Web para Gestão de Ordens de Serviço e Controle 
 
 ---
 
-## 📅 Período
 
-**1º Semestre de 2026**
-
----
