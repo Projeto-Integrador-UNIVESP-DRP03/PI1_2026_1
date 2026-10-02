@@ -30,14 +30,20 @@
         .login-logo { width: auto; height: 100px; }
         .shake { animation: shake 0.25s ease-in-out; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+        @media (max-width: 640px) {
+            body { padding: 1rem; overflow-x: hidden; overflow-y: auto; align-items: flex-start; }
+            .login-layout { min-height: calc(100svh - 2rem); align-content: center; }
+            .login-card { width: 100%; max-width: 26rem; justify-self: center; }
+            .glass { padding: 1.5rem; }
+        }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-6 relative overflow-hidden">
+<body class="min-h-screen flex items-center justify-center p-6 relative overflow-x-hidden">
     <div class="floaty one"></div>
     <div class="floaty two"></div>
     <div class="floaty three"></div>
 
-    <div class="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-10">
+    <div class="login-layout w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-10">
         <div class="text-white flex flex-col justify-center px-4">
             <div class="mb-6">
                 <h1 class="title-font text-5xl lg:text-6xl font-bold mt-4">Gestão de pedidos e serviços</h1>
@@ -48,7 +54,7 @@
             </div>
         </div>
 
-        <div class="glass rounded-3xl p-10 shadow-2xl">
+        <div class="glass login-card rounded-3xl p-10 shadow-2xl">
             <div class="text-center mb-8">
                 <div class="mb-6 flex justify-center" style="height: 100px;">
                     <img src="{{ url_for('static', filename='imagens/Identidade_visual/logo_aplicacao.png') }}" alt="logo_aplicacao" class="login-logo">
