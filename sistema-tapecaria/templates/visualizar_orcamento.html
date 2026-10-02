@@ -10,7 +10,7 @@ Orçamento #{{ orcamento.id_orcamento }}
 
 {% block content %}
 
-<div class="orcamento-visualizacao-container">
+<div class="orcamento-visualizacao-container orcamento-detalhe-page">
     
     <!-- Cabeçalho com botão voltar -->
     <div class="screen-header">
@@ -18,7 +18,7 @@ Orçamento #{{ orcamento.id_orcamento }}
             <p class="screen-subtitle">Visualize todos os detalhes do orçamento</p>
         </div>
         <div class="header-actions">
-            <a href="{{ url_for('main.lista_orcamentos') }}" class="btn-outline">
+            <a href="{{ url_for('main.lista_orcamentos') }}" class="btn-outline" data-return-to="{{ request.args.get('return_to', '') }}">
                 <i class="fas fa-arrow-left"></i> Voltar
             </a>
             <a href="{{ url_for('main.gerar_pdf_orcamento', id_orcamento=orcamento.id_orcamento) }}" class="btn-pdf">
@@ -153,6 +153,22 @@ Orçamento #{{ orcamento.id_orcamento }}
     </div>
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const backLink = document.querySelector('[data-return-to]');
+    if (!backLink || !backLink.dataset.returnTo) return;
+
+    try {
+        const returnUrl = new URL(backLink.dataset.returnTo, window.location.origin);
+        if (returnUrl.origin === window.location.origin) {
+            backLink.href = returnUrl.pathname + returnUrl.search + returnUrl.hash;
+        }
+    } catch (error) {
+        console.warn('Destino de retorno inválido; usando a lista de orçamentos.');
+    }
+});
+</script>
 
 <style>
 /* ============================================
@@ -433,18 +449,146 @@ Orçamento #{{ orcamento.id_orcamento }}
 
 /* Responsividade */
 @media (max-width: 768px) {
+    .orcamento-visualizacao-container,
+    .orcamento-visualizacao-container > * {
+        min-width: 0;
+        max-width: 100%;
+    }
+
     .screen-header {
         flex-direction: column;
         align-items: flex-start;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
     }
     
     .header-actions {
         width: 100%;
-        justify-content: flex-end;
+        margin-top: 0.25rem;
+        gap: 0.5rem;
+    }
+    
+    .header-actions .btn-primary,
+    .header-actions .btn-outline,
+    .header-actions .btn-pdf {
+        flex: 1;
+        justify-content: center;
+        min-width: 0;
+        min-height: 44px;
+        padding: 0.625rem 0.5rem;
+        font-size: 0.8rem;
     }
     
     .info-grid {
         grid-template-columns: 1fr;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .info-card {
+        padding: 1rem;
+        border-radius: 0.85rem;
+    }
+
+    .info-card:hover {
+        transform: none;
+    }
+
+    .info-card-icon {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 0.75rem;
+    }
+
+    .info-card-icon i {
+        font-size: 1.2rem;
+    }
+
+    .info-card-content p {
+        overflow-wrap: anywhere;
+    }
+
+    .card-header-custom {
+        padding: 0.85rem 1rem;
+    }
+
+    .card-header-custom h3 {
+        font-size: 0.9rem;
+    }
+
+    .materiais-card .table-wrapper {
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .orcamento-visualizacao-container .table-materiais {
+        width: 100%;
+        min-width: 0;
+        table-layout: fixed;
+    }
+
+    .orcamento-visualizacao-container .table-materiais th,
+    .orcamento-visualizacao-container .table-materiais td {
+        padding: 0.6rem 0.4rem;
+        overflow-wrap: anywhere;
+        vertical-align: top;
+    }
+
+    .orcamento-visualizacao-container .table-materiais thead th {
+        font-size: 0.62rem;
+        line-height: 1.2;
+        letter-spacing: 0.02em;
+    }
+
+    .orcamento-visualizacao-container .table-materiais th:first-child,
+    .orcamento-visualizacao-container .table-materiais td:first-child {
+        width: 25%;
+    }
+
+    .orcamento-visualizacao-container .table-materiais th:nth-child(2),
+    .orcamento-visualizacao-container .table-materiais td:nth-child(2) {
+        width: 37.5%;
+    }
+
+    .orcamento-visualizacao-container .table-materiais th:last-child,
+    .orcamento-visualizacao-container .table-materiais td:last-child {
+        width: 37.5%;
+    }
+
+    .orcamento-visualizacao-container .materiais-row td {
+        font-size: 0.75rem;
+        line-height: 1.4;
+    }
+
+    .orcamento-visualizacao-container .categoria-badge {
+        max-width: 100%;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        font-size: 0.6rem;
+        padding: 0.2rem 0.35rem;
+    }
+
+    .orcamento-visualizacao-container .obs-text {
+        display: block;
+        max-width: none;
+        white-space: normal;
+        overflow: visible;
+        overflow-wrap: anywhere;
+    }
+
+    .observacoes-content {
+        padding: 1rem;
+    }
+
+    .valor-card {
+        padding: 1rem;
+        margin-top: 0.75rem;
+    }
+
+    .valor-label {
+        font-size: 0.8rem;
+        letter-spacing: 0.05em;
     }
     
     .valor-content {
@@ -454,6 +598,42 @@ Orçamento #{{ orcamento.id_orcamento }}
     
     .valor-number {
         font-size: 1.5rem;
+    }
+
+    .obs-text {
+        max-width: none;
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+}
+
+@media (max-width: 480px) {
+    .orcamento-visualizacao-container .header-actions .btn-outline,
+    .orcamento-visualizacao-container .header-actions .btn-pdf {
+        font-size: 0.72rem;
+        gap: 0.35rem;
+    }
+
+    .orcamento-visualizacao-container .table-materiais th,
+    .orcamento-visualizacao-container .table-materiais td {
+        padding: 0.5rem 0.3rem;
+    }
+
+    .orcamento-visualizacao-container .table-materiais thead th {
+        font-size: 0.56rem;
+    }
+
+    .orcamento-visualizacao-container .materiais-row td {
+        font-size: 0.7rem;
+    }
+
+    .orcamento-visualizacao-container .valor-content {
+        gap: 0.4rem;
+    }
+
+    .orcamento-visualizacao-container .valor-number {
+        font-size: 1.35rem;
+        overflow-wrap: anywhere;
     }
 }
 </style>

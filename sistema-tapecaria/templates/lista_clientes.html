@@ -5,12 +5,11 @@ Clientes Cadastrados
 {% endblock %}
 
 {% block page_title %}
-Clientes Cadastrados
 {% endblock %}
 
 {% block content %}
 
-<div class="table-container">
+<div class="table-container clientes-list-page">
 
     <div class="screen-header" style="margin-bottom: 2rem;">
         <div>
@@ -42,7 +41,8 @@ Clientes Cadastrados
         </div>
     </div>
 
-    <table class="table-clientes">
+    <div class="table-wrapper clientes-table-wrapper">
+    <table class="table-clientes clientes-list-table">
 
         <thead>
             <tr>
@@ -146,6 +146,7 @@ Clientes Cadastrados
         </tbody>
 
     </table>
+    </div>
 
 </div>
 

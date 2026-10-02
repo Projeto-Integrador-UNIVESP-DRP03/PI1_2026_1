@@ -9,7 +9,7 @@ Pedidos
 
 {% block content %}
 
-<div class="table-container">
+<div class="table-container pedidos-page">
 
     <div class="screen-header" style="margin-bottom: 2rem;">
         <div>
@@ -24,12 +24,12 @@ Pedidos
             <div class="filter-search-col">
                 <div class="input-icon">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="filterCliente" placeholder="Cliente, carro ou placa" class="w-full" value="{{ search or '' }}">
+                    <input type="text" id="filterCliente" placeholder="Cliente, carro ou placa" class="w-full mobile-hide-placeholder" value="{{ search or '' }}">
                 </div>
             </div>
             <div class="filter-sort-col"><div class="input-icon">
                 <i class="fas fa-sort"></i>
-                <select id="sortSelect" class="w-full">
+                <select id="sortSelect" class="w-full mobile-center-options">
                     <optgroup label="Tempo">
                         <option value="data_desc">Mais Novo</option>
                         <option value="data_asc">Mais Antigo</option>
@@ -43,7 +43,7 @@ Pedidos
             <div class="filter-status-col">
                 <div class="input-icon">
                     <i class="fas fa-filter"></i>
-                    <select id="filterStatus" class="w-full">
+                    <select id="filterStatus" class="w-full mobile-center-options">
                         <option value="">Todos os status</option>
                         <option value="Pendente">Pendente</option>
                         <option value="Em Andamento">Em Andamento</option>
@@ -71,7 +71,7 @@ Pedidos
     </div>
 
     <!-- ESTATÍSTICAS -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center mb-6 pedidos-stats">
         <div class="stat-card p-4">
             <p class="text-slate-500 text-xs uppercase font-semibold">Total de Pedidos</p>
             <p id="totalPedidos" class="text-2xl font-bold text-slate-900 mt-2">0</p>
@@ -90,9 +90,13 @@ Pedidos
         </div>
     </div>
 
+    <div class="mobile-status-legend" role="group" aria-label="Legenda dos status">
+        <p>Use o ícone de alteração na coluna Ações para mudar o status.</p>
+    </div>
+
     <!-- TABELA -->
-    <div class="table-wrapper">
-        <table class="table-clientes">
+    <div class="table-wrapper pedidos-table-wrapper">
+        <table class="table-clientes pedidos-table">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -127,7 +131,8 @@ Pedidos
                             {% elif pedido_status == 'Concluído' %}
                             {% set status_key = 'concluido' %}
                             {% endif %}
-                            <select name="status" class="status-select" data-status="{{ status_key }}"
+                            <select name="status" class="status-select desktop-status-select" data-status="{{ status_key }}"
+                                aria-label="Status do pedido. Toque para alterar."
                                 onfocus="this.dataset.prev=this.value" onchange="handleStatusChange(this)">
                                 <option value="Pendente" {% if (orcamento.pedidos[0].status or 'Pendente' )=='Pendente'
                                     %}selected{% endif %}>Pendente</option>
@@ -143,7 +148,7 @@ Pedidos
                     </td>
                     <td>
                         <div class="cliente-icons">
-                            <a href="{{ url_for('main.visualizar_orcamento', id_orcamento=orcamento.id_orcamento) }}"
+                            <a href="{{ url_for('main.visualizar_orcamento', id_orcamento=orcamento.id_orcamento, return_to=request.full_path) }}"
                                 class="icon-btn" data-tooltip="Visualizar detalhes">
                                 <i class="fas fa-eye"></i>
                             </a>
@@ -157,7 +162,7 @@ Pedidos
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="9" style="text-align: center; padding: 2rem; color: #94a3b8;">
+                    <td colspan="8" style="text-align: center; padding: 2rem; color: #94a3b8;">
                         <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
                         Nenhum pedido cadastrado
                     </td>
@@ -165,6 +170,44 @@ Pedidos
                 {% endfor %}
             </tbody>
         </table>
+    </div>
+
+    <div class="mobile-pedidos-groups" aria-label="Pedidos por status">
+        <section class="mobile-pedidos-group" aria-labelledby="mobilePendentesTitle">
+            <div class="mobile-pedidos-group-header">
+                <h3 id="mobilePendentesTitle">Pendentes</h3>
+                <span id="mobilePendentesCount">0</span>
+            </div>
+            <div class="table-wrapper mobile-pedidos-table-wrapper">
+                <table class="table-clientes pedidos-table mobile-pedidos-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th><th>Cliente</th><th>Veículo</th><th>Placa</th>
+                            <th>Data de Entrada</th><th>Valor (R$)</th><th>Status</th><th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mobilePendentesBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="mobile-pedidos-group" aria-labelledby="mobileAndamentoTitle">
+            <div class="mobile-pedidos-group-header mobile-andamento-header">
+                <h3 id="mobileAndamentoTitle">Em andamento</h3>
+                <span id="mobileAndamentoCount">0</span>
+            </div>
+            <div class="table-wrapper mobile-pedidos-table-wrapper">
+                <table class="table-clientes pedidos-table mobile-pedidos-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th><th>Cliente</th><th>Veículo</th><th>Placa</th>
+                            <th>Data de Entrada</th><th>Valor (R$)</th><th>Status</th><th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mobileAndamentoBody"></tbody>
+                </table>
+            </div>
+        </section>
     </div>
 
     {% if pagination and pagination.pages > 1 %}
@@ -410,6 +453,10 @@ Pedidos
     .filter-status-col { flex-shrink: 0; min-width: 160px; }
     .filter-dates-col { flex-shrink: 0; }
 
+    .mobile-pedidos-groups {
+        display: none;
+    }
+
     @media (max-width: 768px) {
         .filter-row {
             flex-direction: column;
@@ -418,6 +465,200 @@ Pedidos
         .filter-sort-col,
         .filter-status-col {
             width: 100%;
+        }
+
+        .pedidos-page .desktop-status-select {
+            display: none !important;
+        }
+
+        .pedidos-page > .pedidos-table-wrapper {
+            display: none !important;
+        }
+
+        .pedidos-page > .mobile-pedidos-groups {
+            display: grid;
+            order: 4;
+            gap: 0.9rem;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .mobile-pedidos-group {
+            min-width: 0;
+        }
+
+        .mobile-pedidos-group-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            margin-bottom: 0.4rem;
+            padding: 0 0.15rem;
+        }
+
+        .mobile-pedidos-group-header h3 {
+            margin: 0;
+            color: #92400e;
+            font-size: 0.95rem;
+            line-height: 1.2;
+        }
+
+        .mobile-andamento-header h3 {
+            color: #0e7490;
+        }
+
+        .mobile-pedidos-group-header > span {
+            display: inline-flex;
+            min-width: 1.6rem;
+            height: 1.6rem;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            background: #fef3c7;
+            color: #92400e;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        .mobile-andamento-header > span {
+            background: #cffafe;
+            color: #0e7490;
+        }
+
+        .mobile-pedidos-table-wrapper {
+            width: 100%;
+            overflow: hidden !important;
+            border-radius: 0.8rem;
+        }
+
+        .pedidos-page .mobile-pedidos-table {
+            width: 100%;
+            min-width: 0 !important;
+            table-layout: fixed;
+        }
+
+        .pedidos-page .mobile-pedidos-table th,
+        .pedidos-page .mobile-pedidos-table td {
+            padding: 0.5rem 0.25rem;
+            font-size: 0.65rem;
+            line-height: 1.25;
+            overflow-wrap: anywhere;
+            vertical-align: middle;
+        }
+
+        .pedidos-page .mobile-pedidos-table thead th {
+            padding: 0.45rem 0.15rem;
+            font-size: 0.54rem;
+            line-height: 1.15;
+            text-align: center;
+        }
+
+        .pedidos-page .mobile-pedidos-table th:nth-child(4),
+        .pedidos-page .mobile-pedidos-table td:nth-child(4),
+        .pedidos-page .mobile-pedidos-table th:nth-child(5),
+        .pedidos-page .mobile-pedidos-table td:nth-child(5),
+        .pedidos-page .mobile-pedidos-table th:nth-child(7),
+        .pedidos-page .mobile-pedidos-table td:nth-child(7) {
+            display: none;
+        }
+
+        .pedidos-page .mobile-pedidos-table th:first-child,
+        .pedidos-page .mobile-pedidos-table td:first-child { width: 8%; text-align: center; }
+        .pedidos-page .mobile-pedidos-table th:nth-child(2),
+        .pedidos-page .mobile-pedidos-table td:nth-child(2) { width: 24%; }
+        .pedidos-page .mobile-pedidos-table th:nth-child(3),
+        .pedidos-page .mobile-pedidos-table td:nth-child(3) { width: 16%; }
+        .pedidos-page .mobile-pedidos-table th:nth-child(6),
+        .pedidos-page .mobile-pedidos-table td:nth-child(6) { width: 18%; white-space: nowrap; }
+        .pedidos-page .mobile-pedidos-table th:last-child,
+        .pedidos-page .mobile-pedidos-table td:last-child { width: 34%; text-align: center; }
+
+        .pedidos-page .mobile-pedidos-table .cliente-icons {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: nowrap;
+            gap: 0.1rem;
+        }
+
+        .pedidos-page .mobile-pedidos-table .cliente-icons > .icon-btn {
+            width: 24px !important;
+            height: 26px !important;
+            margin: 0 !important;
+        }
+
+        .mobile-status-action {
+            display: inline-flex;
+            width: 24px;
+            height: 26px;
+            flex: 0 0 24px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-status-trigger {
+            width: 24px !important;
+            height: 26px !important;
+            margin: 0 !important;
+            cursor: pointer;
+        }
+
+        .mobile-status-form {
+            display: none !important;
+        }
+
+        .pedidos-page .mobile-status-trigger:focus-visible {
+            outline: 3px solid #3730a3;
+            outline-offset: 2px;
+        }
+
+        .mobile-status-menu {
+            position: fixed;
+            z-index: 1400;
+            display: none;
+            width: min(190px, calc(100vw - 24px));
+            max-height: calc(100vh - 24px);
+            overflow-y: auto;
+            padding: 0.3rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.65rem;
+            background: #ffffff;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.22);
+        }
+
+        .mobile-status-menu.is-open {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mobile-status-choice {
+            display: block;
+            width: 100%;
+            min-height: 44px;
+            padding: 0.65rem 0.75rem;
+            border: 0;
+            border-radius: 0.4rem;
+            background: transparent;
+            color: #1e293b;
+            font: inherit;
+            font-size: 0.82rem;
+            line-height: 1.2;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .mobile-status-choice:hover,
+        .mobile-status-choice:focus-visible,
+        .mobile-status-choice[aria-checked="true"] {
+            outline: none;
+            background: #eef2ff;
+            color: #3730a3;
+        }
+
+        .pedidos-page .mobile-pedidos-table .mobile-status-empty td {
+            padding: 0.8rem 0.5rem;
+            color: #64748b;
+            text-align: center;
         }
     }
 </style>
@@ -431,7 +672,90 @@ Pedidos
         setupFilters();
         setupSort();
         sortData();
+
+        let mobileTableResizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(mobileTableResizeTimer);
+            mobileTableResizeTimer = setTimeout(renderMobilePedidoTables, 120);
+        });
+
+        document.addEventListener('click', function(event) {
+            const trigger = event.target.closest('.mobile-status-trigger');
+            if (trigger) {
+                event.preventDefault();
+                event.stopPropagation();
+                const statusSelect = trigger.parentElement.querySelector('select.status-select');
+                if (statusSelect) openMobileStatusMenu(trigger, statusSelect);
+                return;
+            }
+
+            const choice = event.target.closest('.mobile-status-choice');
+            if (choice) {
+                const statusSelect = window.activeMobileStatusSelect;
+                closeMobileStatusMenu();
+                if (!statusSelect || statusSelect.value === choice.dataset.statusValue) return;
+
+                statusSelect.dataset.prev = statusSelect.value;
+                statusSelect.value = choice.dataset.statusValue;
+                statusSelect.dataset.status = statusKeyFromValue(statusSelect.value);
+                statusSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                return;
+            }
+
+            if (!event.target.closest('.mobile-status-menu')) closeMobileStatusMenu();
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') closeMobileStatusMenu();
+        });
     });
+
+    function closeMobileStatusMenu() {
+        document.querySelector('.mobile-status-menu')?.remove();
+        window.activeMobileStatusSelect = null;
+    }
+
+    function openMobileStatusMenu(trigger, statusSelect) {
+        closeMobileStatusMenu();
+
+        const menu = document.createElement('div');
+        menu.className = 'mobile-status-menu';
+        menu.setAttribute('role', 'menu');
+        menu.setAttribute('aria-label', 'Alterar status do pedido');
+
+        Array.from(statusSelect.options).forEach(option => {
+            const choice = document.createElement('button');
+            choice.type = 'button';
+            choice.className = 'mobile-status-choice';
+            choice.dataset.statusValue = option.value;
+            choice.setAttribute('role', 'menuitemradio');
+            choice.setAttribute('aria-checked', option.selected ? 'true' : 'false');
+            choice.textContent = option.textContent.trim();
+            menu.appendChild(choice);
+        });
+
+        menu.style.visibility = 'hidden';
+        document.body.appendChild(menu);
+        menu.classList.add('is-open');
+        window.activeMobileStatusSelect = statusSelect;
+
+        const triggerRect = trigger.getBoundingClientRect();
+        const menuRect = menu.getBoundingClientRect();
+        const horizontalPadding = 12;
+        const left = Math.min(
+            Math.max(horizontalPadding, triggerRect.right - menuRect.width),
+            window.innerWidth - menuRect.width - horizontalPadding
+        );
+        const below = triggerRect.bottom + 6;
+        const top = below + menuRect.height <= window.innerHeight - horizontalPadding
+            ? below
+            : Math.max(horizontalPadding, triggerRect.top - menuRect.height - 6);
+
+        menu.style.left = `${left}px`;
+        menu.style.top = `${top}px`;
+        menu.style.visibility = 'visible';
+        menu.querySelector('[aria-checked="true"]')?.focus();
+    }
 
     function normalizeStatusText(value) {
         return (value || '')
@@ -515,6 +839,80 @@ Pedidos
             }
         });
         rows.forEach(r => tbody.appendChild(r));
+        renderMobilePedidoTables();
+    }
+
+    function renderMobilePedidoTables() {
+        const pendingBody = document.getElementById('mobilePendentesBody');
+        const progressBody = document.getElementById('mobileAndamentoBody');
+        const sourceBody = document.getElementById('tabelaPedidosBody');
+        if (!pendingBody || !progressBody || !sourceBody) return;
+
+        pendingBody.replaceChildren();
+        progressBody.replaceChildren();
+
+        if (window.innerWidth > 768) return;
+
+        const groupBodies = {
+            pendente: pendingBody,
+            'em-andamento': progressBody
+        };
+        const counts = { pendente: 0, 'em-andamento': 0 };
+        const sourceRows = Array.from(sourceBody.querySelectorAll('tr'));
+
+        sourceRows.forEach(sourceRow => {
+            if (sourceRow.querySelector('td[colspan]') || sourceRow.style.display === 'none') return;
+
+            const sourceStatus = sourceRow.querySelector('select.status-select, .badge-status');
+            const statusKey = sourceStatus
+                ? (sourceStatus.dataset.status || statusKeyFromValue(sourceStatus.value || sourceStatus.textContent))
+                : 'pendente';
+            const targetBody = groupBodies[statusKey];
+            if (!targetBody) return;
+
+            const mobileRow = sourceRow.cloneNode(true);
+            const statusForm = mobileRow.cells[6]?.querySelector('form');
+            const statusSelect = statusForm?.querySelector('select.status-select');
+            const actionList = mobileRow.cells[7]?.querySelector('.cliente-icons');
+
+            if (statusForm && statusSelect && actionList) {
+                const statusAction = document.createElement('span');
+                statusAction.className = 'mobile-status-action';
+
+                    const statusIcon = document.createElement('button');
+                    statusIcon.type = 'button';
+                    statusIcon.className = 'icon-btn mobile-status-trigger';
+                    statusIcon.setAttribute('aria-label', 'Alterar status');
+                    statusIcon.title = 'Alterar status';
+                    statusIcon.innerHTML = '<i class="fas fa-exchange-alt" aria-hidden="true"></i>';
+
+                statusForm.classList.add('mobile-status-form');
+                statusForm.hidden = true;
+                statusForm.style.display = 'none';
+                statusSelect.classList.remove('desktop-status-select');
+                statusSelect.hidden = true;
+                statusSelect.setAttribute('aria-label', 'Alterar status do pedido');
+                    statusForm.remove();
+                    statusAction.append(statusIcon, statusForm);
+                actionList.appendChild(statusAction);
+            }
+
+            targetBody.appendChild(mobileRow);
+            counts[statusKey] += 1;
+        });
+
+        [
+            [pendingBody, counts.pendente, 'Nenhum pedido pendente.'],
+            [progressBody, counts['em-andamento'], 'Nenhum pedido em andamento.']
+        ].forEach(([body, count, emptyMessage]) => {
+            const emptyRow = document.createElement('tr');
+            emptyRow.className = 'mobile-status-empty';
+            emptyRow.innerHTML = `<td colspan="8">${emptyMessage}</td>`;
+            if (count === 0) body.appendChild(emptyRow);
+        });
+
+        document.getElementById('mobilePendentesCount').textContent = counts.pendente;
+        document.getElementById('mobileAndamentoCount').textContent = counts['em-andamento'];
     }
 
     function setupSort() {
@@ -542,6 +940,8 @@ Pedidos
     function setupFilters() {
         const filterCliente = document.getElementById('filterCliente');
         const filterStatus = document.getElementById('filterStatus');
+        const filterDataInicio = document.getElementById('filterDataInicio');
+        const filterDataFim = document.getElementById('filterDataFim');
         let debounceTimer;
 
         function updateResults(url) {
@@ -602,6 +1002,9 @@ Pedidos
             filterStatus.addEventListener('change', applyFilters);
         }
 
+        if (filterDataInicio) filterDataInicio.addEventListener('change', applyFilters);
+        if (filterDataFim) filterDataFim.addEventListener('change', applyFilters);
+
         // Interceptar cliques na paginação para usar AJAX
         document.addEventListener('click', function(e) {
             const link = e.target.closest('nav[aria-label="Paginação"] a');
@@ -616,6 +1019,8 @@ Pedidos
         const removeAccents = str => str.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
         const filterCliente = removeAccents(document.getElementById('filterCliente').value.toLowerCase());
         const filterStatus = document.getElementById('filterStatus').value.toLowerCase();
+        const filterDataInicio = document.getElementById('filterDataInicio').value;
+        const filterDataFim = document.getElementById('filterDataFim').value;
         const rows = document.querySelectorAll('#tabelaPedidosBody tr');
 
         rows.forEach(row => {
@@ -629,6 +1034,7 @@ Pedidos
                 ? (statusEl.dataset.status || statusKeyFromValue(statusEl.value || statusEl.textContent))
                 : '';
             const filterStatusKey = filterStatus ? statusKeyFromValue(filterStatus) : '';
+            const dataAttr = row.cells[4]?.dataset?.date || '';
 
             const matchCliente = !filterCliente ||
                 clienteText.includes(filterCliente) ||
@@ -637,8 +1043,21 @@ Pedidos
 
             const matchStatus = !filterStatusKey || currentStatusKey === filterStatusKey;
 
-            row.style.display = (matchCliente && matchStatus) ? '' : 'none';
+            let matchData = true;
+            if (filterDataInicio || filterDataFim) {
+                if (!dataAttr) {
+                    matchData = false;
+                } else {
+                    const data = new Date(dataAttr + 'T00:00:00');
+                    if (filterDataInicio && data < new Date(filterDataInicio + 'T00:00:00')) matchData = false;
+                    if (filterDataFim && data > new Date(filterDataFim + 'T23:59:59')) matchData = false;
+                }
+            }
+
+            row.style.display = (matchCliente && matchStatus && matchData) ? '' : 'none';
         });
+
+        renderMobilePedidoTables();
     }
 </script>
 

@@ -10,7 +10,7 @@
 
 {% block content %}
 
-<div class="veiculo-form-container">
+<div class="veiculo-form-container veiculo-form-page">
     
     <!-- Cabeçalho -->
     <div class="screen-header">
@@ -82,6 +82,15 @@
             </div>
 
         </form>
+    </div>
+
+    <div class="form-actions-mobile">
+        <a href="{{ url_for('main.listar_clientes') }}" class="btn-outline">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+        <button type="submit" form="formVeiculo" class="btn-primary">
+            <i class="fas fa-save"></i> {{ 'Atualizar' if veiculo else 'Cadastrar' }} Veículo
+        </button>
     </div>
 </div>
 
@@ -240,7 +249,17 @@ if (placaInput) {
     
     .header-actions {
         width: 100%;
-        justify-content: flex-end;
+        order: 10;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+    
+    .header-actions .btn-primary,
+    .header-actions .btn-outline {
+        flex: 1;
+        justify-content: center;
+        min-width: 120px;
     }
     
     .form-grid {

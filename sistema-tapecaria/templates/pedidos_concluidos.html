@@ -9,7 +9,7 @@ Pedidos Concluídos
 
 {% block content %}
 
-<div class="table-container">
+<div class="table-container concluidos-page">
 
     <div class="screen-header" style="margin-bottom: 2rem;">
         <div>
@@ -19,15 +19,15 @@ Pedidos Concluídos
     </div>
 
     <!-- FILTROS -->
-    <div class="panel filter-panel" style="margin-bottom: 1.5rem; padding: 1.5rem;">
+    <div class="panel filter-panel concluidos-filtros" style="margin-bottom: 1.5rem; padding: 1.5rem;">
         <div class="filter-row">
             <div class="filter-search-col"><div class="input-icon">
                 <i class="fas fa-search"></i>
-                <input type="text" id="filterCliente" placeholder="Cliente, carro ou placa" class="w-full" value="{{ search or '' }}">
+                <input type="text" id="filterCliente" placeholder="Cliente, carro ou placa" class="w-full mobile-hide-placeholder" value="{{ search or '' }}">
             </div></div>
             <div class="filter-sort-col"><div class="input-icon">
                 <i class="fas fa-sort"></i>
-                <select id="sortSelect" class="w-full">
+                <select id="sortSelect" class="w-full mobile-center-options">
                     <optgroup label="Tempo">
                         <option value="data_desc">Mais Novo</option>
                         <option value="data_asc">Mais Antigo</option>
@@ -55,7 +55,7 @@ Pedidos Concluídos
     </div>
 
     <!-- ESTATÍSTICAS -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center mb-6 concluidos-stats">
         <div class="stat-card p-4">
             <p class="text-slate-500 text-xs uppercase font-semibold">Total Concluídos</p>
             <p id="totalConcluidos" class="text-2xl font-bold text-slate-900 mt-2">0</p>
@@ -71,8 +71,8 @@ Pedidos Concluídos
     </div>
 
     <!-- TABELA -->
-    <div class="table-wrapper">
-        <table class="table-clientes">
+    <div class="table-wrapper concluidos-table-wrapper">
+        <table class="table-clientes concluidos-table">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -105,7 +105,7 @@ Pedidos Concluídos
                     <td>{{ "%.2f"|format(orcamento.valor|float) }}</td>
                     <td>
                         <div class="cliente-icons">
-                            <a href="{{ url_for('main.visualizar_orcamento', id_orcamento=orcamento.id_orcamento) }}" 
+                            <a href="{{ url_for('main.visualizar_orcamento', id_orcamento=orcamento.id_orcamento, return_to=request.full_path) }}" 
                                class="icon-btn" 
                                data-tooltip="Visualizar detalhes">
                                 <i class="fas fa-eye"></i>
@@ -317,8 +317,8 @@ Pedidos Concluídos
                 const nb = removeAccents((b.cells[1]?.textContent || '').toLowerCase().trim());
                 return sortBy === 'nome_asc' ? na.localeCompare(nb, 'pt') : nb.localeCompare(na, 'pt');
             } else {
-                const da = a.cells[4]?.dataset?.date || '';
-                const db = b.cells[4]?.dataset?.date || '';
+                const da = a.cells[5]?.dataset?.date || '';
+                const db = b.cells[5]?.dataset?.date || '';
                 return sortBy === 'data_desc' ? db.localeCompare(da) : da.localeCompare(db);
             }
         });

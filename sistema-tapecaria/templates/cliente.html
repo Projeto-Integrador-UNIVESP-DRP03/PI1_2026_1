@@ -10,7 +10,7 @@ Dados do Cliente - {{ cliente.nome }}
 
 {% block content %}
 
-<div class="cliente-perfil-container">
+<div class="cliente-perfil-container cliente-detalhe-page">
     
     <!-- Cabeçalho com ações -->
     <div class="screen-header">
@@ -553,14 +553,35 @@ Dados do Cliente - {{ cliente.nome }}
 
 /* Responsividade */
 @media (max-width: 768px) {
+    .cliente-perfil-container {
+        padding: 0;
+    }
+    
     .screen-header {
         flex-direction: column;
         align-items: flex-start;
+        gap: 1rem;
     }
     
     .header-actions {
         width: 100%;
-        justify-content: flex-end;
+        order: 10;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+    
+    .header-actions .btn-primary,
+    .header-actions .btn-outline,
+    .header-actions .btn-success {
+        flex: 1;
+        justify-content: center;
+        min-width: 120px;
+    }
+    
+    .btn-primary, .btn-outline, .btn-success {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
     }
     
     .info-content-grid {
@@ -571,10 +592,25 @@ Dados do Cliente - {{ cliente.nome }}
     .info-row {
         flex-direction: column;
         gap: 0.25rem;
+        padding: 0.75rem 0;
     }
     
     .info-label {
         width: 100%;
+        font-size: 0.7rem;
+    }
+    
+    .info-value {
+        font-size: 0.9rem;
+        padding-left: 0;
+    }
+    
+    .card-header-custom {
+        padding: 0.75rem 1rem;
+    }
+    
+    .card-header-custom h3 {
+        font-size: 0.9rem;
     }
     
     .table-veiculos thead {
@@ -593,18 +629,48 @@ Dados do Cliente - {{ cliente.nome }}
         align-items: center;
         padding: 0.5rem 0;
         border: none;
+        font-size: 0.85rem;
     }
     
     .table-veiculos tbody td:before {
         content: attr(data-label);
         font-weight: 600;
         color: #64748b;
-        font-size: 0.7rem;
+        font-size: 0.65rem;
         text-transform: uppercase;
     }
     
     .acoes-veiculo {
         justify-content: flex-end;
+    }
+    
+    .icon-btn-sm {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .empty-state {
+        padding: 2rem 1rem;
+    }
+    
+    .empty-state i {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .btn-primary, .btn-outline, .btn-success {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .screen-subtitle {
+        font-size: 0.75rem;
     }
 }
 </style>

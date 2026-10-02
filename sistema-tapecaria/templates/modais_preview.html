@@ -252,6 +252,70 @@
             gap: 1rem;
             flex-wrap: wrap;
         }
+
+        @media (max-width: 768px) {
+            .demo-container {
+                margin: 0.75rem auto;
+                padding: 0.75rem;
+            }
+
+            .demo-card {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .demo-container > h1 {
+                font-size: 1.5rem !important;
+                margin-bottom: 1rem !important;
+            }
+
+            .demo-btns,
+            .demo-btn {
+                width: 100%;
+            }
+
+            .demo-btn {
+                justify-content: center;
+            }
+
+            .modal-overlay.active {
+                padding: 1rem;
+                overflow-y: auto;
+            }
+
+            .modal-container {
+                width: 100%;
+                max-width: 500px;
+                max-height: calc(100dvh - 2rem);
+                display: flex;
+                flex-direction: column;
+            }
+
+            .modal-header,
+            .modal-body,
+            .modal-footer {
+                padding: 1rem;
+            }
+
+            .modal-body {
+                overflow-y: auto;
+            }
+
+            .modal-footer {
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .modal-footer {
+                flex-direction: column-reverse;
+            }
+
+            .modal-footer .modal-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body>

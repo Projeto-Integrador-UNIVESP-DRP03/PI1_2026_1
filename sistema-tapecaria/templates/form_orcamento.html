@@ -10,7 +10,7 @@
 
 {% block content %}
 
-<div class="orcamento-form-container">
+<div class="orcamento-form-container orcamento-form-page">
     
     <!-- Cabeçalho -->
     <div class="screen-header">
@@ -278,6 +278,15 @@
         </div>
 
     </form>
+
+    <div class="form-actions-mobile">
+        <a href="{{ url_for('main.lista_orcamentos') }}" class="btn-outline">
+            <i class="fas fa-times"></i> Cancelar
+        </a>
+        <button type="submit" form="formOrcamento" class="btn-primary">
+            <i class="fas fa-save"></i> Salvar Orçamento
+        </button>
+    </div>
 </div>
 
 <script>
@@ -665,6 +674,26 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 @media (max-width: 768px) {
+    .screen-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .header-actions {
+        width: 100%;
+        order: 10;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+    
+    .header-actions .btn-primary,
+    .header-actions .btn-outline {
+        flex: 1;
+        justify-content: center;
+        min-width: 120px;
+    }
+    
     .full-width {
         grid-column: span 1;
     }

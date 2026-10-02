@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo.css') }}?v=1.2">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo.css') }}?v=2.5">
 </head>
 
 <body>
@@ -23,12 +23,12 @@
     <aside id="sidebar" class="sidebar collapsed bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 text-white flex flex-col shadow-2xl z-10">
 
         <!-- LOGO + TOGGLE -->
-        <div class="sidebar-header p-5 border-b border-white/10 flex items-center justify-between gap-3">
+        <div class="sidebar-header p-3 sm:p-5 border-b border-white/10 flex items-center justify-between gap-3">
             <div>
                 <div class="brand-logo">
                     <img src="{{ url_for('static', filename='imagens/Identidade_visual/logo_aplicacao.png') }}" alt="logo_aplicacao">
                 </div>
-                <div class="brand-tagline mt-2 text-xs uppercase tracking-[0.18em] text-slate-300">Ger. de pedidos</div>
+                <div class="brand-tagline mt-1 sm:mt-2 text-xs uppercase tracking-[0.18em] text-slate-300">Ger. de pedidos</div>
             </div>
             <button id="sidebarCollapse" type="button" class="sidebar-toggle" aria-label="Abrir menu">
                 <i class="fas fa-angle-right"></i>
@@ -36,35 +36,44 @@
         </div>
 
         <!-- MENU -->
-        <div class="flex-1 py-6 px-4 space-y-1 sidebar-menu">
-            <a href="{{ url_for('main.home') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-3 hover:bg-white/10 transition-all">
-                <i class="fas fa-home w-5"></i> <span class="nav-label">Home</span>
+        <div class="flex-1 py-4 sm:py-6 px-3 sm:px-4 space-y-1 sidebar-menu">
+            <a href="{{ url_for('main.home') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-2 sm:gap-3 hover:bg-white/10 transition-all">
+                <i class="fas fa-home w-4 sm:w-5"></i> <span class="nav-label">Home</span>
             </a>
 
-            <a href="{{ url_for('main.lista_orcamentos') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-3 hover:bg-white/10 transition-all">
-                <i class="fas fa-file-invoice-dollar w-5"></i> <span class="nav-label">Orçamentos</span>
+            <a href="{{ url_for('main.lista_orcamentos') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-2 sm:gap-3 hover:bg-white/10 transition-all">
+                <i class="fas fa-file-invoice-dollar w-4 sm:w-5"></i> <span class="nav-label">Orçamentos</span>
             </a>
 
-            <a href="{{ url_for('main.lista_pedidos') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-3 hover:bg-white/10 transition-all">
-                <i class="fas fa-clipboard-list w-5"></i> <span class="nav-label">Pedidos</span>
+            <a href="{{ url_for('main.lista_pedidos') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-2 sm:gap-3 hover:bg-white/10 transition-all">
+                <i class="fas fa-clipboard-list w-4 sm:w-5"></i> <span class="nav-label">Pedidos</span>
             </a>
 
-            <a href="{{ url_for('main.pedidos_concluidos') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-3 hover:bg-white/10 transition-all">
-                <i class="fas fa-check-circle w-5"></i> <span class="nav-label">Concluídos</span>
+            <a href="{{ url_for('main.pedidos_concluidos') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-2 sm:gap-3 hover:bg-white/10 transition-all">
+                <i class="fas fa-check-circle w-4 sm:w-5"></i> <span class="nav-label">Concluídos</span>
             </a>
 
-            <a href="{{ url_for('main.listar_clientes') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-3 hover:bg-white/10 transition-all">
-                <i class="fas fa-users w-5"></i> <span class="nav-label">Lista de Clientes</span>
+            <a href="{{ url_for('main.listar_clientes') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-2 sm:gap-3 hover:bg-white/10 transition-all">
+                <i class="fas fa-users w-4 sm:w-5"></i> <span class="nav-label">Lista de Clientes</span>
             </a>
 
-            <a href="{{ url_for('main.cadastrar_cliente') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-3 hover:bg-white/10 transition-all">
-                <i class="fas fa-user-plus w-5"></i> <span class="nav-label">Novo Cliente</span>
+            <a href="{{ url_for('main.cadastrar_cliente') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-2 sm:gap-3 hover:bg-white/10 transition-all">
+                <i class="fas fa-user-plus w-4 sm:w-5"></i> <span class="nav-label">Novo Cliente</span>
             </a>
 
             <a href="{{ url_for('main.dashboard') }}" class="menu-item">
                 <i class="fas fa-chart-line"></i> <span class="nav-label">Dashboard</span>
             </a>
 
+        </div>
+
+        <!-- BOTÃO DE SAIR NO FINAL DA SIDEBAR -->
+        <div class="p-4 border-t border-white/10">
+            <form method="POST" action="{{ url_for('main.logout') }}">
+                <button type="submit" class="menu-item menu-logout w-full text-left rounded-xl flex items-center gap-2 sm:gap-3 transition-all">
+                    <i class="fas fa-sign-out-alt w-4 sm:w-5"></i> <span class="nav-label">Sair</span>
+                </button>
+            </form>
         </div>
 
     </aside>
@@ -82,11 +91,6 @@
                         <div id="pageTitle" class="topbar-title title-font">{% block page_title %}Sistema{% endblock %}</div>
                     </div>
                 </div>
-                <form method="POST" action="{{ url_for('main.logout') }}">
-                    <button type="submit" class="btn-outline" aria-label="Sair do sistema">
-                        <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Sair
-                    </button>
-                </form>
             </div>
 
             <div class="screen">
@@ -110,6 +114,11 @@
     </main>
 
 </div>
+
+<!-- Botão flutuante para menu mobile -->
+<button id="fabMenuToggle" type="button" class="fab-menu-toggle" aria-label="Abrir menu">
+    <i class="fas fa-bars"></i>
+</button>
 
 <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
 
@@ -245,6 +254,7 @@
     const sidebar = document.getElementById('sidebar');
     const sidebarCollapse = document.getElementById('sidebarCollapse');
     const sidebarIcon = sidebarCollapse.querySelector('i');
+    const fabMenuToggle = document.getElementById('fabMenuToggle');
 
     function toggleSidebar() {
         const collapsed = sidebar.classList.toggle('collapsed');
@@ -253,7 +263,64 @@
         sidebarCollapse.setAttribute('aria-label', collapsed ? 'Abrir menu' : 'Fechar menu');
     }
 
+    function toggleMobileMenu() {
+        const isMobile = window.innerWidth <= 768;
+        
+        if (isMobile) {
+            // Em mobile: abrir sempre maximizada, fechar voltando ao estado colapsado escondido
+            sidebar.classList.toggle('mobile-open');
+            const isOpen = sidebar.classList.contains('mobile-open');
+            
+            if (isOpen) {
+                // Abrir maximizada (remover collapsed)
+                sidebar.classList.remove('collapsed');
+            } else {
+                // Fechar e adicionar collapsed para ficar escondida
+                sidebar.classList.add('collapsed');
+            }
+            
+            fabMenuToggle.setAttribute('aria-label', isOpen ? 'Fechar menu' : 'Abrir menu');
+            fabMenuToggle.querySelector('i').classList.toggle('fa-bars', !isOpen);
+            fabMenuToggle.querySelector('i').classList.toggle('fa-times', isOpen);
+        } else {
+            // Em desktop: comportamento normal
+            toggleSidebar();
+        }
+    }
+
+    function closeMobileMenu() {
+        sidebar.classList.remove('mobile-open');
+        sidebar.classList.add('collapsed');
+        fabMenuToggle.setAttribute('aria-label', 'Abrir menu');
+        fabMenuToggle.querySelector('i').classList.remove('fa-times');
+        fabMenuToggle.querySelector('i').classList.add('fa-bars');
+    }
+
     sidebarCollapse.addEventListener('click', toggleSidebar);
+    
+    if (fabMenuToggle) {
+        fabMenuToggle.addEventListener('click', toggleMobileMenu);
+    }
+    
+    // Fechar menu mobile ao clicar fora
+    document.addEventListener('click', function(event) {
+        if (window.innerWidth <= 768 && 
+            sidebar.classList.contains('mobile-open') && 
+            !sidebar.contains(event.target) && 
+            !fabMenuToggle.contains(event.target)) {
+            closeMobileMenu();
+        }
+    });
+    
+    // Garantir estado correto ao redimensionar
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            sidebar.classList.remove('mobile-open');
+            if (!sidebar.classList.contains('collapsed')) {
+                sidebar.classList.add('collapsed');
+            }
+        }
+    });
 </script>
 </body>
 </html>

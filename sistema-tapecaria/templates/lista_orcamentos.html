@@ -9,7 +9,7 @@ Orçamentos
 
 {% block content %}
 
-<div class="table-container">
+<div class="table-container orcamentos-page">
 
     <div class="screen-header" style="margin-bottom: 2rem;">
         <div>
@@ -22,21 +22,11 @@ Orçamentos
     </div>
 
     <!-- FILTROS -->
-    <div class="panel filter-panel" style="margin-bottom: 1.5rem; padding: 1.5rem;">
+    <div class="panel filter-panel orcamentos-filtros" style="margin-bottom: 1.5rem; padding: 1.5rem;">
         <div class="filter-row">
-            <div class="filter-search-col"><div class="input-icon">
-                <i class="fas fa-search"></i>
-                <input 
-                    type="text" 
-                    id="filterCliente" 
-                    placeholder="Cliente, carro ou placa"
-                    class="w-full"
-                    value="{{ search or '' }}"
-                >
-            </div></div>
             <div class="filter-sort-col"><div class="input-icon">
                 <i class="fas fa-sort"></i>
-                <select id="sortSelect" class="w-full">
+                <select id="sortSelect" class="w-full mobile-center-options">
                     <optgroup label="Tempo">
                         <option value="data_desc">Mais Novo</option>
                         <option value="data_asc">Mais Antigo</option>
@@ -63,69 +53,72 @@ Orçamentos
         </div>
     </div>
 
+    <div class="orcamentos-search">
+        <div class="input-icon">
+            <i class="fas fa-search"></i>
+            <input
+                type="text"
+                id="filterCliente"
+                placeholder="Cliente, carro ou placa"
+                class="w-full mobile-hide-placeholder"
+                value="{{ search or '' }}"
+            >
+        </div>
+    </div>
+
     <!-- ESTATÍSTICAS -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 orcamentos-stats">
         <div class="stat-card p-4">
-            <p class="text-slate-500 text-xs uppercase font-semibold">Total de Orçamentos</p>
+            <p class="text-slate-500 text-xs uppercase font-semibold"><span class="stat-label-desktop">Total de Orçamentos</span><span class="stat-label-mobile" style="display: none;">Orçamentos</span></p>
             <p id="totalOrcamentos" class="text-2xl font-bold text-slate-900 mt-2">0</p>
         </div>
         <div class="stat-card p-4">
-            <p class="text-slate-500 text-xs uppercase font-semibold">Orçamentos do Mês</p>
+            <p class="text-slate-500 text-xs uppercase font-semibold"><span class="stat-label-desktop">Orçamentos do Mês</span><span class="stat-label-mobile" style="display: none;">No mês</span></p>
             <p id="orcamentosMes" class="text-2xl font-bold text-slate-900 mt-2">0</p>
         </div>
         <div class="stat-card p-4">
-            <p class="text-slate-500 text-xs uppercase font-semibold">Ticket Médio</p>
+            <p class="text-slate-500 text-xs uppercase font-semibold"><span class="stat-label-desktop">Ticket Médio</span><span class="stat-label-mobile" style="display: none;">Ticket médio</span></p>
             <p id="ticketMedio" class="text-2xl font-bold text-slate-900 mt-2">R$ 0,00</p>
         </div>
         <div class="stat-card p-4">
-            <p class="text-slate-500 text-xs uppercase font-semibold">Valor Total</p>
+            <p class="text-slate-500 text-xs uppercase font-semibold"><span class="stat-label-desktop">Valor Total</span><span class="stat-label-mobile" style="display: none;">Valor total</span></p>
             <p id="valorTotal" class="text-2xl font-bold text-slate-900 mt-2">R$ 0,00</p>
         </div>
     </div>
 
     <!-- TABELA -->
-    <div class="table-wrapper">
-        <table class="table-clientes">
+    <div class="table-wrapper orcamentos-table-wrapper">
+        <table class="table-clientes orcamentos-table">
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Cliente</th>
-                    <th>Veículo</th>
-                    <th>Placa</th>
-                    <th>Data</th>
+                    <th>Carro</th>
                     <th>Valor (R$)</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody id="tabelaOrcamentosBody">
                 {% for orcamento in orcamentos %}
-                <tr>
+                <tr data-date="{{ orcamento.dat_orcamento.strftime('%Y-%m-%d') if orcamento.dat_orcamento else '' }}"
+                    data-placa="{{ orcamento.veiculo.placa.upper() }}">
                     <td>{{ orcamento.id_orcamento }}</td>
                     <td>{{ orcamento.veiculo.cliente.nome }}</td>
                     <td>{{ orcamento.veiculo.modelo }}</td>
-                    <td><strong>{{ orcamento.veiculo.placa.upper() }}</strong></td>
-                    <td data-date="{{ orcamento.dat_orcamento.strftime('%Y-%m-%d') if orcamento.dat_orcamento else '' }}">
-                        {{ orcamento.dat_orcamento.strftime('%d/%m/%Y') if orcamento.dat_orcamento else '-' }}
-                    </td>
                     <td>{{ "%.2f"|format(orcamento.valor|float) }}</td>
                     <td>
                         <div class="cliente-icons">
-                            <a href="{{ url_for('main.visualizar_orcamento', id_orcamento=orcamento.id_orcamento) }}" 
+                            <a href="{{ url_for('main.visualizar_orcamento', id_orcamento=orcamento.id_orcamento, return_to=request.full_path) }}" 
                                class="icon-btn" 
                                data-tooltip="Visualizar orçamento">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            <a href="{{ url_for('main.gerar_pdf_orcamento', id_orcamento=orcamento.id_orcamento) }}" 
-                               class="icon-btn" 
-                               data-tooltip="Exportar PDF">
-                                <i class="fas fa-file-pdf"></i>
-                            </a>
                             <form id="form-approve-{{ orcamento.id_orcamento }}" method="POST" action="{{ url_for('main.aceitar_orcamento', id_orcamento=orcamento.id_orcamento) }}" style="display: none;"></form>
                             <form id="form-reject-{{ orcamento.id_orcamento }}" method="POST" action="{{ url_for('main.recusar_orcamento', id_orcamento=orcamento.id_orcamento) }}" style="display: none;"></form>
-                            <button type="button" class="icon-btn" data-tooltip="Aprovar orçamento" onclick="openApproveBudgetModal('{{ orcamento.id_orcamento }}', {{ orcamento.veiculo.cliente.nome|tojson }}); return false;">
+                            <button type="button" class="icon-btn" data-budget-action="approve" data-budget-id="{{ orcamento.id_orcamento }}" data-budget-client="{{ orcamento.veiculo.cliente.nome }}" data-tooltip="Aprovar orçamento">
                                 <i class="fas fa-check"></i>
                             </button>
-                            <button type="button" class="icon-btn" data-tooltip="Recusar orçamento" onclick="openRejectBudgetModal('{{ orcamento.id_orcamento }}', {{ orcamento.veiculo.cliente.nome|tojson }}); return false;">
+                            <button type="button" class="icon-btn" data-budget-action="reject" data-budget-id="{{ orcamento.id_orcamento }}" data-budget-client="{{ orcamento.veiculo.cliente.nome }}" data-tooltip="Recusar orçamento">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
@@ -133,7 +126,7 @@ Orçamentos
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="7" style="text-align: center; padding: 2rem; color: #94a3b8;">
+                    <td colspan="5" style="text-align: center; padding: 2rem; color: #94a3b8;">
                         <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
                         Nenhum orçamento cadastrado
                     </td>
@@ -270,6 +263,16 @@ Orçamentos
         box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
     }
 
+    .orcamentos-table th:last-child,
+    .orcamentos-table td:last-child {
+        text-align: center;
+    }
+
+    .orcamentos-table .cliente-icons {
+        justify-content: center;
+        flex-wrap: nowrap;
+    }
+
     .panel {
         background: #f8fafc;
         border: 1px solid #e2e8f0;
@@ -321,6 +324,20 @@ Orçamentos
         setupFilters();
         setupSort();
         sortData(); // padrão: mais novo primeiro
+
+        document.addEventListener('click', function(event) {
+            const actionButton = event.target.closest('[data-budget-action]');
+            if (!actionButton) return;
+
+            const budgetId = actionButton.dataset.budgetId;
+            const clientName = actionButton.dataset.budgetClient;
+
+            if (actionButton.dataset.budgetAction === 'approve') {
+                openApproveBudgetModal(budgetId, clientName);
+            } else if (actionButton.dataset.budgetAction === 'reject') {
+                openRejectBudgetModal(budgetId, clientName);
+            }
+        });
     });
 
     function sortData() {
@@ -335,8 +352,8 @@ Orçamentos
                 const nb = removeAccents((b.cells[1]?.textContent || '').toLowerCase().trim());
                 return sortBy === 'nome_asc' ? na.localeCompare(nb, 'pt') : nb.localeCompare(na, 'pt');
             } else {
-                const da = a.cells[4]?.dataset?.date || '';
-                const db = b.cells[4]?.dataset?.date || '';
+                const da = a.dataset.date || '';
+                const db = b.dataset.date || '';
                 return sortBy === 'data_desc' ? db.localeCompare(da) : da.localeCompare(db);
             }
         });
@@ -443,8 +460,8 @@ Orçamentos
             if (row.querySelector('td[colspan]')) return;
             const clienteText = removeAccents(row.cells[1]?.textContent.toLowerCase() || '');
             const veiculoText = removeAccents(row.cells[2]?.textContent.toLowerCase() || '');
-            const placaText = removeAccents(row.cells[3]?.textContent.toLowerCase() || '');
-            const dataAttr = row.cells[4]?.dataset?.date || '';
+            const placaText = removeAccents(row.dataset.placa?.toLowerCase() || '');
+            const dataAttr = row.dataset.date || '';
             const matchCliente = !filterCliente || clienteText.includes(filterCliente) || veiculoText.includes(filterCliente) || placaText.includes(filterCliente);
             let matchData = true;
             if (filterDataInicio || filterDataFim) {

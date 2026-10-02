@@ -10,7 +10,7 @@
 
 {% block content %}
 
-<div class="cliente-form-container">
+<div class="cliente-form-container cliente-form-page">
 
     <!-- Cabeçalho -->
     <div class="screen-header">
@@ -232,6 +232,15 @@
 
         </form>
     </div>
+
+    <div class="form-actions-mobile">
+        <a href="{{ url_for('main.listar_clientes') }}" class="btn-outline">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+        <button type="submit" form="formCliente" class="btn-primary">
+            <i class="fas fa-save"></i> {{ botao }}
+        </button>
+    </div>
 </div>
 
 <script>
@@ -371,6 +380,28 @@
     .header-actions {
         display: flex;
         gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .screen-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .header-actions {
+            width: 100%;
+            order: 10;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        
+        .header-actions .btn-primary,
+        .header-actions .btn-outline {
+            flex: 1;
+            justify-content: center;
+            min-width: 120px;
+        }
     }
 
     .btn-primary,
@@ -527,7 +558,17 @@
 
         .header-actions {
             width: 100%;
-            justify-content: flex-end;
+            order: 10;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .header-actions .btn-primary,
+        .header-actions .btn-outline {
+            flex: 1;
+            justify-content: center;
+            min-width: 120px;
         }
 
         .form-grid {
