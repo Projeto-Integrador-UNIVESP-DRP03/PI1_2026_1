@@ -1,0 +1,17 @@
+# Cache e artefatos gerados por testes
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Relatórios HTML de execução
+reports/*.html
+
+# Bancos SQLite temporários e arquivos locais
+*.db
+*.sqlite3
+
+# Diretórios de instalação e builds
+.venv/
+venv/
+__pycache__/
+*.py[cod]
