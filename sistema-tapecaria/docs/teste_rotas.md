@@ -31,7 +31,7 @@ No caso do Sistema Tapecaria, um teste de rota pode:
 - confirmar que um usuário foi autenticado ou desconectado;
 - verificar que uma ação proibida foi rejeitada.
 
-Esse tipo de teste é importante porque o aplicativo pode apresentar o comportamento correto em uma função, mas ainda falhar lorsque essa função é acessada por uma rota, quando há um mecanismo de sessão, quando o banco aceita os dados ou quando a página está autenticada.
+Esse tipo de teste é importante porque o aplicativo pode apresentar o comportamento correto em uma função, mas ainda falhar porque essa função é acessada por uma rota, quando há um mecanismo de sessão, quando o banco aceita os dados ou quando a página está autenticada.
 
 ---
 
@@ -77,9 +77,9 @@ A suíte está distribuída em cinco grupos de domínio:
 | Dashboard | 1 | Indicadores e filtros temporais |
 | Testes de acesso inicial | 3 | Redirecionamento, login inválido e logout |
 
-No total, a suíte possui **27 testes**. A contagem considera os três testes de acesso inicial, além dos grupos de domínio listed acima.
+No total, a suíte possui **27 testes**. A contagem considera os três testes de acesso inicial, além dos grupos de domínio listado acima.
 
-Os testes de acesso inicial aparecem antes dos grupos por domínio porque representam os controles básicos da aplicação e são reutilizados como exemplos do fluxo de sessão.
+Os testes de acesso inicial aparecem antes dos grupos por domínio pois representam os controles básicos da aplicação e são reutilizados como exemplos do fluxo de sessão.
 
 ---
 
@@ -94,7 +94,7 @@ Antes de cada teste, a fixture de aplicação cria uma instância da aplicação
 - veículo inicial;
 - uma costura inicial.
 
-O banco é criado e removido dentro de cada teste. Essa isolação evita que dados inserted em um teste permaneçam disponíveis em outro e garante que o resultado não dependa da ordem de execução.
+O banco é criado e removido dentro de cada teste. Esse isolamento evita que dados inseridos em um teste permaneçam disponíveis em outro e garante que o resultado não dependa da ordem de execução.
 
 O cliente autenticado também é preparado por uma fixture própria. Ele faz login com o usuário administrator e mantém a sessão ativa para que as rotas protegidas sejam verificadas como um usuário real.
 
