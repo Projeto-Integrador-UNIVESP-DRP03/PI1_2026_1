@@ -102,14 +102,21 @@ A inicialização recomendada utiliza `create_app()` em `app/__init__.py`. Essa 
 1. Cria a instância Flask.
 2. Define os diretórios reais de templates e arquivos estáticos.
 3. Cria a pasta `instance` quando necessário.
-4. Configura a conexão SQLite.
+4. Configura a conexão com PostgreSQL via `DATABASE_URL` quando definida, ou SQLite localmente.
 5. Configura a chave de sessão e os cookies.
 6. Registra a proteção CSRF.
 7. Registra a exigência de autenticação.
 8. Inicializa o SQLAlchemy.
 9. Registra o Blueprint `main`.
+10. Cria as tabelas ausentes a partir dos models.
 
 O arquivo `app.py` utiliza essa mesma factory para execução web. O arquivo `desktop.py` configura os caminhos específicos do executável congelado, inicia o Waitress na interface `127.0.0.1` e abre o navegador local.
+
+### 4.1.1 Banco PostgreSQL no Render
+
+No serviço web do Render, configure a variável de ambiente `DATABASE_URL` com a **Internal Database URL** do banco PostgreSQL. Não inclua essa URL no código ou em arquivos versionados. A aplicação converte os formatos `postgres://` e `postgresql://` para o driver Psycopg instalado pelas dependências.
+
+No Render, a aplicação falha explicitamente na inicialização se `DATABASE_URL` não estiver configurada. Fora do Render, a ausência dessa variável mantém o uso do SQLite local. Na primeira inicialização, as tabelas ausentes são criadas com `db.create_all()`; essa operação não migra alterações futuras nos models nem popula os dados dos catálogos.
 
 ### 4.2 Autenticação e sessão
 
