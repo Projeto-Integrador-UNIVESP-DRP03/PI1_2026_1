@@ -726,6 +726,8 @@ class TestDashboard:
         response = client.get("/api/dashboard/stats")
 
         assert response.status_code == 200
-        labels = response.get_json()["chartData"]["labels"]
+        chart_data = response.get_json()["chartData"]
+        labels = chart_data["labels"]
         assert f"{today.month:02d}/{today.year}" in labels
         assert f"{today.month:02d}/{today.year - 2}" not in labels
+        assert chart_data["orcamentos"] == [1]

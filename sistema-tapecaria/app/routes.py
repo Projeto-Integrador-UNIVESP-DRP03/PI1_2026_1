@@ -3,7 +3,7 @@ from werkzeug.security import check_password_hash
 from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 import math
-from sqlalchemy import func, inspect, or_, text
+from sqlalchemy import extract, func, inspect, or_, text
 from sqlalchemy.exc import SQLAlchemyError
 
 # tabelas
@@ -1493,31 +1493,36 @@ def dashboard_stats():
     ticket_concluidos_mes = (valor_concluidos_mes / total_concluidos_mes) if total_concluidos_mes > 0 else 0
     
     # Dados para Gráfico 1: Orçamentos por Mês (últimos 12 meses)
-    # Usando SQLite strftime para agrupar
+    ano_orcamento = extract("year", Orcamento.dat_orcamento)
+    mes_orcamento = extract("month", Orcamento.dat_orcamento)
     orcamentos_mensais_raw = db.session.query(
-        func.strftime('%Y-%m', Orcamento.dat_orcamento).label('mes_ano'),
+        ano_orcamento.label("ano"),
+        mes_orcamento.label("mes"),
         func.count(Orcamento.id_orcamento)
     ).filter(
         Orcamento.dat_orcamento >= inicio_grafico
-    ).group_by('mes_ano').order_by('mes_ano').all()
+    ).group_by(ano_orcamento, mes_orcamento).order_by(
+        ano_orcamento, mes_orcamento
+    ).all()
     
     # Dados para Gráfico de Conversão (Pedidos por Mês)
     pedidos_mensais_raw = db.session.query(
-        func.strftime('%Y-%m', Orcamento.dat_orcamento).label('mes_ano'),
+        ano_orcamento.label("ano"),
+        mes_orcamento.label("mes"),
         func.count(Pedido.id_pedido)
     ).join(Orcamento).filter(Pedido.boolean_aceite_cliente == True)\
         .filter(Orcamento.dat_orcamento >= inicio_grafico)\
-     .group_by('mes_ano').order_by('mes_ano').all()
+     .group_by(ano_orcamento, mes_orcamento).order_by(
+         ano_orcamento, mes_orcamento
+     ).all()
     
     # Formatação para o Chart.js
-    labels_meses = sorted(list(set([r[0] for r in orcamentos_mensais_raw] + [r[0] for r in pedidos_mensais_raw])))
-    orc_map = {r[0]: r[1] for r in orcamentos_mensais_raw}
-    ped_map = {r[0]: r[1] for r in pedidos_mensais_raw}
-    
-    def format_mes(iso_mes):
-        # YYYY-MM -> MM/YYYY
-        y, m = iso_mes.split('-')
-        return f"{m}/{y}"
+    labels_meses = sorted(
+        {(int(row[0]), int(row[1])) for row in orcamentos_mensais_raw}
+        | {(int(row[0]), int(row[1])) for row in pedidos_mensais_raw}
+    )
+    orc_map = {(int(row[0]), int(row[1])): row[2] for row in orcamentos_mensais_raw}
+    ped_map = {(int(row[0]), int(row[1])): row[2] for row in pedidos_mensais_raw}
 
     return jsonify({
         "totalClientes": total_clientes,
@@ -1529,7 +1534,7 @@ def dashboard_stats():
         "ticketConcluidosMes": ticket_concluidos_mes,
         "novosClientesMes": 0, # Implementar se houver data_criacao no Cliente
         "chartData": {
-            "labels": [format_mes(l) for l in labels_meses],
+            "labels": [f"{month:02d}/{year}" for year, month in labels_meses],
             "orcamentos": [orc_map.get(l, 0) for l in labels_meses],
             "pedidos": [ped_map.get(l, 0) for l in labels_meses]
         }
