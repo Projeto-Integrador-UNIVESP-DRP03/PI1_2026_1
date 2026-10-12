@@ -23,7 +23,7 @@
         .input-icon input { width: 100%; padding: 0.85rem 1rem 0.85rem 2.75rem; border: 1px solid #e2e8f0; border-radius: 1rem; transition: all 0.2s; background: #f8fafc; }
         .input-icon input::placeholder { color: #64748b; }
         .input-icon input:focus { outline: none; border-color: #e11d2e; box-shadow: 0 0 0 4px rgba(225,29,46,0.12); background: #ffffff; }
-        .btn-login { background: linear-gradient(135deg, #b91c1c 0%, #991b1b 60%, #1e3a8a 100%); transition: all 0.2s; }
+        .btn-login { color: #ffffff; background: linear-gradient(135deg, #b91c1c 0%, #991b1b 60%, #1e3a8a 100%); transition: all 0.2s; }
         .btn-login:hover { transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(225, 29, 46, 0.55); }
         .login-logo { width: auto; height: 100px; }
         .shake { animation: shake 0.25s ease-in-out; }
@@ -37,18 +37,18 @@
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-6 relative overflow-x-hidden">
-    <div class="floaty one"></div>
-    <div class="floaty two"></div>
-    <div class="floaty three"></div>
+    <div class="floaty one" aria-hidden="true"></div>
+    <div class="floaty two" aria-hidden="true"></div>
+    <div class="floaty three" aria-hidden="true"></div>
 
     <main class="login-layout w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-10">
-        <section class="text-white flex flex-col justify-center px-4" aria-labelledby="page-heading">
+        <section class="login-intro flex flex-col justify-center px-4" aria-labelledby="page-heading">
             <div class="mb-6">
                 <h1 id="page-heading" class="title-font text-5xl lg:text-6xl font-bold mt-4">Gestão de pedidos e serviços</h1>
             </div>
-            <div class="flex gap-3 text-slate-100 text-sm">
-                <div class="flex items-center gap-2"><i class="fas fa-check-circle text-emerald-300"></i> Gerenciamento de prazos</div>
-                <div class="flex items-center gap-2"><i class="fas fa-check-circle text-emerald-300"></i> Controle por indicadores</div>
+            <div class="login-features flex gap-3 text-sm">
+                <div class="flex items-center gap-2"><i class="fas fa-check-circle" aria-hidden="true"></i> Gerenciamento de prazos</div>
+                <div class="flex items-center gap-2"><i class="fas fa-check-circle" aria-hidden="true"></i> Controle por indicadores</div>
             </div>
         </section>
 
@@ -57,7 +57,7 @@
                 <div class="mb-6 flex justify-center" style="height: 100px;">
                     <img src="{{ url_for('static', filename='imagens/Identidade_visual/logo_aplicacao.png') }}" alt="logo_aplicacao" class="login-logo">
                 </div>
-                <h2 id="login-heading" class="text-2xl font-bold text-gray-900">Acesso ao sistema</h2>
+                <h2 id="login-heading" class="text-2xl font-bold">Acesso ao sistema</h2>
             </div>
             <form id="loginForm" class="space-y-4" method="POST" action="{{ url_for('main.login') }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
@@ -76,7 +76,7 @@
                         <div class="text-sm text-red-600" role="alert">{{ mensagem }}</div>
                     {% endfor %}
                 {% endwith %}
-                <button type="submit" class="btn-login w-full text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition">
+                <button type="submit" class="btn-login w-full font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition">
                     <i class="fas fa-sign-in-alt"></i> Entrar
                 </button>
             </form>
