@@ -33,7 +33,7 @@ Orçamento #{{ orcamento.id_orcamento }}
             <div class="info-card-icon" style="background: linear-gradient(135deg, #e11d2e, #b91c1c);">
                 <i class="fas fa-user"></i>
             </div>
-            <h3>Cliente</h3>
+            <h2>Cliente</h2>
             <div class="info-card-content">
                 <p><strong>Nome:</strong> {{ cliente.nome }}</p>
                 <p><strong>CPF/CNPJ:</strong> {{ cliente.cod_cliente }}</p>
@@ -47,7 +47,7 @@ Orçamento #{{ orcamento.id_orcamento }}
             <div class="info-card-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
                 <i class="fas fa-car"></i>
             </div>
-            <h3>Veículo</h3>
+            <h2>Veículo</h2>
             <div class="info-card-content">
                 <p><strong>Modelo:</strong> {{ veiculo.modelo }}</p>
                 <p><strong>Placa:</strong> {{ veiculo.placa.upper() }}</p>
@@ -61,7 +61,7 @@ Orçamento #{{ orcamento.id_orcamento }}
             <div class="info-card-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
                 <i class="fas fa-clipboard-list"></i>
             </div>
-            <h3>Detalhes do Pedido</h3>
+            <h2>Detalhes do Pedido</h2>
             <div class="info-card-content">
                 <p><strong>Data:</strong> {{ orcamento.dat_orcamento.strftime('%d/%m/%Y') if orcamento.dat_orcamento else '-' }}</p>
                 <p><strong>Bancos reformados:</strong> {{ orcamento.qtd_bancos or 0 }}
@@ -88,16 +88,16 @@ Orçamento #{{ orcamento.id_orcamento }}
             <div class="header-icon">
                 <i class="fas fa-boxes"></i>
             </div>
-            <h3>Materiais Escolhidos</h3>
+            <h2>Materiais Escolhidos</h2>
         </div>
         
         <div class="table-wrapper">
 	            <table class="table-materiais">
 	                <thead>
 	                    <tr>
-	                        <th>Categoria</th>
-	                        <th>Descrição</th>
-	                        <th>Observação</th>
+                            <th scope="col">Categoria</th>
+                            <th scope="col">Descrição</th>
+                            <th scope="col">Observação</th>
 	                    </tr>
 	                </thead>
                 <tbody>
@@ -136,7 +136,7 @@ Orçamento #{{ orcamento.id_orcamento }}
             <div class="header-icon">
                 <i class="fas fa-comment-dots"></i>
             </div>
-            <h3>Observações Gerais</h3>
+            <h2>Observações Gerais</h2>
         </div>
         <div class="observacoes-content">
             <p>{{ orcamento.obs }}</p>
@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function() {
     color: white;
 }
 
-.info-card h3 {
+.info-card h2 {
     font-size: 1rem;
     font-weight: 700;
     color: #0f172a;
@@ -322,7 +322,7 @@ document.addEventListener('DOMContentLoaded', function() {
     color: white;
 }
 
-.card-header-custom h3 {
+.card-header-custom h2 {
     font-size: 1rem;
     font-weight: 700;
     color: #0f172a;
@@ -512,7 +512,7 @@ document.addEventListener('DOMContentLoaded', function() {
         padding: 0.85rem 1rem;
     }
 
-    .card-header-custom h3 {
+    .card-header-custom h2 {
         font-size: 0.9rem;
     }
 

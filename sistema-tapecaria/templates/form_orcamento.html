@@ -37,39 +37,39 @@
                 <div class="header-icon">
                     <i class="fas fa-car"></i>
                 </div>
-                <h3>Dados do Cliente e Veículo</h3>
+                <h2>Dados do Cliente e Veículo</h2>
             </div>
             
             <div class="form-grid grid-2cols">
                 <div class="input-group">
-                    <label>Cliente</label>
+                    <label for="orcamento-cliente">Cliente</label>
                     <div class="input-icon">
                         <i class="fas fa-user"></i>
-                        <input type="text" class="form-input" value="{{ cliente.nome }}" readonly disabled>
+                        <input id="orcamento-cliente" type="text" class="form-input" value="{{ cliente.nome }}" readonly>
                     </div>
                 </div>
 
                 <div class="input-group">
-                    <label>Veículo</label>
+                    <label for="orcamento-veiculo">Veículo</label>
                     <div class="input-icon">
                         <i class="fas fa-car-side"></i>
-                        <input type="text" class="form-input" value="{{ veiculo.modelo }} - {{ veiculo.placa }}" readonly disabled>
+                        <input id="orcamento-veiculo" type="text" class="form-input" value="{{ veiculo.modelo }} - {{ veiculo.placa }}" readonly>
                     </div>
                 </div>
 
                 <div class="input-group">
-                    <label>Placa</label>
+                    <label for="orcamento-placa">Placa</label>
                     <div class="input-icon">
                         <i class="fas fa-id-card"></i>
-                        <input type="text" class="form-input" value="{{ veiculo.placa }}" readonly disabled>
+                        <input id="orcamento-placa" type="text" class="form-input" value="{{ veiculo.placa }}" readonly>
                     </div>
                 </div>
 
                 <div class="input-group">
-                    <label>Modelo</label>
+                    <label for="orcamento-modelo">Modelo</label>
                     <div class="input-icon">
                         <i class="fas fa-truck"></i>
-                        <input type="text" class="form-input" value="{{ veiculo.modelo }}" readonly disabled>
+                        <input id="orcamento-modelo" type="text" class="form-input" value="{{ veiculo.modelo }}" readonly>
                     </div>
                 </div>
 
@@ -96,10 +96,10 @@
                 <div class="header-icon">
                     <i class="fas fa-couch"></i>
                 </div>
-                <h3>Bancos</h3>
+                <h2 id="orcamento-bancos-heading">Bancos</h2>
             </div>
 
-            <div class="bancos-grid">
+            <div class="bancos-grid" role="group" aria-labelledby="orcamento-bancos-heading">
                 <label class="checkbox-card">
                     <input type="checkbox" name="banco_motorista" value="1" {% if orcamento and orcamento.banco_motorista %}checked{% endif %}>
                     <span class="checkbox-content">
@@ -136,7 +136,7 @@
                 </div>
             </div>
 
-            <div class="checkbox-row">
+            <div class="checkbox-row" role="group" aria-labelledby="orcamento-bancos-heading">
                 <label class="checkbox-inline">
                     <input type="checkbox" name="bool_original" value="1" {% if orcamento and orcamento.bool_original %}checked{% endif %}>
                     <span>Manter padrão original</span>
@@ -161,10 +161,10 @@
                 <div class="header-icon">
                     <i class="fas fa-tshirt"></i>
                 </div>
-                <h3>Tecidos</h3>
+                <h2 id="orcamento-tecidos-heading">Tecidos</h2>
             </div>
 
-            <div class="tecidos-grid">
+            <div class="tecidos-grid" role="group" aria-labelledby="orcamento-tecidos-heading">
                 {% for tecido in tecidos %}
                 <label class="checkbox-card-tecido">
                     <input type="checkbox" name="tecidos" value="{{ tecido.id_tecido }}" {% if tecidos_selecionados and tecido.id_tecido in tecidos_selecionados %}checked{% endif %}>
@@ -192,10 +192,10 @@
                 <div class="header-icon">
                     <i class="fas fa-stitch"></i>
                 </div>
-                <h3>Costuras</h3>
+                <h2 id="orcamento-costuras-heading">Costuras</h2>
             </div>
 
-            <div class="costuras-grid">
+            <div class="costuras-grid" role="group" aria-labelledby="orcamento-costuras-heading">
                 {% for costura in costuras %}
                 <label class="checkbox-card-costura">
                     <input type="checkbox" name="costuras" value="{{ costura.id_costura }}" {% if costuras_selecionadas and costura.id_costura in costuras_selecionadas %}checked{% endif %}>
@@ -223,10 +223,10 @@
                 <div class="header-icon">
                     <i class="fas fa-palette"></i>
                 </div>
-                <h3>Cores de Linha</h3>
+                <h2 id="orcamento-cores-heading">Cores de Linha</h2>
             </div>
 
-            <div class="cores-grid">
+            <div class="cores-grid" role="group" aria-labelledby="orcamento-cores-heading">
                 {% for cor in cores %}
                 <label class="checkbox-card-cor">
                     <input type="checkbox" name="cores" value="{{ cor.id_cor }}" {% if cores_selecionadas and cor.id_cor in cores_selecionadas %}checked{% endif %}>
@@ -255,7 +255,7 @@
                 <div class="header-icon">
                     <i class="fas fa-dollar-sign"></i>
                 </div>
-                <h3>Valor e Observações</h3>
+                <h2>Valor e Observações</h2>
             </div>
 
             <div class="form-grid grid-2cols">

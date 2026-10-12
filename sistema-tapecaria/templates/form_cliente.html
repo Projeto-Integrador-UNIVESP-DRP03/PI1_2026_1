@@ -8,6 +8,10 @@
 {{ titulo }}
 {% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/form_cliente.css') }}">
+{% endblock %}
+
 {% block content %}
 
 <div class="cliente-form-container cliente-form-page">
@@ -16,6 +20,7 @@
     <div class="screen-header">
         <div>
             <p class="screen-subtitle">Preencha os dados do cliente abaixo</p>
+            <p class="required-note"><span class="required">*</span> Campo obrigatório.</p>
         </div>
         <div class="header-actions">
             <a href="{{ url_for('main.listar_clientes') }}" class="btn-outline">
@@ -42,7 +47,7 @@
                     <div class="section-icon">
                         <i class="fas fa-user-circle"></i>
                     </div>
-                    <h3>Dados Pessoais</h3>
+                    <h2>Dados Pessoais</h2>
                 </div>
 
                 <div class="form-grid">
@@ -62,6 +67,7 @@
                             <i class="fas fa-id-card"></i>
                             <input type="text" id="cod_cliente" name="cod_cliente" class="form-input"
                                 value="{{ cod_cliente or (cliente.cod_cliente if cliente else '') }}"
+                                required
                                 placeholder="000.000.000-00 ou 00.000.000/0000-00">
                         </div>
                     </div>
@@ -94,7 +100,7 @@
                     <div class="section-icon">
                         <i class="fas fa-map-marker-alt"></i>
                     </div>
-                    <h3>Endereço</h3>
+                    <h2>Endereço</h2>
                 </div>
 
                 <div class="form-grid">
@@ -352,274 +358,5 @@
             });
     }
 </script>
-
-<style>
-    /* ============================================
-   ESTILOS DO FORMULÁRIO DE CLIENTE
-   ============================================ */
-    .cliente-form-container {
-        max-width: 900px;
-        margin: 0 auto;
-    }
-
-    .screen-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-
-    .screen-subtitle {
-        color: #64748b;
-        font-size: 0.875rem;
-        margin-top: 0.25rem;
-    }
-
-    .header-actions {
-        display: flex;
-        gap: 1rem;
-    }
-
-    @media (max-width: 768px) {
-        .screen-header {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        
-        .header-actions {
-            width: 100%;
-            order: 10;
-            margin-top: 1rem;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
-        
-        .header-actions .btn-primary,
-        .header-actions .btn-outline {
-            flex: 1;
-            justify-content: center;
-            min-width: 120px;
-        }
-    }
-
-    .btn-primary,
-    .btn-outline {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.625rem 1.5rem;
-        border-radius: 0.5rem;
-        font-weight: 600;
-        font-size: 0.875rem;
-        transition: all 0.2s ease;
-        cursor: pointer;
-        text-decoration: none;
-    }
-
-    .btn-primary {
-        background: linear-gradient(135deg, #4f46e5, #4338ca);
-        color: white;
-        border: none;
-    }
-
-    .btn-primary:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
-    }
-
-    .btn-outline {
-        background: white;
-        color: #64748b;
-        border: 1px solid #e2e8f0;
-    }
-
-    .btn-outline:hover {
-        background: #f8fafc;
-        border-color: #cbd5e1;
-    }
-
-    /* Form Card Principal */
-    .form-card-principal {
-        background: white;
-        border-radius: 1rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        border: 1px solid #e2e8f0;
-        overflow: hidden;
-    }
-
-    /* Seções do Formulário */
-    .form-section {
-        padding: 1.5rem;
-        border-bottom: 1px solid #e2e8f0;
-    }
-
-    .form-section:last-child {
-        border-bottom: none;
-    }
-
-    .section-header {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        margin-bottom: 1.5rem;
-        padding-bottom: 0.75rem;
-        border-bottom: 1px solid #e2e8f0;
-    }
-
-    .section-icon {
-        width: 2rem;
-        height: 2rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(135deg, #e11d2e, #b91c1c);
-        border-radius: 0.5rem;
-        color: white;
-    }
-
-    .section-header h3 {
-        font-size: 1rem;
-        font-weight: 700;
-        color: #0f172a;
-        margin: 0;
-    }
-
-    /* Form Grid */
-    .form-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1.5rem;
-    }
-
-    .input-group {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    .input-group.full-width {
-        grid-column: span 2;
-    }
-
-    .input-group label {
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: #374151;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-
-    .required {
-        color: #ef4444;
-    }
-
-    .input-icon {
-        position: relative;
-    }
-
-    .input-icon i {
-        position: absolute;
-        left: 0.75rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #94a3b8;
-        font-size: 1rem;
-        pointer-events: none;
-    }
-
-    .form-input,
-    .form-select {
-        width: 100%;
-        padding: 0.625rem 0.75rem 0.625rem 2.25rem;
-        border: 1px solid #e2e8f0;
-        border-radius: 0.5rem;
-        font-size: 0.875rem;
-        transition: all 0.2s ease;
-        background: #f8fafc;
-        color: #0f172a;
-    }
-
-    .form-input:focus,
-    .form-select:focus {
-        outline: none;
-        border-color: #4f46e5;
-        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-        background: white;
-    }
-
-    /* Responsividade */
-    @media (max-width: 768px) {
-        .screen-header {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .header-actions {
-            width: 100%;
-            order: 10;
-            margin-top: 1rem;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
-
-        .header-actions .btn-primary,
-        .header-actions .btn-outline {
-            flex: 1;
-            justify-content: center;
-            min-width: 120px;
-        }
-
-        .form-grid {
-            grid-template-columns: 1fr;
-            gap: 1rem;
-        }
-
-        .input-group.full-width {
-            grid-column: span 1;
-        }
-
-        .form-section {
-            padding: 1rem;
-        }
-    }
-
-    .cep-link {
-        font-size: 0.7rem;
-        color: #4f46e5;
-        text-decoration: none;
-        font-weight: 600;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-    }
-
-    .cep-link:hover {
-        color: #4338ca;
-        text-decoration: underline;
-    }
-
-    /* Animação de carregamento para busca de CEP */
-    .loading-field {
-        animation: pulse-bg 1.5s infinite;
-        background-color: #f1f5f9 !important;
-    }
-
-    @keyframes pulse-bg {
-        0% {
-            background-color: #f1f5f9;
-        }
-
-        50% {
-            background-color: #e2e8f0;
-        }
-
-        100% {
-            background-color: #f1f5f9;
-        }
-    }
-</style>
 
 {% endblock %}

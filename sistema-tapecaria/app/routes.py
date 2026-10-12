@@ -90,12 +90,15 @@ def login():
         username = (request.form.get("username") or "").strip()
         password = request.form.get("password") or ""
         configured_hash = current_app.config.get("ADMIN_PASSWORD_HASH", "")
+        password_is_valid = False
 
-        if (
-            username == current_app.config.get("ADMIN_USERNAME")
-            and configured_hash
-            and check_password_hash(configured_hash, password)
-        ):
+        if username == current_app.config.get("ADMIN_USERNAME") and configured_hash:
+            try:
+                password_is_valid = check_password_hash(configured_hash, password)
+            except (TypeError, ValueError):
+                current_app.logger.exception("ADMIN_PASSWORD_HASH está inválido.")
+
+        if password_is_valid:
             session.clear()
             session["authenticated"] = True
             session["csrf_token"] = secrets.token_urlsafe(32)
