@@ -116,6 +116,37 @@ def test_unauthenticated_user_is_redirected_to_login(app):
     assert response.headers["Location"].endswith("/login?next=/")
 
 
+def test_database_diagnostic_requires_authentication(app):
+    unauthenticated_client = app.test_client()
+
+    response = unauthenticated_client.get("/diagnostico/banco")
+
+    assert response.status_code == 302
+    assert response.headers["Location"].endswith(
+        "/login?next=/diagnostico/banco"
+    )
+
+
+def test_database_diagnostic_reports_connection_and_tables(app, client):
+    response = client.get("/diagnostico/banco")
+
+    assert response.status_code == 200
+    assert response.json["status"] == "ok"
+    assert response.json["database"] == "sqlite"
+    assert response.json["table_count"] > 0
+
+
+def test_database_diagnostic_reports_missing_tables(app, client):
+    with app.app_context():
+        db.drop_all()
+
+    response = client.get("/diagnostico/banco")
+
+    assert response.status_code == 503
+    assert response.json["status"] == "incomplete"
+    assert "clientes" in response.json["missing_tables"]
+
+
 def test_invalid_login_is_rejected(app):
     unauthenticated_client = app.test_client()
     response = unauthenticated_client.get("/login")

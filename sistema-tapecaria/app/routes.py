@@ -3,7 +3,8 @@ from werkzeug.security import check_password_hash
 from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 import math
-from sqlalchemy import func, or_
+from sqlalchemy import func, inspect, or_, text
+from sqlalchemy.exc import SQLAlchemyError
 
 # tabelas
 from .models import (
@@ -117,6 +118,39 @@ def logout():
 @main.route("/")
 def home():
     return render_template("consulta.html")
+
+
+@main.route("/diagnostico/banco")
+def diagnostico_banco():
+    """Verifica, sem expor credenciais, a conexão e as tabelas da aplicação."""
+    try:
+        with db.engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+
+        existing_tables = set(inspect(db.engine).get_table_names())
+        missing_tables = sorted(set(db.metadata.tables) - existing_tables)
+    except SQLAlchemyError as error:
+        current_app.logger.exception("Falha no diagnóstico de conexão com o banco.")
+        return jsonify(
+            status="error",
+            message="A aplicação não conseguiu consultar o banco de dados.",
+            error_type=type(error).__name__,
+        ), 503
+
+    if missing_tables:
+        return jsonify(
+            status="incomplete",
+            message="A conexão funciona, mas faltam tabelas da aplicação no banco.",
+            database=db.engine.dialect.name,
+            missing_tables=missing_tables,
+        ), 503
+
+    return jsonify(
+        status="ok",
+        message="Conexão e tabelas da aplicação verificadas com sucesso.",
+        database=db.engine.dialect.name,
+        table_count=len(existing_tables),
+    )
 
 
 # =========================
@@ -1500,5 +1534,3 @@ def dashboard_stats():
             "pedidos": [ped_map.get(l, 0) for l in labels_meses]
         }
     })
-
-
