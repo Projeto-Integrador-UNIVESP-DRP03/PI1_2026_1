@@ -5,6 +5,11 @@ Clientes Cadastrados
 {% endblock %}
 
 {% block page_title %}
+Clientes Cadastrados
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/lista_clientes.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -24,6 +29,7 @@ Clientes Cadastrados
             <div class="filter-search-col">
                 <div class="input-icon">
                     <i class="fas fa-search"></i>
+                    <label class="sr-only" for="filterCliente">Pesquisar clientes</label>
                     <input type="text" id="filterCliente"
                         placeholder="Pesquisar por nome, CPF/CNPJ, telefone, carro ou placa..." class="form-input"
                         value="{{ search or '' }}">
@@ -32,6 +38,7 @@ Clientes Cadastrados
             <div class="filter-sort-col">
                 <div class="input-icon">
                     <!--<i class="fas fa-sort"></i>-->
+                    <label class="sr-only" for="sortSelect">Ordenar clientes</label>
                     <select id="sortSelect" class="w-full">
                         <option value="nome_asc">Nome (A-Z)</option>
                         <option value="nome_desc">Nome (Z-A)</option>
@@ -46,11 +53,11 @@ Clientes Cadastrados
 
         <thead>
             <tr>
-                <th>Nome</th>
-                <th>CPF/CNPJ</th>
-                <th>Telefone</th>
-                <th>Rua</th>
-                <th>Veículos</th>
+                <th scope="col">Nome</th>
+                <th scope="col">CPF/CNPJ</th>
+                <th scope="col">Telefone</th>
+                <th scope="col">Rua</th>
+                <th scope="col">Veículos</th>
             </tr>
         </thead>
 
@@ -65,23 +72,25 @@ Clientes Cadastrados
                         <div class="cliente-nome">{{ cliente.nome }}</div>
                         <div class="cliente-icons">
                             <a href="{{ url_for('main.perfil_cliente', id_cliente=cliente.id_cliente) }}"
-                                class="icon-btn" data-tooltip="Ver perfil">
-                                <i class="fas fa-eye"></i>
+                                class="icon-btn" data-tooltip="Ver perfil" aria-label="Ver perfil de {{ cliente.nome }}">
+                                <i class="fas fa-eye" aria-hidden="true"></i>
                             </a>
                             <a href="{{ url_for('main.editar_cliente', id_cliente=cliente.id_cliente) }}"
-                                class="icon-btn" data-tooltip="Editar perfil">
-                                <i class="fas fa-user-edit"></i>
+                                class="icon-btn" data-tooltip="Editar perfil" aria-label="Editar perfil de {{ cliente.nome }}">
+                                <i class="fas fa-user-edit" aria-hidden="true"></i>
                             </a>
                             <form id="form-delete-cliente-{{ cliente.id_cliente }}"
                                 action="{{ url_for('main.deletar_cliente', id_cliente=cliente.id_cliente) }}"
                                 method="post" style="display: none;"></form>
                             <button type="button" class="icon-btn" data-tooltip="Excluir perfil"
-                                onclick="openDeleteModal('cliente', {{ cliente.nome|tojson }}, 'form-delete-cliente-{{ cliente.id_cliente }}');">
-                                <i class="fas fa-trash-alt"></i>
+                                aria-label="Excluir perfil de {{ cliente.nome }}"
+                                data-delete-type="cliente" data-delete-name="{{ cliente.nome }}"
+                                data-delete-form="form-delete-cliente-{{ cliente.id_cliente }}">
+                                <i class="fas fa-trash-alt" aria-hidden="true"></i>
                             </button>
                             <a href="{{ url_for('main.novo_veiculo', id_cliente=cliente.id_cliente) }}" class="icon-btn"
-                                data-tooltip="Adicionar veículo">
-                                <i class="fas fa-car-side"></i>
+                                data-tooltip="Adicionar veículo" aria-label="Adicionar veículo para {{ cliente.nome }}">
+                                <i class="fas fa-car-side" aria-hidden="true"></i>
                             </a>
                         </div>
                     </div>
@@ -113,15 +122,18 @@ Clientes Cadastrados
 
                             <div class="veiculo-acoes">
                                 <a href="{{ url_for('main.editar_veiculo', id_veiculo=veiculo.id_veiculo) }}"
-                                    class="icon-btn" data-tooltip="Editar veículo">
-                                    <i class="fas fa-edit"></i>
+                                    class="icon-btn" data-tooltip="Editar veículo" aria-label="Editar veículo {{ veiculo.placa.upper() }}">
+                                    <i class="fas fa-edit" aria-hidden="true"></i>
                                 </a>
                                 <form id="form-delete-veiculo-{{ veiculo.id_veiculo }}"
                                     action="{{ url_for('main.deletar_veiculo', id_veiculo=veiculo.id_veiculo) }}"
                                     method="post" style="display: none;"></form>
                                 <button type="button" class="icon-btn" data-tooltip="Excluir veículo"
-                                    onclick="openDeleteModal('veiculo', {{ (veiculo.placa.upper() ~ ' - ' ~ veiculo.modelo)|tojson }}, 'form-delete-veiculo-{{ veiculo.id_veiculo }}');">
-                                    <i class="fas fa-trash-alt"></i>
+                                    aria-label="Excluir veículo {{ veiculo.placa.upper() }}"
+                                    data-delete-type="veiculo"
+                                    data-delete-name="{{ veiculo.placa.upper() }} - {{ veiculo.modelo }}"
+                                    data-delete-form="form-delete-veiculo-{{ veiculo.id_veiculo }}">
+                                    <i class="fas fa-trash-alt" aria-hidden="true"></i>
                                 </button>
                             </div>
 
@@ -149,6 +161,8 @@ Clientes Cadastrados
     </div>
 
 </div>
+
+<p id="clientesSearchStatus" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
 
 {% if pagination and pagination.pages > 1 %}
 <nav class="mt-6 flex items-center justify-between gap-3 flex-wrap" aria-label="Paginação">
@@ -190,66 +204,6 @@ Clientes Cadastrados
             </div>
 </nav>
 {% endif %}
-
-<style>
-    .panel {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 1rem;
-        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
-    }
-
-    .screen-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-
-    .screen-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #0f172a;
-    }
-
-    .screen-subtitle {
-        color: #64748b;
-        font-size: 0.875rem;
-    }
-
-    .filter-row {
-        display: flex;
-        gap: 0.75rem;
-        align-items: center;
-    }
-
-    .filter-search-col {
-        flex: 1;
-    }
-
-    .filter-sort-col {
-        flex-shrink: 0;
-        min-width: 180px;
-    }
-
-    @media (max-width: 768px) {
-        .filter-row {
-            flex-wrap: wrap;
-        }
-
-        .filter-sort-col {
-            width: 100%;
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .sort-btn {
-            flex: 1;
-            justify-content: center;
-        }
-    }
-</style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -310,6 +264,14 @@ Clientes Cadastrados
 
                     // Re-ordenar se necessário
                     sortTable();
+
+                    const resultRows = Array.from(currentTbody.querySelectorAll('tr'))
+                        .filter(row => !row.querySelector('td[colspan]'));
+                    const searchStatus = document.getElementById('clientesSearchStatus');
+                    if (searchStatus) {
+                        const total = resultRows.length;
+                        searchStatus.textContent = `${total} ${total === 1 ? 'cliente encontrado' : 'clientes encontrados'}.`;
+                    }
 
                     // Atualizar URL sem recarregar
                     window.history.pushState({}, '', url);

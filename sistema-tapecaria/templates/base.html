@@ -12,9 +12,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='imagens/Identidade_visual/logo_icone.ico') }}?v=1">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo.css') }}?v=2.6">
+    {% block extra_head %}{% endblock %}
 </head>
 
 <body>
+
+<a class="skip-link" href="#main-content">Pular para o conteúdo principal</a>
 
 <div class="app-shell">
 
@@ -27,46 +30,46 @@
         <div class="sidebar-header p-3 sm:p-5 border-b border-white/10 flex items-center justify-between gap-3">
             <div>
                 <div class="brand-logo">
-                    <img src="{{ url_for('static', filename='imagens/Identidade_visual/logo_aplicacao.png') }}" alt="logo_aplicacao">
+                    <img src="{{ url_for('static', filename='imagens/Identidade_visual/logo_aplicacao.png') }}" alt="Zito Tapeçaria">
                 </div>
                 <div class="brand-tagline mt-1 sm:mt-2 text-xs uppercase tracking-[0.18em] text-slate-300">Ger. de pedidos</div>
             </div>
-            <button id="sidebarCollapse" type="button" class="sidebar-toggle" aria-label="Abrir menu">
+            <button id="sidebarCollapse" type="button" class="sidebar-toggle" aria-label="Expandir menu" aria-controls="sidebar" aria-expanded="false">
                 <i class="fas fa-angle-right"></i>
             </button>
         </div>
 
         <!-- MENU -->
-        <div class="flex-1 py-4 sm:py-6 px-3 sm:px-4 space-y-1 sidebar-menu">
-            <a href="{{ url_for('main.home') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-2 sm:gap-3 hover:bg-white/10 transition-all">
+        <nav class="flex-1 py-4 sm:py-6 px-3 sm:px-4 space-y-1 sidebar-menu" aria-label="Navegação principal">
+            <a href="{{ url_for('main.home') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-2 sm:gap-3 hover:bg-white/10 transition-all" {% if request.endpoint == 'main.home' %}aria-current="page"{% endif %}>
                 <i class="fas fa-home w-4 sm:w-5"></i> <span class="nav-label">Home</span>
             </a>
 
-            <a href="{{ url_for('main.lista_orcamentos') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-2 sm:gap-3 hover:bg-white/10 transition-all">
+            <a href="{{ url_for('main.lista_orcamentos') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-2 sm:gap-3 hover:bg-white/10 transition-all" {% if request.endpoint in ['main.lista_orcamentos', 'main.form_orcamento', 'main.visualizar_orcamento'] %}aria-current="page"{% endif %}>
                 <i class="fas fa-file-invoice-dollar w-4 sm:w-5"></i> <span class="nav-label">Orçamentos</span>
             </a>
 
-            <a href="{{ url_for('main.lista_pedidos') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-2 sm:gap-3 hover:bg-white/10 transition-all">
+            <a href="{{ url_for('main.lista_pedidos') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-2 sm:gap-3 hover:bg-white/10 transition-all" {% if request.endpoint in ['main.lista_pedidos', 'main.editar_pedido'] %}aria-current="page"{% endif %}>
                 <i class="fas fa-clipboard-list w-4 sm:w-5"></i> <span class="nav-label">Pedidos</span>
             </a>
 
-            <a href="{{ url_for('main.pedidos_concluidos') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-2 sm:gap-3 hover:bg-white/10 transition-all">
+            <a href="{{ url_for('main.pedidos_concluidos') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-2 sm:gap-3 hover:bg-white/10 transition-all" {% if request.endpoint == 'main.pedidos_concluidos' %}aria-current="page"{% endif %}>
                 <i class="fas fa-check-circle w-4 sm:w-5"></i> <span class="nav-label">Concluídos</span>
             </a>
 
-            <a href="{{ url_for('main.listar_clientes') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-2 sm:gap-3 hover:bg-white/10 transition-all">
+            <a href="{{ url_for('main.listar_clientes') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-2 sm:gap-3 hover:bg-white/10 transition-all" {% if request.endpoint in ['main.listar_clientes', 'main.perfil_cliente', 'main.editar_cliente', 'main.editar_veiculo'] %}aria-current="page"{% endif %}>
                 <i class="fas fa-users w-4 sm:w-5"></i> <span class="nav-label">Lista de Clientes</span>
             </a>
 
-            <a href="{{ url_for('main.cadastrar_cliente') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-2 sm:gap-3 hover:bg-white/10 transition-all">
+            <a href="{{ url_for('main.cadastrar_cliente') }}" class="menu-item w-full text-left rounded-xl flex items-center gap-2 sm:gap-3 hover:bg-white/10 transition-all" {% if request.endpoint in ['main.cadastrar_cliente', 'main.novo_veiculo'] %}aria-current="page"{% endif %}>
                 <i class="fas fa-user-plus w-4 sm:w-5"></i> <span class="nav-label">Novo Cliente</span>
             </a>
 
-            <a href="{{ url_for('main.dashboard') }}" class="menu-item">
+            <a href="{{ url_for('main.dashboard') }}" class="menu-item" {% if request.endpoint == 'main.dashboard' %}aria-current="page"{% endif %}>
                 <i class="fas fa-chart-line"></i> <span class="nav-label">Dashboard</span>
             </a>
 
-        </div>
+        </nav>
 
         <!-- BOTÃO DE SAIR NO FINAL DA SIDEBAR -->
         <div class="p-4 border-t border-white/10">
@@ -83,13 +86,13 @@
     <!-- =========================
          CONTEÚDO PRINCIPAL
     ========================== -->
-    <main class="content-area">
+    <main id="main-content" class="content-area" tabindex="-1">
 
         <div class="w-full">
             <div class="topbar">
                 <div class="flex items-center gap-3">
                     <div>
-                        <div id="pageTitle" class="topbar-title title-font">{% block page_title %}Sistema{% endblock %}</div>
+                        <h1 id="pageTitle" class="topbar-title title-font">{% block page_title %}Sistema{% endblock %}</h1>
                     </div>
                 </div>
             </div>
@@ -99,7 +102,7 @@
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
                         {% for categoria, mensagem in messages %}
-                            <div class="alert alert-{{ categoria }}">
+                            <div class="alert alert-{{ categoria }}" role="{{ 'alert' if categoria in ['error', 'danger'] else 'status' }}" aria-live="{{ 'assertive' if categoria in ['error', 'danger'] else 'polite' }}" aria-atomic="true">
                                 {{ mensagem }}
                             </div>
                         {% endfor %}
@@ -117,7 +120,7 @@
 </div>
 
 <!-- Botão flutuante para menu mobile -->
-<button id="fabMenuToggle" type="button" class="fab-menu-toggle" aria-label="Abrir menu">
+<button id="fabMenuToggle" type="button" class="fab-menu-toggle" aria-label="Abrir menu de navegação" aria-controls="sidebar" aria-expanded="false">
     <i class="fas fa-bars"></i>
 </button>
 
@@ -261,7 +264,12 @@
         const collapsed = sidebar.classList.toggle('collapsed');
         sidebarIcon.classList.toggle('fa-angle-right', collapsed);
         sidebarIcon.classList.toggle('fa-angle-left', !collapsed);
-        sidebarCollapse.setAttribute('aria-label', collapsed ? 'Abrir menu' : 'Fechar menu');
+        sidebarCollapse.setAttribute('aria-label', collapsed ? 'Expandir menu' : 'Recolher menu');
+        sidebarCollapse.setAttribute('aria-expanded', String(!collapsed));
+        if (fabMenuToggle) {
+            fabMenuToggle.setAttribute('aria-label', collapsed ? 'Abrir menu de navegação' : 'Fechar menu de navegação');
+            fabMenuToggle.setAttribute('aria-expanded', String(!collapsed));
+        }
     }
 
     function toggleMobileMenu() {
@@ -280,7 +288,10 @@
                 sidebar.classList.add('collapsed');
             }
             
-            fabMenuToggle.setAttribute('aria-label', isOpen ? 'Fechar menu' : 'Abrir menu');
+            fabMenuToggle.setAttribute('aria-label', isOpen ? 'Fechar menu de navegação' : 'Abrir menu de navegação');
+            fabMenuToggle.setAttribute('aria-expanded', String(isOpen));
+            sidebarCollapse.setAttribute('aria-label', isOpen ? 'Recolher menu' : 'Expandir menu');
+            sidebarCollapse.setAttribute('aria-expanded', String(isOpen));
             fabMenuToggle.querySelector('i').classList.toggle('fa-bars', !isOpen);
             fabMenuToggle.querySelector('i').classList.toggle('fa-times', isOpen);
         } else {
@@ -293,6 +304,9 @@
         sidebar.classList.remove('mobile-open');
         sidebar.classList.add('collapsed');
         fabMenuToggle.setAttribute('aria-label', 'Abrir menu');
+        fabMenuToggle.setAttribute('aria-expanded', 'false');
+        sidebarCollapse.setAttribute('aria-label', 'Expandir menu');
+        sidebarCollapse.setAttribute('aria-expanded', 'false');
         fabMenuToggle.querySelector('i').classList.remove('fa-times');
         fabMenuToggle.querySelector('i').classList.add('fa-bars');
     }
@@ -320,6 +334,10 @@
             if (!sidebar.classList.contains('collapsed')) {
                 sidebar.classList.add('collapsed');
             }
+            sidebarCollapse.setAttribute('aria-label', 'Expandir menu');
+            sidebarCollapse.setAttribute('aria-expanded', 'false');
+            fabMenuToggle.setAttribute('aria-label', 'Abrir menu de navegação');
+            fabMenuToggle.setAttribute('aria-expanded', 'false');
         }
     });
 </script>

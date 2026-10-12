@@ -14,6 +14,17 @@ class ModalManager {
      * Configura eventos globais
      */
     setupEventListeners() {
+        document.addEventListener('click', (event) => {
+            const trigger = event.target.closest('[data-delete-type][data-delete-form]');
+            if (!trigger) return;
+
+            openDeleteModal(
+                trigger.dataset.deleteType,
+                trigger.dataset.deleteName || '',
+                trigger.dataset.deleteForm
+            );
+        });
+
         // Fechar modal ao clicar no overlay
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('modal-overlay') && e.target.classList.contains('active')) {
@@ -25,6 +36,27 @@ class ModalManager {
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.currentModal) {
                 this.closeModal(this.currentModal);
+                return;
+            }
+
+            if (e.key === 'Tab' && this.currentModal) {
+                const focusable = Array.from(this.currentModal.querySelectorAll(
+                    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+                )).filter((element) => element.getClientRects().length > 0);
+                if (!focusable.length) {
+                    e.preventDefault();
+                    return;
+                }
+
+                const first = focusable[0];
+                const last = focusable[focusable.length - 1];
+                if (e.shiftKey && (document.activeElement === first || !this.currentModal.contains(document.activeElement))) {
+                    e.preventDefault();
+                    last.focus();
+                } else if (!e.shiftKey && (document.activeElement === last || !this.currentModal.contains(document.activeElement))) {
+                    e.preventDefault();
+                    first.focus();
+                }
             }
         });
 
@@ -48,6 +80,10 @@ class ModalManager {
             overlay.hidden = false;
             overlay.classList.add('active');
             this.currentModal = overlay;
+            const appShell = document.querySelector('.app-shell');
+            if (appShell) appShell.inert = true;
+            const menuToggle = document.getElementById('fabMenuToggle');
+            if (menuToggle) menuToggle.inert = true;
             document.body.style.overflow = 'hidden';
             const firstButton = overlay.querySelector('button:not([disabled])');
             if (firstButton) firstButton.focus();
@@ -76,6 +112,10 @@ class ModalManager {
             overlay.classList.remove('active');
             overlay.hidden = true;
             this.currentModal = null;
+            const appShell = document.querySelector('.app-shell');
+            if (appShell) appShell.inert = false;
+            const menuToggle = document.getElementById('fabMenuToggle');
+            if (menuToggle) menuToggle.inert = false;
             document.body.style.overflow = '';
             if (this.previousFocusedElement && typeof this.previousFocusedElement.focus === 'function') {
                 this.previousFocusedElement.focus();

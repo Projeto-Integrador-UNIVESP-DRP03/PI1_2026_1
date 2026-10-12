@@ -26,14 +26,14 @@ Selecionar Veículo
     <div class="panel filter-panel" style="margin-bottom: 1.5rem; padding: 1.5rem;">
         <div class="input-icon">
             <i class="fas fa-search"></i>
+            <label class="sr-only" for="filterVeiculo">Pesquisar veículos</label>
             <input
                 type="text"
                 id="filterVeiculo"
                 placeholder="Pesquisar por placa, marca, modelo ou cor..."
-                autofocus
             >
         </div>
-        <p id="searchCount" class="search-count-text" style="display: none;"></p>
+        <p id="searchCount" class="search-count-text" role="status" aria-live="polite" aria-atomic="true" style="display: none;"></p>
     </div>
 
     <!-- VEÍCULOS DO CLIENTE -->
@@ -41,12 +41,12 @@ Selecionar Veículo
         <table class="table-clientes selecao-veiculo-table">
             <thead>
                 <tr>
-                    <th>Placa</th>
-                    <th>Marca</th>
-                    <th>Modelo</th>
-                    <th>Ano</th>
-                    <th>Cor</th>
-                    <th>Ação</th>
+                    <th scope="col">Placa</th>
+                    <th scope="col">Marca</th>
+                    <th scope="col">Modelo</th>
+                    <th scope="col">Ano</th>
+                    <th scope="col">Cor</th>
+                    <th scope="col">Ação</th>
                 </tr>
             </thead>
             <tbody id="tabelaVeiculosBody">
