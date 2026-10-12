@@ -347,11 +347,12 @@ Foi criada uma suíte em `tests/test_routes.py`, executada com pytest e banco te
 A última execução validada apresentou:
 
 ```text
-11 passed
+29 passed in 9.64s
 ```
 
 Também foram realizadas:
 
+- execução da suíte completa de rotas com `pytest`;
 - compilação dos módulos Python com `py_compile`;
 - verificação de erros no editor;
 - validação de `PRAGMA foreign_keys=1`;

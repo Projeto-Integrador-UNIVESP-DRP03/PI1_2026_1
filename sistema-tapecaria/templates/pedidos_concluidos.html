@@ -5,6 +5,11 @@ Pedidos Concluídos
 {% endblock %}
 
 {% block page_title %}
+Pedidos Concluídos
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pedidos_concluidos.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -23,10 +28,12 @@ Pedidos Concluídos
         <div class="filter-row">
             <div class="filter-search-col"><div class="input-icon">
                 <i class="fas fa-search"></i>
+                <label class="sr-only" for="filterCliente">Pesquisar pedidos concluídos</label>
                 <input type="text" id="filterCliente" placeholder="Cliente, carro ou placa" class="w-full mobile-hide-placeholder" value="{{ search or '' }}">
             </div></div>
             <div class="filter-sort-col"><div class="input-icon">
                 <i class="fas fa-sort"></i>
+                <label class="sr-only" for="sortSelect">Ordenar pedidos concluídos</label>
                 <select id="sortSelect" class="w-full mobile-center-options">
                     <optgroup label="Tempo">
                         <option value="data_desc">Mais Novo</option>
@@ -42,17 +49,21 @@ Pedidos Concluídos
                 <span class="filter-label">De:</span>
                 <div class="input-icon small-date">
                     <i class="fas fa-calendar"></i>
+                    <label class="sr-only" for="filterDataInicio">Data inicial</label>
                     <input type="date" id="filterDataInicio" class="w-full">
                 </div>
             </div><div class="filter-date-group">
                 <span class="filter-label">Até:</span>
                 <div class="input-icon small-date">
                     <i class="fas fa-calendar"></i>
+                    <label class="sr-only" for="filterDataFim">Data final</label>
                     <input type="date" id="filterDataFim" class="w-full">
                 </div></div>
             </div>
         </div>
     </div>
+
+    <p id="concluidosSearchStatus" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
 
     <!-- ESTATÍSTICAS -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center mb-6 concluidos-stats">
@@ -75,14 +86,14 @@ Pedidos Concluídos
         <table class="table-clientes concluidos-table">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Cliente</th>
-                    <th>Veículo</th>
-                    <th>Placa</th>
-                    <th>Data de Entrada</th>
-                    <th>Data de Conclusão</th>
-                    <th>Valor (R$)</th>
-                    <th>Ações</th>
+                    <th scope="col">ID</th>
+                    <th scope="col">Cliente</th>
+                    <th scope="col">Veículo</th>
+                    <th scope="col">Placa</th>
+                    <th scope="col">Data de Entrada</th>
+                    <th scope="col">Data de Conclusão</th>
+                    <th scope="col">Valor (R$)</th>
+                    <th scope="col">Ações</th>
                 </tr>
             </thead>
             <tbody id="tabelaConcluidosBody">
@@ -107,8 +118,8 @@ Pedidos Concluídos
                         <div class="cliente-icons">
                             <a href="{{ url_for('main.visualizar_orcamento', id_orcamento=orcamento.id_orcamento, return_to=request.full_path) }}" 
                                class="icon-btn" 
-                               data-tooltip="Visualizar detalhes">
-                                <i class="fas fa-eye"></i>
+                               data-tooltip="Visualizar detalhes" aria-label="Visualizar orçamento {{ orcamento.id_orcamento }}">
+                                <i class="fas fa-eye" aria-hidden="true"></i>
                             </a>
                         </div>
                     </td>
@@ -165,135 +176,6 @@ Pedidos Concluídos
     {% endif %}
 
 </div>
-
-<style>
-    .screen-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 1rem;
-    }
-
-    .screen-title {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: #0f172a;
-        margin: 0;
-    }
-
-    .screen-subtitle {
-        color: #64748b;
-        font-size: 0.9rem;
-        margin: 0;
-    }
-
-    .filter-panel {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 1rem;
-    }
-
-    .input-icon {
-        position: relative;
-    }
-
-    .input-icon i {
-        position: absolute;
-        left: 0.75rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #94a3b8;
-        font-size: 0.9rem;
-    }
-
-    .input-icon input,
-    .input-icon select {
-        width: 100%;
-        padding-left: 3rem !important;
-        padding-top: 0.6rem;
-        padding-bottom: 0.6rem;
-        padding-right: 0.75rem;
-        border: 1px solid #cbd5e1;
-        border-radius: 0.5rem;
-        font-size: 0.9rem;
-        background: #ffffff;
-        transition: all 0.2s ease;
-    }
-
-    .input-icon input::placeholder {
-        color: #cbd5e1;
-    }
-
-    .input-icon input:focus,
-    .input-icon select:focus {
-        border-color: #0ea5e9;
-        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
-        outline: none;
-    }
-
-    .stat-card {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 1rem;
-        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
-        transition: all 0.2s ease;
-    }
-
-    .stat-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
-    }
-
-    .table-wrapper {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 1.25rem;
-        overflow: visible;
-        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
-    }
-
-    .panel {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 1rem;
-        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
-    }
-
-    @media (max-width: 768px) {
-        .grid {
-            grid-template-columns: 1fr !important;
-        }
-
-        .screen-header {
-            flex-direction: column;
-        }
-
-        .input-icon input,
-        .input-icon select {
-            padding-left: 2.5rem;
-        }
-    }
-
-    .filter-row { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
-    .filter-search-col { flex: 1; min-width: 200px; }
-    .filter-sort-col { flex-shrink: 0; min-width: 180px; }
-    #sortSelect optgroup {
-        font-weight: 700;
-        color: #1e293b;
-        background-color: #f1f5f9;
-        font-style: normal;
-    }
-    #sortSelect option {
-        font-weight: 500;
-        color: #334155;
-        background-color: #ffffff;
-    }
-    @media (max-width: 768px) {
-        .filter-row { flex-direction: column; }
-        .filter-sort-col { width: 100%; }
-        .sort-btn { flex: 1; justify-content: center; }
-    }
-</style>
 
 <script>
     const removeAccents = str => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -383,6 +265,10 @@ Pedidos Concluídos
                 // Re-ordenar e aplicar filtros
                 sortData();
                 applyFilters();
+                const visibleRows = Array.from(currentTbody.querySelectorAll('tr'))
+                    .filter(row => !row.querySelector('td[colspan]') && row.style.display !== 'none');
+                document.getElementById('concluidosSearchStatus').textContent =
+                    `${visibleRows.length} ${visibleRows.length === 1 ? 'pedido concluído encontrado' : 'pedidos concluídos encontrados'}.`;
                 
                 // Atualizar URL sem recarregar
                 window.history.pushState({}, '', url);

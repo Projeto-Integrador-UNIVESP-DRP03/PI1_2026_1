@@ -65,18 +65,19 @@ Dashboard de Indicadores
     <!-- GRÁFICO 1: Orçamentos por Mês -->
     <div class="chart-card">
         <div class="chart-header">
-            <h3><i class="fas fa-chart-line"></i> Orçamentos por Mês</h3>
+            <h2><i class="fas fa-chart-line"></i> Orçamentos por Mês</h2>
             <p>Evolução mensal de orçamentos</p>
         </div>
         <div class="chart-container">
-            <canvas id="orcamentosChart" style="height: 250px; width: 100%;"></canvas>
+            <canvas id="orcamentosChart" role="img" aria-label="Gráfico de orçamentos por mês" aria-describedby="orcamentosChartSummary" style="height: 250px; width: 100%;"></canvas>
+            <p id="orcamentosChartSummary" class="sr-only"></p>
         </div>
     </div>
 
     {# GRÁFICO 3: Top 5 Clientes, oculto até os dados estarem disponíveis.
     <div class="chart-card">
         <div class="chart-header">
-            <h3><i class="fas fa-chart-bar"></i> Top 5 Clientes</h3>
+            <h2><i class="fas fa-chart-bar"></i> Top 5 Clientes</h2>
             <p>Clientes com mais pedidos</p>
         </div>
         <div class="chart-container">
@@ -88,11 +89,12 @@ Dashboard de Indicadores
     <!-- GRÁFICO 4: Conversão Mensal -->
     <div class="chart-card">
         <div class="chart-header">
-            <h3><i class="fas fa-chart-line"></i> Conversão Mensal</h3>
+            <h2><i class="fas fa-chart-line"></i> Conversão Mensal</h2>
             <p>Orçamentos convertidos em pedidos</p>
         </div>
         <div class="chart-container">
-            <canvas id="conversaoChart" style="height: 250px; width: 100%;"></canvas>
+            <canvas id="conversaoChart" role="img" aria-label="Gráfico de conversão mensal de orçamentos em pedidos" aria-describedby="conversaoChartSummary" style="height: 250px; width: 100%;"></canvas>
+            <p id="conversaoChartSummary" class="sr-only"></p>
         </div>
     </div>
 
@@ -138,6 +140,14 @@ function atualizarKPIs(stats) {
 
 function criarGraficos(stats) {
     const data = stats.chartData;
+    const labels = data.labels.length ? data.labels : ['Sem dados'];
+    const orcamentos = data.orcamentos.length ? data.orcamentos : [0];
+    const pedidos = data.pedidos.length ? data.pedidos : [0];
+    const resumoMensal = labels.map((label, index) =>
+        `${label}: ${Number(orcamentos[index] || 0)} orçamentos, ${Number(pedidos[index] || 0)} convertidos`
+    ).join('; ');
+    document.getElementById('orcamentosChartSummary').textContent = `Orçamentos por mês. ${resumoMensal}.`;
+    document.getElementById('conversaoChartSummary').textContent = `Orçamentos e conversões por mês. ${resumoMensal}.`;
     
     // Gráfico 1: Orçamentos por Mês
     const ctxOrcamentos = document.getElementById('orcamentosChart').getContext('2d');
@@ -145,10 +155,10 @@ function criarGraficos(stats) {
     orcamentosChart = new Chart(ctxOrcamentos, {
         type: 'line',
         data: {
-            labels: data.labels.length ? data.labels : ['Sem dados'],
+            labels,
             datasets: [{
                 label: 'Orçamentos',
-                data: data.orcamentos.length ? data.orcamentos : [0],
+                data: orcamentos,
                 borderColor: '#e11d2e',
                 backgroundColor: 'rgba(225, 29, 46, 0.1)',
                 tension: 0.3, fill: true,
@@ -165,10 +175,10 @@ function criarGraficos(stats) {
     conversaoChart = new Chart(ctxConversao, {
         type: 'bar',
         data: {
-            labels: data.labels.length ? data.labels : ['Sem dados'],
+            labels,
             datasets: [
-                { label: 'Orçamentos', data: data.orcamentos.length ? data.orcamentos : [0], backgroundColor: 'rgba(225, 29, 46, 0.6)', borderRadius: 6 },
-                { label: 'Convertidos', data: data.pedidos.length ? data.pedidos : [0], backgroundColor: 'rgba(16, 185, 129, 0.8)', borderRadius: 6 }
+                { label: 'Orçamentos', data: orcamentos, backgroundColor: 'rgba(225, 29, 46, 0.6)', borderRadius: 6 },
+                { label: 'Convertidos', data: pedidos, backgroundColor: 'rgba(16, 185, 129, 0.8)', borderRadius: 6 }
             ]
         },
         options: { responsive: true, maintainAspectRatio: true }
@@ -204,102 +214,5 @@ function parseData(texto) {
     return new Date(raw);
 }
 </script>
-
-<style>
-.dashboard-container { width: 100%; max-width: 1400px; margin: 0 auto; }
-.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
-.kpi-card { background: linear-gradient(135deg, #ffffff, #f8fafc); border: 1px solid #e2e8f0; border-radius: 1rem; padding: 1rem; transition: all 0.3s ease; }
-.kpi-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); }
-.kpi-icon { width: 40px; height: 40px; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem; }
-.kpi-icon i { font-size: 1.25rem; color: white; }
-.kpi-value { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin-bottom: 0.25rem; }
-.kpi-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; font-weight: 600; margin-bottom: 0.5rem; }
-.kpi-meta { font-size: 0.7rem; color: #475569; display: flex; align-items: center; gap: 0.35rem; }
-.chart-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 1rem; margin-bottom: 1rem; }
-.chart-header { margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0; }
-.chart-header h3 { font-size: 0.95rem; font-weight: 700; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem; }
-.chart-header h3 i { color: #e11d2e; }
-.chart-header p { font-size: 0.7rem; color: #64748b; margin: 0.2rem 0 0 0; }
-.chart-container { width: 100%; position: relative; }
-.half-width-container { max-width: 400px; margin: 0 auto; }
-.table-wrapper { overflow-x: auto; }
-.table-clientes { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-.table-clientes thead { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
-.table-clientes thead th { color: #ffffff; padding: 0.5rem 0.75rem; text-align: left; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; }
-.table-clientes tbody tr { border-bottom: 1px solid #e2e8f0; }
-.table-clientes tbody tr:nth-child(even) { background-color: #f8fafc; }
-.table-clientes td { padding: 0.5rem 0.75rem; color: #0f172a; }
-.badge-status { display: inline-flex; align-items: center; padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.65rem; font-weight: 600; }
-.badge-status[data-status="pendente"] { background: #fef3c7; color: #b45309; }
-.badge-status[data-status="em andamento"] { background: #dbeafe; color: #1e40af; }
-.badge-status[data-status="concluido"] { background: #dcfce7; color: #166534; }
-@media (max-width: 1024px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; } }
-@media (max-width: 640px) { .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .half-width-container { max-width: 100%; } }
-@media (max-width: 768px) {
-    .dashboard-container {
-        padding: 0 0.5rem;
-    }
-
-    .kpi-grid,
-    .kpi-card,
-    .chart-card,
-    .chart-container {
-        min-width: 0;
-    }
-    
-    .kpi-card {
-        padding: 0.75rem;
-    }
-    
-    .kpi-icon {
-        width: 32px;
-        height: 32px;
-    }
-    
-    .kpi-icon i {
-        font-size: 1rem;
-    }
-    
-    .kpi-value {
-        font-size: clamp(0.9rem, 4vw, 1.2rem);
-        line-height: 1.15;
-        overflow-wrap: anywhere;
-    }
-    
-    .kpi-label {
-        font-size: 0.62rem;
-        line-height: 1.2;
-        letter-spacing: 0.035em;
-        overflow-wrap: anywhere;
-    }
-    
-    .kpi-meta {
-        display: flex;
-        flex-wrap: wrap;
-        font-size: 0.62rem;
-        line-height: 1.25;
-        overflow-wrap: anywhere;
-    }
-    
-    .chart-card {
-        padding: 0.75rem;
-    }
-    
-    .chart-header h3 {
-        font-size: 0.85rem;
-        line-height: 1.25;
-        flex-wrap: wrap;
-    }
-    
-    .chart-header p {
-        font-size: 0.65rem;
-    }
-    
-    .chart-container canvas {
-        height: 200px !important;
-        max-width: 100%;
-    }
-}
-</style>
 
 {% endblock %}

@@ -174,6 +174,21 @@ class TestAutenticacaoESeguranca:
         with unauthenticated_client.session_transaction() as session:
             assert not session.get("authenticated")
 
+    def test_malformed_password_hash_does_not_raise_server_error(self, app):
+        app.config["ADMIN_PASSWORD_HASH"] = "invalid-hash"
+        unauthenticated_client = app.test_client()
+        response = unauthenticated_client.get("/login")
+        with unauthenticated_client.session_transaction() as session:
+            token = session["csrf_token"]
+
+        response = unauthenticated_client.post(
+            "/login",
+            data={"csrf_token": token, "username": "admin", "password": "any-password"},
+        )
+
+        assert response.status_code == 200
+        assert "Usuário ou senha inválidos." in response.get_data(as_text=True)
+
     def test_logout_clears_session(self, client):
         token = csrf_token(client)
         response = client.post("/logout", data={"csrf_token": token})
@@ -213,6 +228,18 @@ class TestClientesEBusca:
         assert response.status_code == 200
         assert b"Cliente Teste" in response.data
         assert b"Cliente Inativo" not in response.data
+
+    def test_client_list_escapes_delete_button_data(self, app, client):
+        with app.app_context():
+            quoted_client = Cliente(cod_cliente="TSTQ01", nome='Amanda "Especial"')
+            db.session.add(quoted_client)
+            db.session.commit()
+
+        response = client.get("/clientes")
+
+        assert response.status_code == 200
+        assert b'data-delete-name="Amanda &#34;Especial&#34;"' in response.data
+        assert b'onclick="openDeleteModal' not in response.data
 
     def test_client_creation_redirects_to_vehicle_form(self, app, client):
         token = csrf_token(client)

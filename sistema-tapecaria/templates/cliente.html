@@ -36,7 +36,7 @@ Dados do Cliente - {{ cliente.nome }}
             <div class="header-icon">
                 <i class="fas fa-user-circle"></i>
             </div>
-            <h3>Informações Pessoais</h3>
+            <h2>Informações Pessoais</h2>
         </div>
         
         <div class="info-content-grid">
@@ -71,7 +71,7 @@ Dados do Cliente - {{ cliente.nome }}
             <div class="header-icon">
                 <i class="fas fa-map-marker-alt"></i>
             </div>
-            <h3>Endereço</h3>
+            <h2>Endereço</h2>
         </div>
         
         <div class="info-content-grid">
@@ -146,7 +146,7 @@ Dados do Cliente - {{ cliente.nome }}
             <div class="header-icon">
                 <i class="fas fa-car"></i>
             </div>
-            <h3>Veículos Cadastrados</h3>
+            <h2>Veículos Cadastrados</h2>
             <div class="header-badge">
                 {% set veiculos_ativos = [] %}
                 {% for v in cliente.veiculos %}
@@ -170,12 +170,12 @@ Dados do Cliente - {{ cliente.nome }}
                 <table class="table-veiculos">
                     <thead>
                         <tr>
-                            <th>Placa</th>
-                            <th>Modelo</th>
-                            <th>Marca</th>
-                            <th>Ano</th>
-                            <th>Cor</th>
-                            <th style="text-align: center;">Ações</th>
+                            <th scope="col">Placa</th>
+                            <th scope="col">Modelo</th>
+                            <th scope="col">Marca</th>
+                            <th scope="col">Ano</th>
+                            <th scope="col">Cor</th>
+                            <th scope="col" style="text-align: center;">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -187,18 +187,20 @@ Dados do Cliente - {{ cliente.nome }}
                             <td data-label="Ano">{{ veiculo.ano }}</td>
                             <td data-label="Cor">{{ veiculo.cor }}</td>
                             <td data-label="Ações" class="acoes-veiculo">
-                                <a href="{{ url_for('main.form_orcamento', id_veiculo=veiculo.id_veiculo) }}" class="icon-btn-sm icon-btn-orcamento" data-tooltip="Novo orçamento">
-                                    <i class="fas fa-dollar-sign"></i>
+                                <a href="{{ url_for('main.form_orcamento', id_veiculo=veiculo.id_veiculo) }}" class="icon-btn-sm icon-btn-orcamento" data-tooltip="Novo orçamento" aria-label="Criar orçamento para {{ veiculo.placa.upper() }}">
+                                    <i class="fas fa-dollar-sign" aria-hidden="true"></i>
                                 </a>
-                                <a href="{{ url_for('main.editar_veiculo', id_veiculo=veiculo.id_veiculo) }}" class="icon-btn-sm" data-tooltip="Editar veículo">
-                                    <i class="fas fa-edit"></i>
+                                <a href="{{ url_for('main.editar_veiculo', id_veiculo=veiculo.id_veiculo) }}" class="icon-btn-sm" data-tooltip="Editar veículo" aria-label="Editar veículo {{ veiculo.placa.upper() }}">
+                                    <i class="fas fa-edit" aria-hidden="true"></i>
                                 </a>
                                 <form id="form-delete-veiculo-{{ veiculo.id_veiculo }}" method="POST"
                                       action="{{ url_for('main.deletar_veiculo', id_veiculo=veiculo.id_veiculo) }}"
                                       style="display: none;"></form>
                                 <button type="button" class="icon-btn-sm" data-tooltip="Excluir veículo"
-                                        onclick="openDeleteModal('veiculo', {{ (veiculo.placa.upper() ~ ' - ' ~ veiculo.modelo)|tojson }}, 'form-delete-veiculo-{{ veiculo.id_veiculo }}');">
-                                        <i class="fas fa-trash-alt"></i>
+                                    aria-label="Excluir veículo {{ veiculo.placa.upper() }}"
+                                    data-delete-type="veiculo" data-delete-name="{{ veiculo.placa.upper() }} - {{ veiculo.modelo }}"
+                                    data-delete-form="form-delete-veiculo-{{ veiculo.id_veiculo }}">
+                                    <i class="fas fa-trash-alt" aria-hidden="true"></i>
                                 </button>
                              </td>
                          </tr>
@@ -344,7 +346,7 @@ Dados do Cliente - {{ cliente.nome }}
     color: white;
 }
 
-.card-header-custom h3 {
+.card-header-custom h2 {
     font-size: 1rem;
     font-weight: 700;
     color: #0f172a;
@@ -609,7 +611,7 @@ Dados do Cliente - {{ cliente.nome }}
         padding: 0.75rem 1rem;
     }
     
-    .card-header-custom h3 {
+    .card-header-custom h2 {
         font-size: 0.9rem;
     }
     

@@ -66,18 +66,18 @@ A suíte não utiliza mocks da lógica da aplicação. Isso significa que o comp
 
 ## 4. Organização da suíte
 
-A suíte está distribuída em cinco grupos de domínio:
+A suíte está distribuída em seis blocos de domínio, incluindo os testes de acesso inicial:
 
 | Domínio | Quantidade de testes | Responsabilidade principal |
 |---|---:|---|
-| Autenticação e segurança | 4 | Login, logout, acesso anônimo e proteção CSRF |
-| Clientes e busca | 5 | Busca, listagem, cadastro, atualização e inativação |
+| Autenticação e segurança | 8 | Login, logout, acesso anônimo, proteção CSRF e tratamento de erros |
+| Clientes e busca | 6 | Busca, listagem, cadastro, atualização e inativação |
 | Orçamentos | 6 | Validação, persistência, aprovação, rejeição e geração de PDF |
 | Veículos e pedidos | 8 | Cadastro, atualização, busca e controle de pedidos |
 | Dashboard | 1 | Indicadores e filtros temporais |
 | Testes de acesso inicial | 3 | Redirecionamento, login inválido e logout |
 
-No total, a suíte possui **27 testes**. A contagem considera os três testes de acesso inicial, além dos grupos de domínio listado acima.
+No total, a suíte possui **29 testes**. A contagem considera os testes de acesso inicial e os grupos de domínio listados acima.
 
 Os testes de acesso inicial aparecem antes dos grupos por domínio pois representam os controles básicos da aplicação e são reutilizados como exemplos do fluxo de sessão.
 
@@ -650,14 +650,14 @@ A execução validada apresentou os seguintes resultados:
 
 | Indicador | Resultado |
 |---|---:|
-| Testes executados | 27 |
-| Testes aprovados | 27 |
+| Testes executados | 29 |
+| Testes aprovados | 29 |
 | Testes falhas | 0 |
 | Testes ignorados | 0 |
-| Tempo de execução | 8,43 segundos |
+| Tempo de execução | 9,64 segundos |
 | Relatório | `reports/relatorio-testes.html` |
 
-O relatório informou que todos os testes passaram. Isso significa que os cenários de autenticação, clientes, orçamentos, veículos, pedidos e dashboard foram executados sem falhas.
+O relatório informado pela execução atual confirmou que todos os 29 testes passaram. Isso significa que os cenários de autenticação, clientes, orçamentos, veículos, pedidos e dashboard foram executados sem falhas.
 
 O resultado não significa que o sistema esteja completamente sem problemas. Ele indica que a suíte atual cobrem os fluxos testados e que os testes não encontraram falhas nos cenários avaliados.
 
@@ -706,7 +706,7 @@ Os testes têm uma importância fundamental para o desenvolvimento do Sistema Ta
 
 ## 15. Conclusão
 
-A suíte de testes de rotas do Sistema Tapecaria cobre os fluxos principais da aplicação. A execução atual apresentou 27 testes aprovados, sem falhas.
+A suíte de testes de rotas do Sistema Tapecaria cobre os fluxos principais da aplicação. A execução atual apresentou 29 testes aprovados, sem falhas.
 
 A documentação deste arquivo foi criada para facilitar a compreensão desses testes pelos desenvolvedores e para mostrar quando cada teste deve ser considerado um ponto de proteção importante no processo de desenvolvimento.
 
