@@ -118,7 +118,7 @@ No serviço web do Render, configure a variável de ambiente `DATABASE_URL` com 
 
 No Render, a aplicação falha explicitamente na inicialização se `DATABASE_URL` não estiver configurada. Fora do Render, a ausência dessa variável mantém o uso do SQLite local. Na primeira inicialização, as tabelas ausentes são criadas com `db.create_all()`; essa operação não migra alterações futuras nos models nem popula os dados dos catálogos.
 
-Após entrar na aplicação, a rota `/diagnostico/banco` verifica a conexão ativa e a presença das tabelas dos models. O resultado informa se a conexão está funcionando ou se há tabelas ausentes, sem exibir credenciais. Se o serviço não iniciar por falha de configuração ou conexão, essa rota também não estará disponível.
+Após entrar na aplicação, a rota `/diagnostico/banco` verifica a conexão ativa, compara tabelas e colunas com os models e testa a gravação de um cliente e telefone em uma transação revertida, sem manter esses registros no banco. A resposta não exibe credenciais; se o teste de gravação falhar, informa a classe da exceção e, quando disponível, o SQLSTATE para ajudar o responsável a localizar o erro. Se o serviço não iniciar por falha de configuração ou conexão, essa rota também não estará disponível.
 
 ### 4.2 Autenticação e sessão
 

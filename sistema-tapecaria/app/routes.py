@@ -3,7 +3,7 @@ from werkzeug.security import check_password_hash
 from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 import math
-from sqlalchemy import extract, func, inspect, or_, text
+from sqlalchemy import extract, func, inspect, insert, or_
 from sqlalchemy.exc import SQLAlchemyError
 
 # tabelas
@@ -34,6 +34,7 @@ from reportlab.lib import colors
 import io
 import os
 import secrets
+import uuid
 
 
 
@@ -122,13 +123,24 @@ def home():
 
 @main.route("/diagnostico/banco")
 def diagnostico_banco():
-    """Verifica, sem expor credenciais, a conexão e as tabelas da aplicação."""
+    """Verifica conexão, schema e gravação transacional sem persistir dados."""
     try:
-        with db.engine.connect() as connection:
-            connection.execute(text("SELECT 1"))
-
-        existing_tables = set(inspect(db.engine).get_table_names())
+        inspector = inspect(db.engine)
+        existing_tables = set(inspector.get_table_names())
         missing_tables = sorted(set(db.metadata.tables) - existing_tables)
+        missing_columns = {
+            table_name: sorted(
+                {column.name for column in table.columns}
+                - {column["name"] for column in inspector.get_columns(table_name)}
+            )
+            for table_name, table in db.metadata.tables.items()
+            if table_name in existing_tables
+        }
+        missing_columns = {
+            table_name: columns
+            for table_name, columns in missing_columns.items()
+            if columns
+        }
     except SQLAlchemyError as error:
         current_app.logger.exception("Falha no diagnóstico de conexão com o banco.")
         return jsonify(
@@ -137,19 +149,54 @@ def diagnostico_banco():
             error_type=type(error).__name__,
         ), 503
 
-    if missing_tables:
+    if missing_tables or missing_columns:
         return jsonify(
             status="incomplete",
-            message="A conexão funciona, mas faltam tabelas da aplicação no banco.",
+            message="O schema do banco não corresponde aos models da aplicação.",
             database=db.engine.dialect.name,
             missing_tables=missing_tables,
+            missing_columns=missing_columns,
+        ), 503
+
+    try:
+        with db.engine.connect() as connection:
+            transaction = connection.begin()
+            try:
+                result = connection.execute(
+                    insert(Cliente).values(
+                        cod_cliente=f"DIAG-{uuid.uuid4().hex}",
+                        nome="Verificação temporária",
+                    )
+                )
+                connection.execute(
+                    insert(TelefoneCliente).values(
+                        id_cliente=result.inserted_primary_key[0],
+                        telefone="0000000000",
+                    )
+                )
+            finally:
+                transaction.rollback()
+    except SQLAlchemyError as error:
+        current_app.logger.exception(
+            "Falha no teste transacional de gravação do cadastro de cliente."
+        )
+        sqlstate = getattr(getattr(error, "orig", None), "sqlstate", None)
+        if sqlstate is None:
+            sqlstate = getattr(getattr(error, "orig", None), "pgcode", None)
+        return jsonify(
+            status="write_error",
+            message="A conexão funciona, mas o teste de gravação do cliente falhou.",
+            database=db.engine.dialect.name,
+            error_type=type(error).__name__,
+            sqlstate=sqlstate,
         ), 503
 
     return jsonify(
         status="ok",
-        message="Conexão e tabelas da aplicação verificadas com sucesso.",
+        message="Conexão, schema e gravação de cliente verificadas com sucesso.",
         database=db.engine.dialect.name,
         table_count=len(existing_tables),
+        write_check="passed_and_rolled_back",
     )
 
 

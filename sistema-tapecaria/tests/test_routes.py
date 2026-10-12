@@ -134,6 +134,9 @@ def test_database_diagnostic_reports_connection_and_tables(app, client):
     assert response.json["status"] == "ok"
     assert response.json["database"] == "sqlite"
     assert response.json["table_count"] > 0
+    assert response.json["write_check"] == "passed_and_rolled_back"
+    with app.app_context():
+        assert Cliente.query.count() == 1
 
 
 def test_database_diagnostic_reports_missing_tables(app, client):
