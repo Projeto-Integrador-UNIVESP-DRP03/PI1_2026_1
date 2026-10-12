@@ -25,7 +25,7 @@
         .input-icon i { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8; }
         .input-icon input { width: 100%; padding: 0.85rem 1rem 0.85rem 2.75rem; border: 1px solid #e2e8f0; border-radius: 1rem; transition: all 0.2s; background: #f8fafc; }
         .input-icon input:focus { outline: none; border-color: #e11d2e; box-shadow: 0 0 0 4px rgba(225,29,46,0.12); background: #ffffff; }
-        .btn-login { background: linear-gradient(135deg, #e11d2e 0%, #b91c1c 60%, #1e3a8a 100%); transition: all 0.2s; }
+        .btn-login { background: linear-gradient(135deg, #b91c1c 0%, #991b1b 60%, #1e3a8a 100%); transition: all 0.2s; }
         .btn-login:hover { transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(225, 29, 46, 0.55); }
         .login-logo { width: auto; height: 100px; }
         .shake { animation: shake 0.25s ease-in-out; }
@@ -43,23 +43,23 @@
     <div class="floaty two"></div>
     <div class="floaty three"></div>
 
-    <div class="login-layout w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-10">
-        <div class="text-white flex flex-col justify-center px-4">
+    <main class="login-layout w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-10">
+        <section class="text-white flex flex-col justify-center px-4" aria-labelledby="page-heading">
             <div class="mb-6">
-                <h1 class="title-font text-5xl lg:text-6xl font-bold mt-4">Gestão de pedidos e serviços</h1>
+                <h1 id="page-heading" class="title-font text-5xl lg:text-6xl font-bold mt-4">Gestão de pedidos e serviços</h1>
             </div>
-            <div class="flex gap-3 text-slate-300 text-sm">
-                <div class="flex items-center gap-2"><i class="fas fa-check-circle text-emerald-400"></i> Gerenciamento de prazos</div>
-                <div class="flex items-center gap-2"><i class="fas fa-check-circle text-emerald-400"></i> Controle por indicadores</div>
+            <div class="flex gap-3 text-slate-100 text-sm">
+                <div class="flex items-center gap-2"><i class="fas fa-check-circle text-emerald-300"></i> Gerenciamento de prazos</div>
+                <div class="flex items-center gap-2"><i class="fas fa-check-circle text-emerald-300"></i> Controle por indicadores</div>
             </div>
-        </div>
+        </section>
 
-        <div class="glass login-card rounded-3xl p-10 shadow-2xl">
+        <section class="glass login-card rounded-3xl p-10 shadow-2xl" aria-labelledby="login-heading">
             <div class="text-center mb-8">
                 <div class="mb-6 flex justify-center" style="height: 100px;">
                     <img src="{{ url_for('static', filename='imagens/Identidade_visual/logo_aplicacao.png') }}" alt="logo_aplicacao" class="login-logo">
                 </div>
-                <h2 class="text-2xl font-bold text-gray-800">Acesso ao sistema</h2>
+                <h2 id="login-heading" class="text-2xl font-bold text-gray-900">Acesso ao sistema</h2>
             </div>
             <form id="loginForm" class="space-y-4" method="POST" action="{{ url_for('main.login') }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
@@ -80,8 +80,8 @@
                     <i class="fas fa-sign-in-alt"></i> Entrar
                 </button>
             </form>
-        </div>
-    </div>
+        </section>
+    </main>
 
 </body>
 </html>
