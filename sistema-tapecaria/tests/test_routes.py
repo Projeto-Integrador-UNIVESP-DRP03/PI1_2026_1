@@ -284,6 +284,7 @@ class TestClientesEBusca:
                 "cod_cliente": "NEW001",
                 "nome": "Novo Cliente",
                 "telefone": "12999990000",
+                "cep": "12400-000",
             },
         )
 
@@ -292,6 +293,24 @@ class TestClientesEBusca:
             created = Cliente.query.filter_by(cod_cliente="NEW001").one()
             assert created.nome == "Novo Cliente"
             assert created.telefones[0].telefone == "12999990000"
+            assert created.enderecos[0].cep == "12400000"
+
+    def test_client_creation_rejects_invalid_cep(self, app, client):
+        token = csrf_token(client)
+        response = client.post(
+            "/salvar_cliente",
+            data={
+                "csrf_token": token,
+                "cod_cliente": "NEW002",
+                "nome": "Cliente CEP Inválido",
+                "cep": "12345-6789",
+            },
+        )
+
+        assert response.status_code == 302
+        assert response.headers["Location"].endswith("/cadastrar_cliente")
+        with app.app_context():
+            assert Cliente.query.filter_by(cod_cliente="NEW002").first() is None
 
     def test_client_update_changes_name_and_phone(self, app, client):
         token = csrf_token(client)
@@ -310,7 +329,7 @@ class TestClientesEBusca:
                 "bairro": "Centro",
                 "cidade": "Pindamonhangaba",
                 "estado": "SP",
-                "cep": "12400000",
+                "cep": "12400-000",
                 "complemento": "Casa",
             },
         )
@@ -321,6 +340,7 @@ class TestClientesEBusca:
             assert updated.nome == "Cliente Atualizado"
             assert updated.telefones[0].telefone == "12999998888"
             assert updated.enderecos[0].cidade == "Pindamonhangaba"
+            assert updated.enderecos[0].cep == "12400000"
 
     def test_customer_soft_delete_hides_client_and_vehicle(self, app, client):
         token = csrf_token(client)

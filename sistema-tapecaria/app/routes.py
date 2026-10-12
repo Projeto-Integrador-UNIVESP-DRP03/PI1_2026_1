@@ -82,6 +82,15 @@ def parse_money(value):
     return parsed
 
 
+def normalize_cep(value):
+    cep = re.sub(r"\D", "", value or "")
+    if not cep:
+        return None
+    if len(cep) != 8:
+        raise ValueError("O CEP deve conter exatamente 8 dígitos.")
+    return cep
+
+
 # =========================
 # HOME
 # =========================
@@ -294,6 +303,11 @@ def salvar_cliente():
     cod_cliente = request.form.get("cod_cliente")
     nome = request.form.get("nome")
     telefone = request.form.get("telefone")
+    try:
+        cep = normalize_cep(request.form.get("cep"))
+    except ValueError as error:
+        flash(str(error), "error")
+        return redirect(url_for("main.cadastrar_cliente"))
     
     # Verifica se já existe cliente com esse código
     existente = Cliente.query.filter_by(cod_cliente=cod_cliente).first()
@@ -321,7 +335,7 @@ def salvar_cliente():
                 bairro=request.form.get("bairro"),
                 cidade=request.form.get("cidade"),
                 estado=request.form.get("estado"),
-                cep=request.form.get("cep"),
+                cep=cep,
                 complemento=request.form.get("complemento")
             )
         )
@@ -369,6 +383,11 @@ def editar_cliente(id_cliente):
 def atualizar_cliente(id_cliente):
 
     cliente = db.get_or_404(Cliente, id_cliente)
+    try:
+        cep = normalize_cep(request.form.get("cep"))
+    except ValueError as error:
+        flash(str(error), "error")
+        return redirect(url_for("main.editar_cliente", id_cliente=id_cliente))
 
     cliente.nome = request.form["nome"]
 
@@ -390,7 +409,7 @@ def atualizar_cliente(id_cliente):
         cliente.enderecos[0].bairro = request.form["bairro"]
         cliente.enderecos[0].cidade = request.form["cidade"]
         cliente.enderecos[0].estado = request.form["estado"]
-        cliente.enderecos[0].cep = request.form["cep"]
+        cliente.enderecos[0].cep = cep
         cliente.enderecos[0].complemento = request.form["complemento"]
     else:
         cliente.enderecos.append(
@@ -400,7 +419,7 @@ def atualizar_cliente(id_cliente):
                 bairro=request.form["bairro"],
                 cidade=request.form["cidade"],
                 estado=request.form["estado"],
-                cep=request.form["cep"],
+                cep=cep,
                 complemento=request.form["complemento"])
         )
 
