@@ -34,7 +34,24 @@ def create_app(test_config=None):
     # Caminho do banco
     db_path = os.path.join(instance_path, "database.db")
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
+    database_url = os.environ.get("DATABASE_URL")
+    if database_url:
+        if database_url.startswith("postgres://"):
+            database_url = database_url.replace(
+                "postgres://", "postgresql+psycopg://", 1
+            )
+        elif database_url.startswith("postgresql://"):
+            database_url = database_url.replace(
+                "postgresql://", "postgresql+psycopg://", 1
+            )
+    elif os.environ.get("RENDER", "").lower() == "true":
+        raise RuntimeError(
+            "DATABASE_URL não configurada. Defina a variável no serviço web do Render."
+        )
+    else:
+        database_url = f"sqlite:///{db_path}"
+
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_url
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     # SECRET KEY
@@ -81,5 +98,9 @@ def create_app(test_config=None):
     # Registra rotas
     from .routes import main
     app.register_blueprint(main)
+
+    # Cria tabelas ausentes, incluindo na primeira inicialização do PostgreSQL.
+    with app.app_context():
+        db.create_all()
 
     return app
