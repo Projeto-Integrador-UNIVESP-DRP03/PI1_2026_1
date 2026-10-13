@@ -66,20 +66,20 @@ A suíte não utiliza mocks da lógica da aplicação. Isso significa que o comp
 
 ## 4. Organização da suíte
 
-A suíte está distribuída em seis blocos de domínio, incluindo os testes de acesso inicial:
+A suíte está distribuída em seis blocos de domínio, incluindo os testes de acesso inicial e o diagnóstico do banco de dados:
 
 | Domínio | Quantidade de testes | Responsabilidade principal |
 |---|---:|---|
-| Autenticação e segurança | 8 | Login, logout, acesso anônimo, proteção CSRF e tratamento de erros |
-| Clientes e busca | 6 | Busca, listagem, cadastro, atualização e inativação |
+| Testes de acesso inicial | 6 | Redirecionamento, autenticação, logout e diagnóstico do banco |
+| Autenticação e segurança | 5 | Login, logout, acesso anônimo, proteção CSRF e tratamento de erros |
+| Clientes e busca | 7 | Busca, listagem, cadastro, atualização e inativação |
 | Orçamentos | 6 | Validação, persistência, aprovação, rejeição e geração de PDF |
 | Veículos e pedidos | 8 | Cadastro, atualização, busca e controle de pedidos |
 | Dashboard | 1 | Indicadores e filtros temporais |
-| Testes de acesso inicial | 3 | Redirecionamento, login inválido e logout |
 
-No total, a suíte possui **29 testes**. A contagem considera os testes de acesso inicial e os grupos de domínio listados acima.
+No total, a suíte possui **33 testes**. A contagem considera os testes de acesso inicial, o diagnóstico do banco e os grupos de domínio listados acima.
 
-Os testes de acesso inicial aparecem antes dos grupos por domínio pois representam os controles básicos da aplicação e são reutilizados como exemplos do fluxo de sessão.
+Os testes de acesso inicial aparecem antes dos grupos por domínio porque representam os controles básicos da aplicação e são reutilizados como exemplos do fluxo de sessão.
 
 ---
 
@@ -629,10 +629,10 @@ O dashboard precisa mostrar informações atuais e relevantes. Orçamentos antig
 A execução da suíte deve ser feita a partir da raiz do projeto:
 
 ```powershell
-pytest tests/test_routes.py
+python -m pytest -q
 ```
 
-O comando utiliza a configuração de [pytest.ini](../pytest.ini), que gera o relatório HTML automaticamente.
+O comando utiliza a configuração de [pytest.ini](../pytest.ini), que gera o relatório HTML automaticamente e salva o artefato em `reports/relatorio-testes.html`.
 
 O relatório fica em:
 
@@ -650,16 +650,18 @@ A execução validada apresentou os seguintes resultados:
 
 | Indicador | Resultado |
 |---|---:|
-| Testes executados | 29 |
-| Testes aprovados | 29 |
+| Testes executados | 33 |
+| Testes aprovados | 33 |
 | Testes falhas | 0 |
 | Testes ignorados | 0 |
-| Tempo de execução | 9,64 segundos |
+| Tempo de execução | 13,52 segundos |
 | Relatório | `reports/relatorio-testes.html` |
 
-O relatório informado pela execução atual confirmou que todos os 29 testes passaram. Isso significa que os cenários de autenticação, clientes, orçamentos, veículos, pedidos e dashboard foram executados sem falhas.
+O relatório informado pela execução atual confirmou que todos os 33 testes passaram. Isso significa que os cenários de autenticação, clientes, orçamentos, veículos, pedidos, dashboard e diagnóstico do banco foram executados sem falhas.
 
-O resultado não significa que o sistema esteja completamente sem problemas. Ele indica que a suíte atual cobrem os fluxos testados e que os testes não encontraram falhas nos cenários avaliados.
+Uma versão resumida em formato acadêmico também foi registrada em `docs/relatorio_academico_testes.md`, com foco em contextualização metodológica e apresentação dos resultados em linguagem adequada para documentação do projeto.
+
+O resultado não significa que o sistema esteja completamente sem problemas. Ele indica que a suíte atual cobre os fluxos testados e que os testes não encontraram falhas nos cenários avaliados.
 
 ---
 
@@ -706,7 +708,7 @@ Os testes têm uma importância fundamental para o desenvolvimento do Sistema Ta
 
 ## 15. Conclusão
 
-A suíte de testes de rotas do Sistema Tapecaria cobre os fluxos principais da aplicação. A execução atual apresentou 29 testes aprovados, sem falhas.
+A suíte de testes de rotas do Sistema Tapecaria cobre os fluxos principais da aplicação. A execução atual apresentou 33 testes aprovados, sem falhas.
 
 A documentação deste arquivo foi criada para facilitar a compreensão desses testes pelos desenvolvedores e para mostrar quando cada teste deve ser considerado um ponto de proteção importante no processo de desenvolvimento.
 
